@@ -4,13 +4,15 @@ import {
     StyleSheet,
     Text,
     View,
-    ScrollView
+    ScrollView,
+    StatusBar
 } from 'react-native'
 
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
 
 import { useNavigation } from '@react-navigation/native';
+import { COLOURS } from '../../utils/database/Database';
 
 const ForgotPasswordScreen = () => {
 
@@ -30,6 +32,10 @@ const ForgotPasswordScreen = () => {
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
+            <StatusBar
+                backgroundColor={COLOURS.dirtyWhiteBackground}
+                barStyle="dark-content"
+            />
             <View style={styles.root}>
                 <Text style={styles.titleStyle}>Reset your password</Text>
                 <CustomInput

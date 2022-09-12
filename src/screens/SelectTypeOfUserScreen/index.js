@@ -1,9 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View
+} from 'react-native';
 
 import CustomButton from '../../components/CustomButton';
 
 import { useNavigation } from '@react-navigation/native';
+import { COLOURS } from '../../utils/database/Database';
 
 const SelectTypeOfUser = () => {
 
@@ -42,7 +47,7 @@ export default SelectTypeOfUser
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        backgroundColor: "#FF9967",
+        backgroundColor: COLOURS.dirtyWhiteBackground,
         alignItems: "center",
         justifyContent: "center",
         padding: 20

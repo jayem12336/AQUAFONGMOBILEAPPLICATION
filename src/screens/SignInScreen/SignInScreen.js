@@ -5,7 +5,8 @@ import {
     Image,
     View,
     useWindowDimensions,
-    ScrollView
+    ScrollView,
+    StatusBar
 } from 'react-native'
 
 import Logo from '../../images/aqualogo.png';
@@ -14,6 +15,7 @@ import CustomButton from '../../components/CustomButton';
 import SocialSignInButtons from '../../components/SocialSignInButtons';
 
 import { useNavigation } from '@react-navigation/native';
+import { COLOURS } from '../../utils/database/Database';
 
 const Login = () => {
 
@@ -40,7 +42,11 @@ const Login = () => {
     }
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer}>
+            <StatusBar
+                backgroundColor={COLOURS.dirtyWhiteBackground}
+                barStyle="dark-content"
+            />
             <View style={styles.root}>
                 <Image
                     source={Logo}
@@ -85,13 +91,17 @@ const styles = StyleSheet.create({
     root: {
         alignItems: 'center',
         padding: 20,
-        backgroundColor: 'F9FBFC',
-        marginTop: 50
+        justifyContent: 'center'
     },
     logo: {
         width: "70%",
         maxHeight: 200,
         maxWidth: 300,
         marginBottom: 5
-    }
+    },
+    contentContainer: {
+        flex: 1,
+        backgroundColor: COLOURS.dirtyWhiteBackground,
+        paddingTop: 20
+    },
 })

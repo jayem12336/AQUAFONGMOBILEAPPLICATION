@@ -6,20 +6,25 @@ import {
     View,
     useWindowDimensions,
     ScrollView
-} from 'react-native'
+} from 'react-native';
 
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
 import SocialSignInButtons from '../../components/SocialSignInButtons';
 
+import { useNavigation } from '@react-navigation/native';
+
 const ConfirmEmailScreen = () => {
+
+    const navigation = useNavigation();
 
     const [code, setCode] = useState('');
 
     const { height } = useWindowDimensions();
 
     const onConfirmPress = () => {
-        console.warn("Confirm Press");
+        navigation.navigate('Home')
+
     }
 
     const onSignInPress = () => {

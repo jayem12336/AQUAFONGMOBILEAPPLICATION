@@ -5,12 +5,14 @@ import {
     Text,
     View,
     Image,
+    StatusBar,
 } from "react-native";
 
 import Logo from '../../images/aqualogo.png';
 import CustomButton from "../../components/CustomButton";
 
 import { useNavigation } from "@react-navigation/native";
+import { COLOURS } from "../../utils/database/Database";
 
 export default function LandingPage() {
 
@@ -23,6 +25,10 @@ export default function LandingPage() {
 
     return (
         <View style={styles.container}>
+            <StatusBar
+                backgroundColor={COLOURS.dirtyWhiteBackground}
+                barStyle="dark-content"
+            />
             <Image
                 source={Logo}
                 style={styles.logoStyle}
@@ -40,13 +46,13 @@ export default function LandingPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#FF9967",
+        backgroundColor: COLOURS.dirtyWhiteBackground,
         alignItems: "center",
         justifyContent: "center",
         padding: 20
     },
     textColor: {
-        color: "black",
+        color: COLOURS.black,
         fontStyle: "italic",
         fontWeight: "bold",
         fontSize: 16,
@@ -56,12 +62,5 @@ const styles = StyleSheet.create({
         maxHeight: 200,
         maxWidth: 200,
         borderRadius: 100
-    },
-    buttonStyle: {
-        alignItems: "center",
-        backgroundColor: "#DDDDDD",
-        padding: 10,
-        marginTop: 20,
-        width: 150
     },
 });

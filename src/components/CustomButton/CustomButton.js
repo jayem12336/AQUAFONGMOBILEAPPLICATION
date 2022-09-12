@@ -1,5 +1,7 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, Pressable } from 'react-native'
+import React from 'react';
+
+import { COLOURS } from '../../utils/database/Database';
 
 const CustomButton = ({ onPress, text, type = "PRIMARY", bgColor, fgColor }) => {
     return (
@@ -32,10 +34,10 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     container_PRIMARY: {
-        backgroundColor: '#3B71F3',
+        backgroundColor: COLOURS.buttonContainerPrimary,
     },
     container_SECONDARY: {
-        borderColor: '#3B71F3',
+        borderColor: COLOURS.buttonContainerSecondary,
         borderWidth: 2
     },
     container_TERTIARY: {
@@ -43,20 +45,20 @@ const styles = StyleSheet.create({
     },
     container_ENTERSHOPBUTTON: {
         width: '50%',
-        backgroundColor: '#DDDDDD',
+        backgroundColor: COLOURS.buttonContainerPrimary,
         marginTop: 10
     },
     textStyle: {
         fontWeight: 'bold',
-        color: 'white'
+        color: COLOURS.white
     },
     text_SECONDARY: {
-        color: '#3B71F3'
+        color: COLOURS.buttonTextSecondary
     },
     text_TERTIARY: {
-        color: 'gray'
+        color: COLOURS.buttonTextTertiary
     },
     text_ENTERSHOPBUTTON: {
-        color: 'black'
+        color: COLOURS.white
     }
 })
