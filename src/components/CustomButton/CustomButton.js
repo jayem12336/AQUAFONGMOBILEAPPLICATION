@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     },
     container_ENTERSHOPBUTTON: {
         width: '50%',
-        backgroundColor: COLOURS.buttonContainerPrimary,
-        marginTop: 10
+        backgroundColor: COLOURS.white,
+        marginTop: 50,
     },
     textStyle: {
         fontWeight: 'bold',
@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
         color: COLOURS.buttonTextTertiary
     },
     text_ENTERSHOPBUTTON: {
-        color: COLOURS.white
+        color: COLOURS.black,
+        fontSize: 12
     }
 })

@@ -6,7 +6,7 @@ import {
     View,
     ScrollView,
     StatusBar
-} from 'react-native'
+} from 'react-native';
 
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
@@ -23,7 +23,7 @@ const NewPasswordScreen = () => {
 
     const onSubmitPress = () => {
         //Go to Home or Back to Login
-        navigation.navigate('Home');
+        navigation.navigate('SignIn');
     }
 
     const onSignInPress = () => {

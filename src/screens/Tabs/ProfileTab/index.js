@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, SafeAreaView, StyleSheet, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import {
+    View,
+    SafeAreaView,
+    StyleSheet,
+    ScrollView,
+    StatusBar,
+    TouchableOpacity
+} from 'react-native';
 import {
     Avatar,
     Title,
@@ -9,88 +16,61 @@ import {
 } from 'react-native-paper';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import IonIcon from 'react-native-vector-icons/Ionicons';
-
-import files from '../../../images/Jpeg/KoiFish.jpg';
-
 import { COLOURS } from '../../../utils/database/Database';
-
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 const ProfileTab = ({ navigation }) => {
 
     return (
-        <View>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ backgroundColor: COLOURS.white }}>
-                <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <SafeAreaView>
                     <StatusBar
                         backgroundColor={COLOURS.white}
                         barStyle="dark-content"
                     />
-                    <View
-                        style={{
-                            width: '100%',
-                            flexDirection: 'row',
-                            paddingTop: 16,
-                            paddingBottom: 16,
-                            paddingHorizontal: 16,
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                            <MaterialCommunityIcons
-                                name="chevron-left"
-                                style={{
-                                    fontSize: 20,
-                                    color: COLOURS.backgroundDark,
-                                    padding: 12,
-                                    backgroundColor: COLOURS.backgroundLight,
-                                    borderRadius: 12,
-                                }}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                            <IonIcons
-                                name="mail-outline"
-                                style={{
-                                    fontSize: 20,
-                                    color: COLOURS.backgroundDark,
-                                    padding: 12,
-                                    borderRadius: 12,
-                                    backgroundColor: COLOURS.backgroundLight,
-                                }}
-                            />
-                        </TouchableOpacity>
-                    </View>
                     <View style={styles.userInfoSection}>
-                        <View style={{ flexDirection: 'row', marginTop: 15 }}>
+                        <View style={styles.userHeaderContainer}>
                             <Avatar.Image
                                 source={require('../../../images/Jpeg/KoiFish.jpg')}
                                 size={80}
                             />
-                            <View style={{ marginLeft: 20 }}>
+                            <View style={{ marginLeft: 10 }}>
                                 <Title style={[styles.title, {
                                     marginTop: 15,
                                     marginBottom: 5,
                                 }]}>Joeprilardeza</Title>
                                 <Caption style={styles.caption}>gulod.maguinao</Caption>
                             </View>
+                            <View style={styles.headerIconContainer}>
+                                <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
+                                    <Icon
+                                        name="cart"
+                                        style={styles.headerIconStyle}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
+                                    <IonIcons
+                                        name="mail-outline"
+                                        style={styles.headerIconStyle}
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                     <View style={styles.userInfoSection}>
                         <View style={styles.row}>
-                            <Icon name="map-marker-radius" color="#777777" size={20} />
-                            <Text style={{ color: "#777777", marginLeft: 20 }}>Bustos Bulacan</Text>
+                            <Icon name="map-marker-radius" color={COLOURS.black} size={20} />
+                            <Text style={styles.userInformation}>Bustos Bulacan</Text>
                         </View>
                         <View style={styles.row}>
-                            <Icon name="phone" color="#777777" size={20} />
-                            <Text style={{ color: "#777777", marginLeft: 20 }}>09125123456</Text>
+                            <Icon name="phone" color={COLOURS.black} size={20} />
+                            <Text style={styles.userInformation}>09125123456</Text>
                         </View>
                         <View style={styles.row}>
-                            <Icon name="email" color="#777777" size={20} />
-                            <Text style={{ color: "#777777", marginLeft: 20 }}>Joeprilardeza@gmail.com</Text>
+                            <Icon name="email" color={COLOURS.black} size={20} />
+                            <Text style={styles.userInformation}>Joeprilardeza@gmail.com</Text>
                         </View>
                     </View>
                     {/* <View style={styles.infoBoxWrapper}>
@@ -107,51 +87,45 @@ const ProfileTab = ({ navigation }) => {
                     </View>
                     </View> */}
                     <View style={styles.menuWrapper}>
-                        <TouchableRipple>
+                        {/* <TouchableRipple>
                             <View style={styles.menuItem}>
                                 <Icon name="cart" color="#FF6347" size={25} />
-                                <Text style={styles.menuItemText}>My Cart</Text>
+                                <Text style={styles.menuItemText}>My Shop</Text>
+                            </View>
+                        </TouchableRipple> */}
+                        <TouchableRipple onPress={() => navigation.navigate('BusinessRegistrationForm')}>
+                            <View style={styles.menuItem}>
+                                <Icon name="cart" size={25} style={styles.iconColor}/>
+                                <Text style={styles.menuItemText}>Start Business</Text>
                             </View>
                         </TouchableRipple>
-                        <TouchableRipple>
+                        <TouchableRipple onPress={() => navigation.navigate('MyOrder')}>
                             <View style={styles.menuItem}>
-                                <IonIcon name="pricetag-outline" color="#FF6347" size={25} />
-                                <Text style={styles.menuItemText}>My Vouchers</Text>
-                            </View>
-                        </TouchableRipple>
-                        <TouchableRipple>
-                            <View style={styles.menuItem}>
-                                <Icon name="account-check-outline" color="#FF6347" size={25} />
-                                <Text style={styles.menuItemText}>Start Selling</Text>
-                            </View>
-                        </TouchableRipple>
-                        <TouchableRipple>
-                            <View style={styles.menuItem}>
-                                <IonIcon name="bookmarks-outline" color="#FF6347" size={25} />
+                                <IonIcon name="bookmarks-outline" style={styles.iconColor} size={25} />
                                 <Text style={styles.menuItemText}>My Orders</Text>
                             </View>
                         </TouchableRipple>
                         <TouchableRipple>
                             <View style={styles.menuItem}>
-                                <IonIcon name="newspaper-outline" color="#FF6347" size={25} />
-                                <Text style={styles.menuItemText}>Feed</Text>
+                                <Icon name="account-check-outline" style={styles.iconColor} size={25} />
+                                <Text style={styles.menuItemText}>My Wallet</Text>
                             </View>
                         </TouchableRipple>
                         <TouchableRipple>
                             <View style={styles.menuItem}>
-                                <IonIcon name="settings-outline" color="#FF6347" size={25} />
-                                <Text style={styles.menuItemText}>Account Settings</Text>
+                                <IonIcon name="settings-outline" style={styles.iconColor} size={25} />
+                                <Text style={styles.menuItemText}>Settings</Text>
                             </View>
                         </TouchableRipple>
                         <TouchableRipple>
                             <View style={styles.menuItem}>
-                                <IonIcon name="help-circle-outline" color="#FF6347" size={25} />
-                                <Text style={styles.menuItemText}>Help Center</Text>
+                                <IonIcon name="help-circle-outline" style={styles.iconColor} size={25} />
+                                <Text style={styles.menuItemText}>About</Text>
                             </View>
                         </TouchableRipple>
                         <TouchableRipple onPress={() => navigation.navigate('SignIn')}>
                             <View style={styles.menuItem}>
-                                <IonIcon name="log-out-outline" color="#FF6347" size={25} />
+                                <IonIcon name="log-out-outline" style={styles.iconColor} size={25} />
                                 <Text style={styles.menuItemText}>Logout</Text>
                             </View>
                         </TouchableRipple>
@@ -166,14 +140,16 @@ export default ProfileTab;
 
 const styles = StyleSheet.create({
     container: {
-
+        backgroundColor: COLOURS.white,
+        height: '100%',
     },
     userInfoSection: {
         paddingHorizontal: 30,
-        marginBottom: 25,
+        paddingBottom: 20,
+        backgroundColor: COLOURS.backgroundPrimary
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
     },
     caption: {
@@ -199,7 +175,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     menuWrapper: {
-        marginTop: 10,
+        paddingTop: 50
     },
     menuItem: {
         flexDirection: 'row',
@@ -213,4 +189,25 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 26,
     },
+    headerIconContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginLeft: 10
+    },
+    headerIconStyle: {
+        fontSize: 25,
+        color: COLOURS.black,
+        padding: 12,
+        marginTop: 10,
+    },
+    userInformation: {
+        color: COLOURS.black, marginLeft: 20
+    },
+    iconColor: {
+        color: '#FF6347'
+    },
+    userHeaderContainer: {
+        flexDirection: 'row', 
+        marginTop: 15
+    }
 });

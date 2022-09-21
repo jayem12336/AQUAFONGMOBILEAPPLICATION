@@ -14,6 +14,11 @@ const SocialSignInButtons = () => {
         console.warn("Sign in with Google");
     }
 
+    const onSignInWithApple = () => {
+        //Has no function yet
+        console.warn("Sign in with Google");
+    }
+
     return (
         <>
             <CustomButton
@@ -27,6 +32,12 @@ const SocialSignInButtons = () => {
                 onPress={onSignInWithGoogle}
                 bgColor='#FAE9EA'
                 fgColor='#DD4D44'
+            />
+            <CustomButton
+                text="Sign In with Apple"
+                onPress={onSignInWithApple}
+                bgColor='#E7EAF4'
+                fgColor='gray'
             />
         </>
     )

@@ -6,7 +6,7 @@ import {
     View,
     ScrollView,
     StatusBar
-} from 'react-native'
+} from 'react-native';
 
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
@@ -19,16 +19,16 @@ const SignUp = () => {
 
     const navigation = useNavigation();
 
-    const [fullName, setFullName] = useState('');
+    const [contact, setContact] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [address, setAddress] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [email, setEmail] = useState('');
 
-
     const onRegisterPress = () => {
         //Go to Email Confirmation
-        navigation.navigate('Home');
+        navigation.navigate('RegisterSuccess');
     }
 
     const onSignInPress = () => {
@@ -45,9 +45,10 @@ const SignUp = () => {
         //On Proccess
         console.warn("Privacy Policy");
     }
+    //contentContainerStyle={styles.contentContainer}
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer}>
+        <ScrollView showsVerticalScrollIndicator={false}>    
             <StatusBar
                 backgroundColor={COLOURS.dirtyWhiteBackground}
                 barStyle="dark-content"
@@ -55,19 +56,24 @@ const SignUp = () => {
             <View style={styles.root}>
                 <Text style={styles.titleStyle}>Create an Account</Text>
                 <CustomInput
-                    placeholder="Full Name"
-                    value={fullName}
-                    setValue={setFullName}
+                    placeholder="Username"
+                    value={username}
+                    setValue={setUsername}
+                />
+                <CustomInput
+                    placeholder="Contact No."
+                    value={contact}
+                    setValue={setContact}
+                />
+                <CustomInput
+                    placeholder="Email"
+                    value={address}
+                    setValue={setAddress}
                 />
                 <CustomInput
                     placeholder="Email"
                     value={email}
                     setValue={setEmail}
-                />
-                <CustomInput
-                    placeholder="Username"
-                    value={username}
-                    setValue={setUsername}
                 />
                 <CustomInput
                     placeholder="Password"
@@ -128,6 +134,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         backgroundColor: COLOURS.dirtyWhiteBackground,
-        paddingTop: 20
+        paddingTop: 20,
+        paddingBottom: 20
     },
 })

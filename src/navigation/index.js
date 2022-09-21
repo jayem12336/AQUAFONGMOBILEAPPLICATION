@@ -5,7 +5,7 @@ import {
     Text,
     View,
     Image,
-} from 'react-native'
+} from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,7 +17,6 @@ import SignUpScreen from '../screens/SignUpScreen';
 import ConfirmEmailScreen from '../screens/ConfirmEmailScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import NewPasswordScreen from '../screens/NewPasswordScreen';
-import SelectTypeOfUser from '../screens/SelectTypeOfUserScreen';
 import SplashScreen from '../screens/SplashScreen';
 
 import LandingPage from '../screens/LandingPageScreen';
@@ -26,6 +25,18 @@ import DiscoverTab from '../screens/Tabs/DiscoverTab';;
 import CartTab from '../screens/Tabs/CartTab';
 import ProfileTab from '../screens/Tabs/ProfileTab';
 import ProductInfo from '../screens/Tabs/FeedTab/ProductInfo/ProductInfo';
+import PurchaseScreen from '../screens/Tabs/FeedTab/PurchaseScreen/PurchaseScreen';
+import RegisterSuccessScreen from '../screens/RegisterSuccessScreen';
+import { COLOURS } from '../utils/database/Database';
+import PurchaseCompleteScreen from '../screens/Tabs/FeedTab/PurchaseCompleteScreen.js/PurchaseComplete';
+import MessageTabScreen from '../screens/Tabs/MessageTabScreen/MessageTabScreen';
+import NotificationTabScreen from '../screens/Tabs/NotificationTabScreen/NotificationTabScreen';
+import BusinessRegistrationForm from '../screens/Tabs/ProfileTab/BusinessRegistrationForm/BusinessRegistrationForm';
+import SuccessBusinessScreen from '../screens/Tabs/ProfileTab/SuccessBusinessScreen/SuccessBusinessScreen';
+import MyShop from '../screens/Tabs/ProfileTab/MyShop/MyShop';
+import MyProducts from '../screens/Tabs/ProfileTab/MyShop/MyProducts/MyProducts';
+import MyOrder from '../screens/Tabs/MyOrders/MyOrder';
+import Message from '../screens/Tabs/MessageTabScreen/Message';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -38,8 +49,10 @@ function BottomTabNavigation() {
                 tabBarStyle: {
                     position: 'absolute',
                     elevation: 0,
-                    backgroundColor: '#ffffff',
-                    height: 80,
+                    //borderTopWidth: 2,
+                    //borderTopColor: 'gray',
+                    backgroundColor: COLOURS.white,
+                    height: 65,
                     ...styles.shadow
                 },
                 tabBarHideOnKeyboard: true
@@ -52,22 +65,22 @@ function BottomTabNavigation() {
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Image
-                                source={require('../../assets/icons/Feed.png')}
+                                source={require('../../assets/icons/Home.png')}
                                 resizeMode='contain'
                                 style={{
-                                    width: 30,
-                                    height: 30,
+                                    width: 25,
+                                    height: 25,
                                     tintColor: '#000000'
                                 }}
                             />
-                            <Text
+                            {/* <Text
                                 style={{
                                     color: '#748c94',
                                     fontSize: 12
                                 }}
                             >
                                 Feed
-                            </Text>
+                            </Text> */}
                         </View>
                     ),
                     headerShown: false
@@ -80,53 +93,53 @@ function BottomTabNavigation() {
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Image
-                                source={require('../../assets/icons/people.png')}
+                                source={require('../../assets/icons/Location.png')}
                                 resizeMode='contain'
                                 style={{
-                                    width: 30,
-                                    height: 30,
+                                    width: 25,
+                                    height: 25,
                                     tintColor: '#000000'
                                 }}
                             />
-                            <Text
+                            {/* <Text
                                 style={{
                                     color: '#748c94',
                                     fontSize: 12
                                 }}
                             >
                                 Find
-                            </Text>
+                            </Text> */}
                         </View>
                     ),
+                    headerShown: false
                 }}
             />
             <BottomTab.Screen
-                name="CartTab"
-                component={CartTab}
+                name="NotificationTabScreen"
+                component={NotificationTabScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Image
-                                source={require('../../assets/icons/Cart.png')}
+                                source={require('../../assets/icons/Notification.png')}
                                 resizeMode='contain'
                                 style={{
-                                    width: 30,
-                                    height: 30,
+                                    width: 25,
+                                    height: 25,
                                     tintColor: '#000000'
                                 }}
                             />
-                            <Text
+                            {/* <Text
                                 style={{
                                     color: '#748c94',
                                     fontSize: 12
                                 }}
                             >
                                 Cart
-                            </Text>
+                            </Text> */}
                         </View>
                     ),
                     headerShown: false,
-                    tabBarStyle: {display: 'none'}
                 }}
             />
             <BottomTab.Screen
@@ -139,23 +152,22 @@ function BottomTabNavigation() {
                                 source={require('../../assets/icons/Profile.png')}
                                 resizeMode='contain'
                                 style={{
-                                    width: 30,
-                                    height: 30,
+                                    width: 25,
+                                    height: 25,
                                     tintColor: '#000000'
                                 }}
                             />
-                            <Text
+                            {/* <Text
                                 style={{
                                     color: '#748c94',
                                     fontSize: 12
                                 }}
                             >
                                 Profile
-                            </Text>
+                            </Text> */}
                         </View>
                     ),
                     headerShown: false,
-                    tabBarStyle: { display: 'none'}
                 }}
             />
         </BottomTab.Navigator>
@@ -181,13 +193,6 @@ const Navigation = () => {
                     }}
                 />
                 <Stack.Screen
-                    name="TypeOfUser"
-                    component={SelectTypeOfUser}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
                     name="SignIn"
                     component={SignInScreen}
                     options={{
@@ -197,6 +202,10 @@ const Navigation = () => {
                 <Stack.Screen
                     name="SignUp"
                     component={SignUpScreen}
+                />
+                <Stack.Screen
+                    name="RegisterSuccess"
+                    component={RegisterSuccessScreen}
                 />
                 <Stack.Screen
                     name="ConfirmEmail"
@@ -217,6 +226,46 @@ const Navigation = () => {
                 <Stack.Screen
                     name="ProductInfo"
                     component={ProductInfo}
+                />
+                <Stack.Screen
+                    name="Purchase"
+                    component={PurchaseScreen}
+                />
+                <Stack.Screen
+                    name="PurchaseComplete"
+                    component={PurchaseCompleteScreen}
+                />
+                <Stack.Screen
+                    name="MessageTabScreen"
+                    component={MessageTabScreen}
+                />
+                <Stack.Screen
+                    name="Message"
+                    component={Message}
+                />
+                <Stack.Screen
+                    name="BusinessRegistrationForm"
+                    component={BusinessRegistrationForm}
+                />
+                <Stack.Screen
+                    name="SuccessBusinessScreen"
+                    component={SuccessBusinessScreen}
+                />
+                <Stack.Screen
+                    name="MyShop"
+                    component={MyShop}
+                />
+                <Stack.Screen
+                    name="MyProducts"
+                    component={MyProducts}
+                />
+                <Stack.Screen
+                    name="MyOrder"
+                    component={MyOrder}
+                />
+                <Stack.Screen
+                    name="CartTab"
+                    component={CartTab}
                 />
             </Stack.Navigator>
         </NavigationContainer>

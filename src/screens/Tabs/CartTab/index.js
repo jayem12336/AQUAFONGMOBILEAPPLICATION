@@ -88,7 +88,7 @@ const CartTab = ({ navigation }) => {
 
         ToastAndroid.show('Items will be Deliverd SOON!', ToastAndroid.SHORT);
 
-        navigation.navigate('Home');
+        navigation.navigate('FeedTab');
     };
 
     const renderProducts = (data, index) => {

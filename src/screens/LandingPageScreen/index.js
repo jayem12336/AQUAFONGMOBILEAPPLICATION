@@ -19,8 +19,7 @@ export default function LandingPage() {
     const navigation = useNavigation();
 
     const onEnterShopPress = () => {
-        //go to select Type of User
-        navigation.navigate('TypeOfUser');
+        navigation.navigate('SignIn');
     }
 
     return (
@@ -33,9 +32,9 @@ export default function LandingPage() {
                 source={Logo}
                 style={styles.logoStyle}
             />
-            <Text style={styles.textColor}>BulAquaPond Fisheries</Text>
+            <Text style={styles.textColor}>BULACAN FISHERIES</Text>
             <CustomButton
-                text="Enter Shop"
+                text="START FREE TRIAL"
                 type="ENTERSHOPBUTTON"
                 onPress={onEnterShopPress}
             />
@@ -46,7 +45,7 @@ export default function LandingPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOURS.dirtyWhiteBackground,
+        backgroundColor: COLOURS.backgroundPrimary,
         alignItems: "center",
         justifyContent: "center",
         padding: 20

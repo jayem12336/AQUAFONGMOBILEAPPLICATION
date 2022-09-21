@@ -7,7 +7,7 @@ import {
     useWindowDimensions,
     ScrollView,
     StatusBar
-} from 'react-native'
+} from 'react-native';
 
 import Logo from '../../images/aqualogo.png';
 import CustomInput from '../../components/CustomInput';

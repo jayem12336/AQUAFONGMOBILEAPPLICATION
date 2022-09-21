@@ -16,10 +16,12 @@ import {
 
 import { COLOURS, Items } from '../../../../utils/database/Database';
 
+import { Rating } from 'react-native-ratings';
+
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProductInfo = ({ route, navigation }) => {
 
@@ -32,6 +34,8 @@ const ProductInfo = ({ route, navigation }) => {
     const scrollX = new Animated.Value(0);
 
     let position = Animated.divide(scrollX, width);
+
+    const [buyNowButton, setBuyNowButton] = useState(false);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -66,7 +70,7 @@ const ProductInfo = ({ route, navigation }) => {
                 <Image source={item} style={{
                     width: '100%',
                     height: '100%',
-                    resizeMode: 'contain'
+                    resizeMode: 'contain',
                 }} />
             </View>
         )
@@ -157,7 +161,7 @@ const ProductInfo = ({ route, navigation }) => {
                     </View>
                 </View>
                 <View style={{ paddingHorizontal: 16, marginTop: 6, }}>
-                    <View style={styles.shoppingContainer}>
+                    {/* <View style={styles.shoppingContainer}>
                         <Entypo
                             name="shopping-cart"
                             style={styles.shoppingCartIconStyle}
@@ -165,7 +169,7 @@ const ProductInfo = ({ route, navigation }) => {
                         <Text style={styles.textShoppingCartStyle}>
                             Shopping
                         </Text>
-                    </View>
+                    </View> */}
                     <View style={styles.productNameContainer}>
                         <Text style={styles.productNameStyle}>
                             {product.productName}
@@ -175,38 +179,106 @@ const ProductInfo = ({ route, navigation }) => {
                             style={styles.linkIconStyle}
                         />
                     </View>
-                    <Text style={styles.productDescriptionStyle}>
-                        {product.description} Optional
+                    <Text style={styles.productPriceStyle}>
+                        &#x20B1; {product.productPrice}.00
                     </Text>
-                    <View style={styles.addressContainer}>
-                        <View style={styles.addressStyle}>
-                            <View style={styles.addressIconContainer}>
-                                <Entypo name="location-pin" style={{ fontSize: 16, color: COLOURS.blue, }} />
-                            </View>
-                            <Text> Concepcion,{'\n'}Bustos, Bulacan</Text>
-                        </View>
-                        <Entypo name="chevron-right" style={{ fontSize: 22, color: COLOURS.backgroundDark, }} />
+                    <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                        <Rating
+                            //onFinishRating={(rating) => { Alert.alert('Star Rating: ' + JSON.stringify(rating)); }}
+                            imageSize={28}
+                            startingValue={product.rating}
+                            readonly
+                            style={{ paddingVertical: 10 }}
+                        />
                     </View>
-                    <View>
-                        <Text style={styles.productPriceStyle}>
-                            &#x20B1; {product.productPrice}.00
-                        </Text>
-                        <Text>
-                            Discount Rate 2%~ &#x20B1;{product.productPrice / 20} (&#x20B1;
-                            {product.productPrice + product.productPrice / 20})
-                        </Text>
-                    </View>
+                    {
+                        buyNowButton === false ?
+                            <><View style={styles.addressContainer}>
+                                <View style={styles.addressStyle}>
+                                    <View style={styles.addressIconContainer}>
+                                        <Entypo name="location-pin" style={{ fontSize: 16, color: COLOURS.blue, }} />
+                                    </View>
+                                    <Text> Concepcion,{'\n'}Bustos, Bulacan</Text>
+                                </View>
+                                <Entypo name="chevron-right" style={{ fontSize: 22, color: COLOURS.backgroundDark, }} />
+                            </View><View>
+                                    <Text>
+                                        Discount Rate 2%~ &#x20B1;{product.productPrice / 20} (&#x20B1;
+                                        {product.productPrice + product.productPrice / 20})
+                                    </Text>
+                                </View></>
+                            : ""
+                    }
                 </View>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        onPress={() => product.isAvailable ? addToCart(product.id) : null}
-                        style={styles.buttonStyle}
-                    >
-                    <Text style={styles.buttonTextStyle}>
-                        {product.isAvailable ? 'Add to cart' : 'Not Avialable'}
-                    </Text>
-                </TouchableOpacity>
-        </View>
+                {
+                    buyNowButton === false ?
+                        <View style={{alignItems: 'center',marginTop: 40}}>
+                            <View style={styles.buttonContainer}>
+                                <View style={styles.buttonSubContainer}>
+                                    <TouchableOpacity>
+                                        <Ionicons name="mail-outline" style={styles.shoppingBagIcon} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <MaterialCommunityIcons name="cart" style={styles.shoppingBagIcon} />
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.buyNowSubContainer}>
+                                    <TouchableOpacity
+                                        onPress={() => setBuyNowButton(true)}
+                                        style={styles.buttonStyle}
+                                    >
+                                        <Text style={styles.buttonTextStyle}>
+                                            Buy now
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View> :
+                        <View style={styles.quantityView}>
+                            <View style={styles.quantitySubView}>
+                                <View style={styles.imagesContainer}>
+                                    <Image source={product.productImage} alt="Product Image" style={styles.productImageStyle} />
+                                    <Image source={product.productImage} alt="Product Image" style={styles.productImageStyle} />
+                                    <Image source={product.productImage} alt="Product Image" style={styles.productImageStyle} />
+                                </View>
+                                <View style={styles.headquantityContainer}>
+                                    <View style={styles.quantityTextContainer}>
+                                        <Text>Quantity</Text>
+                                    </View>
+                                    <View style={styles.productQuantityContainer}>
+                                        <View style={styles.quantitySubContainer}>
+                                            <View
+                                                style={[styles.plusIconContainer, { marginRight: 20 }]}>
+                                                <MaterialCommunityIcons
+                                                    name="minus"
+                                                    style={styles.iconStyle}
+                                                />
+                                            </View>
+                                            <Text>1</Text>
+                                            <View style={[styles.plusIconContainer, { marginLeft: 20 }]}>
+                                                <MaterialCommunityIcons
+                                                    name="plus"
+                                                    style={styles.iconStyle}
+                                                />
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={styles.buyNowContainer}>
+                                <View style={styles.buyNowSubContainer}>
+                                    <TouchableOpacity
+                                        onPress={() => { navigation.navigate('Purchase'), setBuyNowButton(false) }}
+                                        style={styles.buyBtnContainer}
+                                    >
+                                        <Text style={styles.buyBtnText}>
+                                            Buy now
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                }
             </ScrollView >
         </View >
     )
@@ -270,7 +342,6 @@ const styles = StyleSheet.create({
     },
     productNameContainer: {
         flexDirection: 'row',
-        marginVertical: 4,
         alignItems: 'center',
         justifyContent: 'space-between',
     },
@@ -336,10 +407,17 @@ const styles = StyleSheet.create({
         height: 100,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20
+        padding: 20,
+        flexDirection: 'row'
     },
     buttonStyle: {
-        width: '86%',
+        height: '100%',
+        backgroundColor: COLOURS.dirtyWhiteBackground,
+        borderRadius: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonIconsStyle: {
         height: '90%',
         backgroundColor: COLOURS.blue,
         borderRadius: 20,
@@ -347,10 +425,103 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonTextStyle: {
-        fontSize: 12,
+        fontSize: 15,
         fontWeight: '500',
         letterSpacing: 1,
-        color: COLOURS.white,
+        color: COLOURS.black,
         textTransform: 'uppercase',
+    },
+    shoppingBagIcon: {
+        fontSize: 25,
+        color: COLOURS.black,
+        padding: 12,
+        borderRadius: 10,
+        marginLeft: 5,
+        backgroundColor: COLOURS.backgroundLight
+    },
+    productQuantityContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    quantitySubContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    plusIconContainer: {
+        borderRadius: 100,
+        padding: 4,
+        borderWidth: 1,
+        borderColor: COLOURS.backgroundMedium,
+        opacity: 0.5,
+    },
+    iconStyle: {
+        fontSize: 16,
+        color: COLOURS.backgroundDark,
+    },
+    buyNowContainer: {
+        width: '100%',
+        height: '20%',
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    buyNowSubContainer: {
+        width: '60%',
+        height: '90%',
+        paddingLeft: 5
+    },
+    buyBtnContainer: {
+        height: '100%',
+        backgroundColor: COLOURS.dirtyWhiteBackground,
+        borderRadius: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buyBtnText: {
+        fontSize: 15,
+        fontWeight: '500',
+        letterSpacing: 1,
+        color: COLOURS.black,
+        textTransform: 'uppercase',
+    },
+    headquantityContainer: {
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        padding: 20
+    },
+    quantityTextContainer: {
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center'
+    },
+    productImageStyle: {
+        resizeMode: 'contain',
+        height: 80,
+        width: 80,
+        borderRadius: 60
+    },
+    imagesContainer: {
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        padding: 20
+    },
+    quantityView: {
+        padding: 10,
+        backgroundColor: COLOURS.backgroundPrimary,
+        height: 300
+    },
+    quantitySubView: {
+        width: '100%',
+        height: '65%',
+        backgroundColor: COLOURS.white
+    },
+    buttonSubContainer: {
+        width: '40%',
+        height: '90%',
+        flexDirection: 'row',
+        alignItems: 'space-between',
+        justifyContent: 'space-between',
+        paddingHorizontal: 5
     }
 })
