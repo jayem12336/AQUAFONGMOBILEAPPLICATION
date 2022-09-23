@@ -12,7 +12,10 @@ export const COLOURS = {
     buttonContainerSecondary: '#3B71F3',
     buttonTextSecondary: '#3B71F3',
     buttonTextTertiary: '#808080',
-    dirtyWhiteBackground: '#F9FBFC'
+    dirtyWhiteBackground: '#F9FBFC',
+    grey: '#BABBC3',
+    light: '#F3F4FB',
+    darkBlue: '#7978B5',
 };
 
 export const Items = [
