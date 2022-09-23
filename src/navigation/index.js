@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
     StyleSheet,
@@ -36,6 +36,8 @@ import MyShop from '../screens/Tabs/ProfileTab/MyShop/MyShop';
 import MyProducts from '../screens/Tabs/ProfileTab/MyShop/MyProducts/MyProducts';
 import MyOrder from '../screens/Tabs/MyOrders/MyOrder';
 import Message from '../screens/Tabs/MessageTabScreen/Message';
+
+import { auth } from '../utils/firebase'
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -173,95 +175,116 @@ function BottomTabNavigation() {
     )
 }
 
-const Navigation = () => {
+const Navigation = ({ navigation }) => {
+
+    const [isLoggedIn, setIsLoggedIn] = useState();
+
+    useEffect(() => {
+        auth.onAuthStateChanged((authUser) => {
+            if (authUser) {
+                setIsLoggedIn(true)
+            } else {
+                setIsLoggedIn(false)
+            }
+        })
+    }, [navigation])
+
+    console.log(isLoggedIn)
+
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                    name="SplashScreen"
-                    component={SplashScreen}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="LandingPage"
-                    component={LandingPage}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="SignIn"
-                    component={SignInScreen}
-                    options={{
-                        headerShown: false
-                    }}
-                />
-                <Stack.Screen
-                    name="SignUp"
-                    component={SignUpScreen}
-                />
-                <Stack.Screen
-                    name="RegisterSuccess"
-                    component={RegisterSuccessScreen}
-                />
-                <Stack.Screen
-                    name="ConfirmEmail"
-                    component={ConfirmEmailScreen}
-                />
-                <Stack.Screen
-                    name="ForgotPassword"
-                    component={ForgotPasswordScreen}
-                />
-                <Stack.Screen
-                    name="Home"
-                    component={BottomTabNavigation}
-                />
-                <Stack.Screen
-                    name="ProductInfo"
-                    component={ProductInfo}
-                />
-                <Stack.Screen
-                    name="Purchase"
-                    component={PurchaseScreen}
-                />
-                <Stack.Screen
-                    name="PurchaseComplete"
-                    component={PurchaseCompleteScreen}
-                />
-                <Stack.Screen
-                    name="MessageTabScreen"
-                    component={MessageTabScreen}
-                />
-                <Stack.Screen
-                    name="Message"
-                    component={Message}
-                />
-                <Stack.Screen
-                    name="BusinessRegistrationForm"
-                    component={BusinessRegistrationForm}
-                />
-                <Stack.Screen
-                    name="SuccessBusinessScreen"
-                    component={SuccessBusinessScreen}
-                />
-                <Stack.Screen
-                    name="MyShop"
-                    component={MyShop}
-                />
-                <Stack.Screen
-                    name="MyProducts"
-                    component={MyProducts}
-                />
-                <Stack.Screen
-                    name="MyOrder"
-                    component={MyOrder}
-                />
-                <Stack.Screen
-                    name="CartTab"
-                    component={CartTab}
-                />
+                {isLoggedIn ?
+                    <>
+                        <Stack.Screen
+                            name="Home"
+                            component={BottomTabNavigation}
+                        />
+                        <Stack.Screen
+                            name="ProductInfo"
+                            component={ProductInfo}
+                        />
+                        <Stack.Screen
+                            name="Purchase"
+                            component={PurchaseScreen}
+                        />
+                        <Stack.Screen
+                            name="PurchaseComplete"
+                            component={PurchaseCompleteScreen}
+                        />
+                        <Stack.Screen
+                            name="MessageTabScreen"
+                            component={MessageTabScreen}
+                        />
+                        <Stack.Screen
+                            name="Message"
+                            component={Message}
+                        />
+                        <Stack.Screen
+                            name="BusinessRegistrationForm"
+                            component={BusinessRegistrationForm}
+                        />
+                        <Stack.Screen
+                            name="SuccessBusinessScreen"
+                            component={SuccessBusinessScreen}
+                        />
+                        <Stack.Screen
+                            name="MyShop"
+                            component={MyShop}
+                        />
+                        <Stack.Screen
+                            name="MyProducts"
+                            component={MyProducts}
+                        />
+                        <Stack.Screen
+                            name="MyOrder"
+                            component={MyOrder}
+                        />
+                        <Stack.Screen
+                            name="CartTab"
+                            component={CartTab}
+                        />
+                    </> :
+                    <>
+                        <Stack.Screen
+                            name="SplashScreen"
+                            component={SplashScreen}
+                            options={{
+                                headerShown: false
+                            }}
+                        />
+                        <Stack.Screen
+                            name="LandingPage"
+                            component={LandingPage}
+                            options={{
+                                headerShown: false
+                            }}
+                        />
+                        <Stack.Screen
+                            name="SignIn"
+                            component={SignInScreen}
+                            options={{
+                                headerShown: false
+                            }}
+                        />
+                        <Stack.Screen
+                            name="SignUp"
+                            component={SignUpScreen}
+                        />
+                        <Stack.Screen
+                            name="RegisterSuccess"
+                            component={RegisterSuccessScreen}
+                        />
+                        <Stack.Screen
+                            name="ConfirmEmail"
+                            component={ConfirmEmailScreen}
+                        />
+                        <Stack.Screen
+                            name="ForgotPassword"
+                            component={ForgotPasswordScreen}
+                        />
+                    </>
+                }
             </Stack.Navigator>
         </NavigationContainer>
     )

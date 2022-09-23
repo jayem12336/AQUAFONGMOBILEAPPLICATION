@@ -20,7 +20,18 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import { COLOURS } from '../../../utils/database/Database';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
+import { auth } from '../../../utils/firebase'
+
 const ProfileTab = ({ navigation }) => {
+
+    const logout = () => {
+        auth.signOut().then(() => {
+            navigation.navigate('SignIn')
+        }).catch((err) => {
+            const errorCode = err.code;
+            console.log(errorCode)
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -123,7 +134,7 @@ const ProfileTab = ({ navigation }) => {
                                 <Text style={styles.menuItemText}>About</Text>
                             </View>
                         </TouchableRipple>
-                        <TouchableRipple onPress={() => navigation.navigate('SignIn')}>
+                        <TouchableRipple onPress={logout}>
                             <View style={styles.menuItem}>
                                 <IonIcon name="log-out-outline" style={styles.iconColor} size={25} />
                                 <Text style={styles.menuItemText}>Logout</Text>
