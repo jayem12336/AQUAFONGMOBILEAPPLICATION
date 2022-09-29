@@ -21,6 +21,7 @@ import Loader from '../../components/Loader/Loader';
 
 import { auth } from '../../utils/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
 
@@ -72,13 +73,15 @@ const Login = () => {
         }
     }
 
-
-    const login = () => {
+    const login = async() => {
         setLoading(true);
         try {
-            signInWithEmailAndPassword(auth, inputs.email, inputs.password)
+            await signInWithEmailAndPassword(auth, inputs.email, inputs.password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
+                //AsyncStorage.setItem('@userid', user.uid.toString());
+                const jsonValue = JSON.stringify(user)
+                AsyncStorage.setItem('@storage_Key', jsonValue)
                 setLoading(false);
                 navigation.navigate('Home');
             }).catch((error) => {

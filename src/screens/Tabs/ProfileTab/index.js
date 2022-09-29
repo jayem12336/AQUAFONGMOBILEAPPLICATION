@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'
 import {
     View,
     SafeAreaView,
@@ -20,11 +20,34 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import { COLOURS } from '../../../utils/database/Database';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
-import { auth } from '../../../utils/firebase'
+import { auth, db } from '../../../utils/firebase'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
 const ProfileTab = ({ navigation }) => {
 
-    const logout = () => {
+    const [userData, setUserData] = useState({});
+    const [userID, setUserID] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            let itemArray = await AsyncStorage.getItem('@storage_Key');
+            itemArray = JSON.parse(itemArray);
+            setUserData(itemArray);
+            setUserID(itemArray.uid);
+            const unsub = onSnapshot(doc(db, "users", itemArray.uid), (doc) => {
+                console.log("Current data: ", doc.data());
+                setUserData(doc.data());
+            })
+            console.log(unsub);
+        }
+        fetchData().catch((error) => {
+            console.log(error)
+        })
+    }, [navigation])
+
+    const logout = async () => {
+        await AsyncStorage.removeItem('@storage_Key');
         auth.signOut().then(() => {
             navigation.navigate('SignIn')
         }).catch((err) => {
@@ -35,7 +58,7 @@ const ProfileTab = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
                 <SafeAreaView>
                     <StatusBar
                         backgroundColor={COLOURS.white}
@@ -51,8 +74,7 @@ const ProfileTab = ({ navigation }) => {
                                 <Title style={[styles.title, {
                                     marginTop: 15,
                                     marginBottom: 5,
-                                }]}>Joeprilardeza</Title>
-                                <Caption style={styles.caption}>gulod.maguinao</Caption>
+                                }]}>{userData.username}</Title>
                             </View>
                             <View style={styles.headerIconContainer}>
                                 <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
@@ -73,15 +95,15 @@ const ProfileTab = ({ navigation }) => {
                     <View style={styles.userInfoSection}>
                         <View style={styles.row}>
                             <Icon name="map-marker-radius" color={COLOURS.black} size={20} />
-                            <Text style={styles.userInformation}>Bustos Bulacan</Text>
+                            <Text style={styles.userInformation}>{userData.address}</Text>
                         </View>
                         <View style={styles.row}>
                             <Icon name="phone" color={COLOURS.black} size={20} />
-                            <Text style={styles.userInformation}>09125123456</Text>
+                            <Text style={styles.userInformation}>{userData.phone}</Text>
                         </View>
                         <View style={styles.row}>
                             <Icon name="email" color={COLOURS.black} size={20} />
-                            <Text style={styles.userInformation}>Joeprilardeza@gmail.com</Text>
+                            <Text style={styles.userInformation}>{userData.email}</Text>
                         </View>
                     </View>
                     {/* <View style={styles.infoBoxWrapper}>
@@ -98,18 +120,27 @@ const ProfileTab = ({ navigation }) => {
                     </View>
                     </View> */}
                     <View style={styles.menuWrapper}>
-                        {/* <TouchableRipple>
-                            <View style={styles.menuItem}>
-                                <Icon name="cart" color="#FF6347" size={25} />
-                                <Text style={styles.menuItemText}>My Shop</Text>
-                            </View>
-                        </TouchableRipple> */}
-                        <TouchableRipple onPress={() => navigation.navigate('BusinessRegistrationForm')}>
-                            <View style={styles.menuItem}>
-                                <Icon name="cart" size={25} style={styles.iconColor}/>
-                                <Text style={styles.menuItemText}>Start Business</Text>
-                            </View>
-                        </TouchableRipple>
+                        {userData.hasShop === true ?
+                            <TouchableRipple onPress={() => navigation.navigate('MyShop', {
+                                userID: userID,
+                                shopID: userData.shopID
+                            })}>
+                                <View style={styles.menuItem}>
+                                    <Icon name="cart" color="#FF6347" size={25} />
+                                    <Text style={styles.menuItemText}>My Shop</Text>
+                                </View>
+                            </TouchableRipple>
+                            : ''
+                        }
+                        {userData.hasShop === false ?
+                            <TouchableRipple onPress={() => navigation.navigate('BusinessRegistrationForm')}>
+                                <View style={styles.menuItem}>
+                                    <Icon name="cart" size={25} style={styles.iconColor} />
+                                    <Text style={styles.menuItemText}>Start Business</Text>
+                                </View>
+                            </TouchableRipple> : ''
+                        }
+
                         <TouchableRipple onPress={() => navigation.navigate('MyOrder')}>
                             <View style={styles.menuItem}>
                                 <IonIcon name="bookmarks-outline" style={styles.iconColor} size={25} />
@@ -153,6 +184,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: COLOURS.white,
         height: '100%',
+        flex: 1
     },
     userInfoSection: {
         paddingHorizontal: 30,
@@ -167,6 +199,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         lineHeight: 14,
         fontWeight: '500',
+        maxWidth: 150
     },
     row: {
         flexDirection: 'row',
@@ -186,7 +219,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     menuWrapper: {
-        paddingTop: 50
+        paddingTop: 30
     },
     menuItem: {
         flexDirection: 'row',
@@ -202,8 +235,7 @@ const styles = StyleSheet.create({
     },
     headerIconContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        marginLeft: 10
+        justifyContent: 'flex-end',
     },
     headerIconStyle: {
         fontSize: 25,
@@ -218,7 +250,8 @@ const styles = StyleSheet.create({
         color: '#FF6347'
     },
     userHeaderContainer: {
-        flexDirection: 'row', 
-        marginTop: 15
+        flexDirection: 'row',
+        marginTop: 15,
+        justifyContent: 'space-between'
     }
 });

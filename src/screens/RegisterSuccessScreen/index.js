@@ -69,7 +69,7 @@ const RegisterSuccessScreen = ({navigation}) => {
                             </Text>
                             <View style={styles.buttonContainer}>
                             <TouchableOpacity
-                                onPress={() => navigation.navigate("SignIn")}
+                                onPress={() => navigation.navigate("Home")}
                                 style={styles.buttonStyle}>
                                 <Text style={styles.buttonText}>
                                     Proceed

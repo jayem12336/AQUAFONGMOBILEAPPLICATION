@@ -38,6 +38,7 @@ import MyOrder from '../screens/Tabs/MyOrders/MyOrder';
 import Message from '../screens/Tabs/MessageTabScreen/Message';
 
 import { auth } from '../utils/firebase'
+import ShopList from '../screens/Tabs/ProfileTab/ShopList/ShopList';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -178,19 +179,20 @@ function BottomTabNavigation() {
 const Navigation = ({ navigation }) => {
 
     const [isLoggedIn, setIsLoggedIn] = useState();
-
+    const [user, setUser] = useState();
     useEffect(() => {
         auth.onAuthStateChanged((authUser) => {
             if (authUser) {
                 setIsLoggedIn(true)
+                setUser(authUser.uid)
             } else {
                 setIsLoggedIn(false)
+                setUser(null)
             }
         })
     }, [navigation])
-
+    console.log(user)
     console.log(isLoggedIn)
-
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -223,10 +225,17 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="BusinessRegistrationForm"
                             component={BusinessRegistrationForm}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="SuccessBusinessScreen"
                             component={SuccessBusinessScreen}
+                        />
+                        <Stack.Screen
+                            name="ShopList"
+                            component={ShopList}
                         />
                         <Stack.Screen
                             name="MyShop"
@@ -243,6 +252,10 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="CartTab"
                             component={CartTab}
+                        />
+                        <Stack.Screen
+                            name="RegisterSuccess"
+                            component={RegisterSuccessScreen}
                         />
                     </> :
                     <>
@@ -270,10 +283,6 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="SignUp"
                             component={SignUpScreen}
-                        />
-                        <Stack.Screen
-                            name="RegisterSuccess"
-                            component={RegisterSuccessScreen}
                         />
                         <Stack.Screen
                             name="ConfirmEmail"

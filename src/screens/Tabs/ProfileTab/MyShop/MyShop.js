@@ -9,13 +9,34 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { COLOURS } from '../../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import { TouchableRipple } from 'react-native-paper';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../../../../utils/firebase';
 
-const MyShop = ({ navigation }) => {
+const MyShop = ({ navigation, route }) => {
+
+  const {shopID, userID} = route.params;
+
+  const [shopDetails, setShopDetails] = useState({});
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "users", userID, "shop", shopID), (doc) => {
+      console.log("Current data: ", doc.data());
+      setShopDetails(doc.data());
+    })
+
+    return unsub;
+  }, [navigation])
+  
+
+  console.log(shopID);
+  console.log(userID);
+  console.log(shopDetails);
+
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -30,7 +51,7 @@ const MyShop = ({ navigation }) => {
               <View style={{ flexDirection: 'row', }}>
                 <TouchableOpacity>
                   <MaterialCommunityIcons
-                    onPress={() => navigation.goBack()}
+                    onPress={() => navigation.navigate('ProfileTab')}
                     name="chevron-left"
                     style={styles.backIconStyle}
                   />
@@ -65,10 +86,10 @@ const MyShop = ({ navigation }) => {
             </View>
             <View style={styles.addressContainer}>
               <Text>
-                AQUA, ARDEZA FISH STORE
+                {shopDetails.businessName}
               </Text>
               <Text>
-                San Rafael, Bulacan
+              {shopDetails.shopLocation}
               </Text>
             </View>
           </View>
@@ -81,7 +102,7 @@ const MyShop = ({ navigation }) => {
                 <Text>
                   0
                 </Text>
-                <Text style={{marginTop: 5}}>
+                <Text style={{ marginTop: 5 }}>
                   To Ship
                 </Text>
               </View>
@@ -89,16 +110,16 @@ const MyShop = ({ navigation }) => {
                 <Text>
                   0
                 </Text>
-                <Text style={{marginTop: 5}}>
+                <Text style={{ marginTop: 5 }}>
                   Cancelled
                 </Text>
               </View>
               <View style={styles.purchaseContainer}>
                 <MaterialCommunityIcons
                   name="account-supervisor"
-                  style={{fontSize: 35}}
+                  style={{ fontSize: 35 }}
                 />
-                <Text style={{textAlign: 'center'}}>
+                <Text style={{ textAlign: 'center' }}>
                   Order History
                 </Text>
               </View>
@@ -113,7 +134,7 @@ const MyShop = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
             </View>
-            <View style={[styles.linkItem, {marginTop: 15}]}>
+            <View style={[styles.linkItem, { marginTop: 15 }]}>
               <TouchableOpacity onPress={() => navigation.navigate('FeedTab')}>
                 <View style={styles.menuItem}>
                   <MaterialCommunityIcons name="home" color="black" size={25} />

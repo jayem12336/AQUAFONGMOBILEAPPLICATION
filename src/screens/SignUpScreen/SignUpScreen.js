@@ -22,6 +22,9 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import Input from '../../components/Input/Input';
 
+import { collection, addDoc } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const SignUp = () => {
 
     const navigation = useNavigation();
@@ -117,9 +120,14 @@ const SignUp = () => {
                         email: inputs.email,
                         address: inputs.address,
                         phone: inputs.phone,
-                        ownerId: user.uid
+                        ownerId: user.uid,
+                        hasShop: false,
+                        shopID: '',
+                        photoURL: ''
                     }
                 );
+                const jsonValue = JSON.stringify(user)
+                AsyncStorage.setItem('@storage_Key', jsonValue)
                 setLoading(false);
                 navigation.navigate('RegisterSuccess');
             }).catch((err) => {
