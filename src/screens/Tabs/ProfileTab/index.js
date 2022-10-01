@@ -5,7 +5,8 @@ import {
     StyleSheet,
     ScrollView,
     StatusBar,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator
 } from 'react-native';
 import {
     Avatar,
@@ -28,8 +29,10 @@ const ProfileTab = ({ navigation }) => {
 
     const [userData, setUserData] = useState({});
     const [userID, setUserID] = useState('');
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let itemArray = await AsyncStorage.getItem('@storage_Key');
             itemArray = JSON.parse(itemArray);
@@ -40,6 +43,7 @@ const ProfileTab = ({ navigation }) => {
                 setUserData(doc.data());
             })
             console.log(unsub);
+            setIsLoading(false);
         }
         fetchData().catch((error) => {
             console.log(error)
@@ -65,46 +69,53 @@ const ProfileTab = ({ navigation }) => {
                         barStyle="dark-content"
                     />
                     <View style={styles.userInfoSection}>
-                        <View style={styles.userHeaderContainer}>
-                            <Avatar.Image
-                                source={require('../../../images/Jpeg/KoiFish.jpg')}
-                                size={80}
-                            />
-                            <View style={{ marginLeft: 10 }}>
-                                <Title style={[styles.title, {
-                                    marginTop: 15,
-                                    marginBottom: 5,
-                                }]}>{userData.username}</Title>
+                        {isLoading ?
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 200 }}>
+                                <ActivityIndicator size={50} color="white" />
                             </View>
-                            <View style={styles.headerIconContainer}>
-                                <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
-                                    <Icon
-                                        name="cart"
-                                        style={styles.headerIconStyle}
+                            : <>
+                                <View style={styles.userHeaderContainer}>
+                                    <Avatar.Image
+                                        source={require('../../../images/Jpeg/KoiFish.jpg')}
+                                        size={80}
                                     />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
-                                    <IonIcons
-                                        name="mail-outline"
-                                        style={styles.headerIconStyle}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.userInfoSection}>
-                        <View style={styles.row}>
-                            <Icon name="map-marker-radius" color={COLOURS.black} size={20} />
-                            <Text style={styles.userInformation}>{userData.address}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Icon name="phone" color={COLOURS.black} size={20} />
-                            <Text style={styles.userInformation}>{userData.phone}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Icon name="email" color={COLOURS.black} size={20} />
-                            <Text style={styles.userInformation}>{userData.email}</Text>
-                        </View>
+                                    <View style={{ marginLeft: 10 }}>
+                                        <Title style={[styles.title, {
+                                            marginTop: 15,
+                                            marginBottom: 5,
+                                        }]}>{userData.username}</Title>
+                                    </View>
+                                    <View style={styles.headerIconContainer}>
+                                        <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
+                                            <Icon
+                                                name="cart"
+                                                style={styles.headerIconStyle}
+                                            />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
+                                            <IonIcons
+                                                name="mail-outline"
+                                                style={styles.headerIconStyle}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View style={{marginTop: 20}}>
+                                    <View style={styles.row}>
+                                        <Icon name="map-marker-radius" color={COLOURS.black} size={20} />
+                                        <Text style={styles.userInformation}>{userData.address}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Icon name="phone" color={COLOURS.black} size={20} />
+                                        <Text style={styles.userInformation}>{userData.phone}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Icon name="email" color={COLOURS.black} size={20} />
+                                        <Text style={styles.userInformation}>{userData.email}</Text>
+                                    </View>
+                                </View>
+                            </>
+                        }
                     </View>
                     {/* <View style={styles.infoBoxWrapper}>
                     <View style={[styles.infoBox, {
@@ -121,10 +132,12 @@ const ProfileTab = ({ navigation }) => {
                     </View> */}
                     <View style={styles.menuWrapper}>
                         {userData.hasShop === true ?
-                            <TouchableRipple onPress={() => navigation.navigate('MyShop', {
-                                userID: userID,
-                                shopID: userData.shopID
-                            })}>
+                            <TouchableRipple onPress={() => {
+                                navigation.navigate('MyShop', {
+                                    userID: userID,
+                                    shopID: userData.shopID
+                                })
+                            }}>
                                 <View style={styles.menuItem}>
                                     <Icon name="cart" color="#FF6347" size={25} />
                                     <Text style={styles.menuItemText}>My Shop</Text>

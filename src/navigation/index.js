@@ -39,6 +39,9 @@ import Message from '../screens/Tabs/MessageTabScreen/Message';
 
 import { auth } from '../utils/firebase'
 import ShopList from '../screens/Tabs/ProfileTab/ShopList/ShopList';
+import CreateProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/CreateProduct';
+import EditProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/EditProduct';
+import Items from '../screens/Tabs/ProfileTab/MyShop/MyProducts/Items';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -180,6 +183,7 @@ const Navigation = ({ navigation }) => {
 
     const [isLoggedIn, setIsLoggedIn] = useState();
     const [user, setUser] = useState();
+
     useEffect(() => {
         auth.onAuthStateChanged((authUser) => {
             if (authUser) {
@@ -191,6 +195,7 @@ const Navigation = ({ navigation }) => {
             }
         })
     }, [navigation])
+
     console.log(user)
     console.log(isLoggedIn)
     return (
@@ -244,6 +249,17 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="MyProducts"
                             component={MyProducts}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="CreateProduct"
+                            component={CreateProduct}
+                        />
+                        <Stack.Screen
+                            name="EditProduct"
+                            component={EditProduct}
                         />
                         <Stack.Screen
                             name="MyOrder"

@@ -127,7 +127,9 @@ const MyShop = ({ navigation, route }) => {
           </View>
           <View style={styles.footerSection}>
             <View style={styles.linkItem}>
-              <TouchableOpacity onPress={() => navigation.navigate('MyProducts')}>
+              <TouchableOpacity onPress={() => navigation.navigate('MyProducts', {
+                shopID: shopID
+              })}>
                 <View style={styles.menuItem}>
                   <MaterialCommunityIcons name="shopping" color="black" size={25} />
                   <Text style={styles.menuItemText}>My Products</Text>

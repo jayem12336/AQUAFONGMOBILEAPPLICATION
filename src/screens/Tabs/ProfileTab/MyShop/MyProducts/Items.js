@@ -1,27 +1,62 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { COLOURS } from '../../../../../utils/database/Database'
+import { doc, deleteDoc } from "firebase/firestore";
+import { db } from '../../../../../utils/firebase';
+import { useNavigation } from '@react-navigation/native';
 
-const Items = () => {
+const Items = ({ data, userID, shopID, productID }) => {
+
+    const navigation = useNavigation();
+
+    console.log(productID)
+    const showAlert = (e) => {
+        e.preventDefault();
+        Alert.alert(
+            "Warning",
+            "Are you sure you want to remove this product?",
+            [
+                {
+                    text: "No",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                {
+                    text: "Yes", onPress: async () => {
+                        await deleteDoc(doc(db, "users", userID, "shop", shopID, "products", productID))
+                        .then(() => {
+                            Alert.alert("Successfully deleted product!")
+                        });
+                    }
+                }
+            ]
+        );
+    }
+
     return (
         <View style={styles.root}>
             <View style={styles.container}>
                 <View style={styles.subContainer}>
-                    <Image source={require('../../../../../images/Jpeg/GoldFish.jpg')} alt="Profile"
+                    <Image source={{ uri: data.productImage }} alt="Profile"
                         style={styles.imageStyle}
                     />
                     <View style={styles.infoItemContainer}>
-                        <Text style={styles.textInfo}>NDRRMC</Text>
-                        <Text style={styles.priceInfo}>&#x20B1; 303</Text>
+                        <Text style={styles.textInfo}>{data.productName}</Text>
+                        <Text style={styles.priceInfo}>&#x20B1; {data.productPrice}</Text>
                     </View>
                 </View>
                 <View style={styles.btnContainer}>
-                    <TouchableOpacity style={styles.btnStyle}>
+                    <TouchableOpacity style={styles.btnStyle} onPress={showAlert}>
                         <Text style={styles.btnText}>
                             Remove
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.btnStyle}>
+                    <TouchableOpacity style={styles.btnStyle} onPress={() => navigation.navigate('EditProduct', {
+                        productData: data,
+                        userID: userID,
+                        shopID: shopID,
+                        productID: productID,
+                    })}>
                         <Text style={styles.btnText}>
                             Edit
                         </Text>

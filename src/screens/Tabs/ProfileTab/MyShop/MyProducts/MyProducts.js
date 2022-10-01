@@ -8,9 +8,10 @@ import {
     View,
     Dimensions,
     Image,
-    useWindowDimensions
+    useWindowDimensions,
+    ActivityIndicator,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { COLOURS, Items } from '../../../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
@@ -19,33 +20,71 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import ItemsComponent from './Items'
 import Sold from './Sold';
-
-const FirstRoute = () => (
-    <ScrollView contentContainerStyle={{
-        paddingBottom: 60
-    }}>
-        <ItemsComponent />
-        <ItemsComponent />
-        <ItemsComponent />
-        <ItemsComponent />
-    </ScrollView>
-);
-
-const SecondRoute = () => (
-    <Sold />
-);
-
-const renderScene = SceneMap({
-    first: FirstRoute,
-    second: SecondRoute,
-});
+import { collection, getDocs, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../../../../utils/firebase';
+import Loader from '../../../../../components/Loader/Loader';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
-const MyProducts = ({ navigation }) => {
+const MyProducts = ({ navigation, route }) => {
 
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
+    const { userinfo, shopID } = route.params;
+
+    const [productData, setProductData] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(() => {
+        setIsLoading(true);
+        const q = query(collection(db, "users", userinfo, "shop", shopID, 'products'));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setProductData(data);
+            setIsLoading(false);
+        });
+        return unsubscribe;
+    }, [navigation])
+
+    console.log(productData)
+
+    const FirstRoute = () => (
+        <ScrollView contentContainerStyle={{
+            paddingBottom: 60
+        }}>
+            {isLoading ?
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                    <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                </View>
+                : <>
+                    {productData.map(({ data, id }) => (
+                        <View key={id}>
+                            <ItemsComponent data={data} userID={userinfo} shopID={shopID} productID={id}/>
+                        </View>
+                    ))}
+                </>
+            }
+        </ScrollView>
+    );
+
+    const SecondRoute = () => (
+        <Sold />
+    );
+
+    const renderScene = SceneMap({
+        first: FirstRoute,
+        second: SecondRoute,
+    });
+
+    console.log(productData)
+
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
         { key: 'first', title: 'Items' },
         { key: 'second', title: 'Sold' },
     ]);
@@ -102,7 +141,10 @@ const MyProducts = ({ navigation }) => {
             {
                 index === 0 ?
                     <View style={styles.footerContainer}>
-                        <TouchableOpacity style={styles.btnContainer}>
+                        <TouchableOpacity style={styles.btnContainer} onPress={() => navigation.navigate('CreateProduct', {
+                            userID: userinfo,
+                            shopID: shopID
+                        })}>
                             <Text style={styles.btnText}>
                                 Add items
                             </Text>
@@ -192,13 +234,13 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         borderRadius: 2
-      },
-      btnText: {
+    },
+    btnText: {
         fontSize: 12,
         fontWeight: '500',
         letterSpacing: 1,
         color: COLOURS.black,
         textTransform: 'uppercase',
         textAlign: 'center'
-      }
+    }
 })
