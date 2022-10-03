@@ -58,14 +58,6 @@ const DiscoverTab = () => {
                         <View>
                             <View style={styles.bubble}>
                                 <Text style={styles.name}>Name of Shop</Text>
-                                {/* <Text>A short description</Text> */}
-                                {/* <Text>
-                                    <Image
-                                        style={styles.image}
-                                        source={require('./assets/food-banner1.jpg')}
-                                        resizeMode="cover"
-                                    />
-                                    </Text> */}
                             </View>
                             <View style={styles.arrowBorder} />
                             <View style={styles.arrow} />

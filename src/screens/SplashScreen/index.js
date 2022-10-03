@@ -1,4 +1,4 @@
-import { StatusBar, StyleSheet, Text, View } from 'react-native'
+import { StatusBar, StyleSheet, View } from 'react-native'
 import React from 'react';
 
 import AnimatedLottieView from 'lottie-react-native';

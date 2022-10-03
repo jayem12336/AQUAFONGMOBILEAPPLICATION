@@ -11,15 +11,51 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
+    ActivityIndicator,
 } from 'react-native'
 import SearchBarComponent from '../../../components/Searchbar/SearchBar';
 import { COLOURS, Items } from '../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { auth, db } from '../../../utils/firebase';
 
 const FeedTab = ({ navigation }) => {
 
+
     const [value, setValue] = useState();
+
+    const [productData, setProductData] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [userID, setUserID] = useState('');
+
+    useEffect(() => {
+        setIsLoading(true);
+        const unsubscribe =
+            auth.onAuthStateChanged((authUser) => {
+                if (authUser) {
+                    setUserID(authUser.uid)
+                    const q = query(collection(db, "feedproducts"), where("userID", "!=", authUser.uid));
+                    onSnapshot(q, (querySnapshot) => {
+                        const data = [];
+                        querySnapshot.forEach((doc) => {
+                            data.push({
+                                id: doc.id,
+                                data: doc.data()
+                            })
+                        });
+                        setProductData(data);
+                        setIsLoading(false);
+                    });
+                } else {
+                    setUserID(null)
+                    setIsLoading(false);
+                }
+            })
+        return unsubscribe;
+    }, [navigation])
+    console.log(productData)
 
     const updateSearch = (value) => {
 
@@ -44,15 +80,14 @@ const FeedTab = ({ navigation }) => {
         setProducts(productList);
     }
 
-    const ProductCard = ({ data }) => {
+    const ProductCard = ({ data, productID }) => {
         return (
             <TouchableOpacity
-                onPress={() => navigation.navigate("ProductInfo", { productID: data.id })}
-                style={styles.productCardContainer}
+             onPress={() => navigation.navigate("NewProductInfo", { productID: productID })}
             >
                 <View style={styles.productImageContainer}>
                     <Image
-                        source={data.productImage}
+                        source={{ uri: data.productImage }}
                         style={styles.imageStyle}
                     />
                 </View>
@@ -61,19 +96,12 @@ const FeedTab = ({ navigation }) => {
                 >
                     {data.productName}
                 </Text>
-                <Text>&#x20B1; {data.productPrice}</Text>
-                {/* <View style={{ paddingHorizontal: 10 }}>
-                    <Rating
-                        //onFinishRating={(rating) => { Alert.alert('Star Rating: ' + JSON.stringify(rating)); }}
-                        imageSize={28}
-                        startingValue={data.rating}
-                        readonly
-                        style={{ paddingVertical: 10 }} />
-                </View> */}
+                <Text style={{
+                    paddingLeft: 5
+                }}>&#x20B1; {data.productPrice}</Text>
             </TouchableOpacity>
         )
     }
-
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -90,30 +118,19 @@ const FeedTab = ({ navigation }) => {
                         <IonIcons name="mail-outline" style={styles.shoppingBagIcon} />
                     </TouchableOpacity>
                 </View>
-                {/* <View style={styles.textTitleContainer}>
-                    <Text style={styles.titleStyle}>
-                        BulAquaPond Fisheries
-                    </Text>
-                    <Text style={styles.textStyle}>
-                        Details about the shop.
-                        {'\n'}This shop offers both products and services
-                    </Text>
-                </View> */}
-                <View style={{ padding: 16 }}>
-                    {/* <View style={styles.capstionContainer}>
-                        <View style={styles.textCaptionContainer}>
-                            <Text style={styles.textCapstionStyle}>Fish</Text>
-                            <Text style={styles.textCapstionLengthStyle}>{Items.length}</Text>
-                        </View>
-                        <Text style={styles.secondaryCapstionStyle}>
-                            SeeAll
-                        </Text>
-                    </View> */}
+                <View style={{ width: '100%' }}>
                     <View style={styles.productContainer}>
-                        {
-                            products.map((data) => {
-                                return <ProductCard data={data} key={data.id} />
-                            })
+                        {isLoading ?
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                            </View>
+                            : <>
+                                {productData.map(({ data, id }) => (
+                                    <View key={id} style={styles.productCardContainer}>
+                                        <ProductCard data={data} key={data.id} productID={id} />
+                                    </View>
+                                ))}
+                            </>
                         }
                     </View>
                 </View>
@@ -128,14 +145,14 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.white
     },
     headerContainer: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 16,
-        marginBottom: -50
+        backgroundColor: COLOURS.backgroundPrimary,
     },
     shoppingBagIcon: {
         fontSize: 18,
@@ -200,10 +217,10 @@ const styles = StyleSheet.create({
     productContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         backgroundColor: COLOURS.white,
         marginBottom: 80,
-        padding: 10
+        padding: 10,
     },
     productCardContainer: {
         width: '48%',
@@ -226,7 +243,7 @@ const styles = StyleSheet.create({
         height: '100%',
         maxHeight: 200,
         maxWidth: 200,
-        resizeMode: 'stretch',
+        resizeMode: 'cover',
         borderRadius: 10,
     },
     imageTextStyle: {

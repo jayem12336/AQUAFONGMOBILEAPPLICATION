@@ -22,7 +22,6 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import Input from '../../components/Input/Input';
 
-import { collection, addDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignUp = () => {

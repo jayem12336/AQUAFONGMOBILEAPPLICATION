@@ -9,17 +9,13 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
-  Button,
   Alert,
-  Keyboard,
 } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
-import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import IonIcons from 'react-native-vector-icons/Ionicons';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import Loader from '../../../../../components/Loader/Loader';
 import { COLOURS } from '../../../../../utils/database/Database';
 import Input from '../../../../../components/Input/Input';
@@ -42,6 +38,7 @@ const EditProduct = ({ navigation, route }) => {
     productDescription: '',
     shopID: '',
     userID: '',
+    productQuantity: productData.productQuantity
   })
 
   const handleOnchange = (text, input) => {
@@ -143,19 +140,28 @@ const EditProduct = ({ navigation, route }) => {
             style: "cancel"
           },
           {
-            text: "Yes", onPress: async() => {
+            text: "Yes", onPress: async () => {
               setLoading(true);
               const cityRef = doc(db, "users", userID, "shop", shopID, "products", productID);
               await setDoc(cityRef, {
                 productName: inputs.productName,
                 productPrice: inputs.productPrice,
-                productImage: inputs.productImage
-              }, { merge: true }).then(() => {
-                navigation.navigate("MyProducts", {
-                  userinfo: userID,
-                  shopID: shopID,
-                });
-                setLoading(false);
+                productImage: inputs.productImage,
+                productQuantity: inputs.productQuantity
+              }, { merge: true }).then(async () => {
+                const docRef = doc(db, "feedproducts", productData.prodID);
+                await setDoc(docRef, {
+                  productName: inputs.productName,
+                  productPrice: inputs.productPrice,
+                  productImage: inputs.productImage,
+                  productQuantity: inputs.productQuantity
+                }, { merge: true }).then(() => {
+                  navigation.navigate("MyProducts", {
+                    userinfo: userID,
+                    shopID: shopID,
+                  });
+                  setLoading(false);
+                })
               })
             }
           }
@@ -217,11 +223,20 @@ const EditProduct = ({ navigation, route }) => {
               error={errors.productName}
             />
             <Input
+              keyboardType="numeric"
               onChangeText={text => handleOnchange(text, 'productPrice')}
               onFocus={() => handleError(null, 'productPrice')}
               label="Product Price"
               placeholder="Enter new product price"
               error={errors.productPrice}
+            />
+            <Input
+              keyboardType="numeric"
+              onChangeText={text => handleOnchange(text, 'productQuantity')}
+              onFocus={() => handleError(null, 'productQuantity')}
+              label="Product Quantity *"
+              placeholder="Enter your product quantity"
+              error={errors.productQuantity}
             />
             <View style={styles.textFieldSubContainer}>
               <Text style={{ marginBottom: 10, fontSize: 14, color: COLOURS.grey, }}>

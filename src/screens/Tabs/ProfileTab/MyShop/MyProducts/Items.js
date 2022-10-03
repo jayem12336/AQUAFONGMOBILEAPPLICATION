@@ -23,8 +23,9 @@ const Items = ({ data, userID, shopID, productID }) => {
                 },
                 {
                     text: "Yes", onPress: async () => {
-                        await deleteDoc(doc(db, "users", userID, "shop", shopID, "products", productID))
-                        .then(() => {
+                        await deleteDoc(doc(db, "feedproducts", data.prodID))
+                        .then(async() => {
+                            await deleteDoc(doc(db, "users", userID, "shop", shopID, "products", productID))
                             Alert.alert("Successfully deleted product!")
                         });
                     }

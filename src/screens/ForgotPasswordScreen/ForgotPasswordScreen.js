@@ -10,7 +10,6 @@ import {
     Alert
 } from 'react-native';
 
-import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
 
 import { useNavigation } from '@react-navigation/native';
@@ -69,7 +68,6 @@ const ForgotPasswordScreen = () => {
     }
 
     const onSignInPress = () => {
-        // Go to Signin Screen
         navigation.navigate('SignIn');
     }
 

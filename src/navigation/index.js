@@ -41,7 +41,7 @@ import { auth } from '../utils/firebase'
 import ShopList from '../screens/Tabs/ProfileTab/ShopList/ShopList';
 import CreateProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/CreateProduct';
 import EditProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/EditProduct';
-import Items from '../screens/Tabs/ProfileTab/MyShop/MyProducts/Items';
+import NewProductInfo from '../screens/Tabs/FeedTab/NewProductInfo/NewProductInfo';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -210,6 +210,10 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="ProductInfo"
                             component={ProductInfo}
+                        />
+                        <Stack.Screen
+                            name="NewProductInfo"
+                            component={NewProductInfo}
                         />
                         <Stack.Screen
                             name="Purchase"

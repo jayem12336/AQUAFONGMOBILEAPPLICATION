@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   StyleSheet,
@@ -9,21 +9,18 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
-  Button,
   Alert,
   Keyboard,
 } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
-import Entypo from 'react-native-vector-icons/Entypo';
 import Loader from '../../../../../components/Loader/Loader';
 import { COLOURS } from '../../../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import IonIcons from 'react-native-vector-icons/Ionicons';
 import Input from '../../../../../components/Input/Input';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '../../../../../utils/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 const CreateProduct = ({ navigation, route }) => {
 
@@ -37,6 +34,7 @@ const CreateProduct = ({ navigation, route }) => {
     productDescription: '',
     shopID: '',
     userID: '',
+    productQuantity: '',
   })
 
   const [image, setImage] = useState(null);
@@ -45,6 +43,7 @@ const CreateProduct = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [parentProdID, setParentProdID] = useState('');
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({ ...prevState, [input]: text }));
   };
@@ -66,6 +65,14 @@ const CreateProduct = ({ navigation, route }) => {
       isValid = false;
     } else if (inputs.productPrice < 0) {
       handleError('Please input a valid product price', 'productPrice');
+      isValid = false;
+    }
+
+    if (!inputs.productQuantity) {
+      handleError('Please input quantity', 'productQuantity');
+      isValid = false;
+    } else if (inputs.productPrice < 0) {
+      handleError('Please input a valid quantity', 'productQuantity');
       isValid = false;
     }
 
@@ -130,26 +137,45 @@ const CreateProduct = ({ navigation, route }) => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          addDoc(collection(db, "users", userID, "shop", shopID, "products"), {
+          addDoc(collection(db, "feedproducts"), {
             productName: inputs.productName,
             productPrice: inputs.productPrice,
             productDescription: inputs.productDescription,
             rating: inputs.rating,
             productImage: downloadURL,
-          }).then(() => {
-            navigation.navigate("MyProducts", {
-              userinfo: userID,
-              shopID: shopID,
-            });
-            Alert.alert("Successfully create a product");
-            console.log(downloadURL);
-            setLoading(false);
+            productQuantity: inputs.productQuantity,
+            userID: userID,
+            shopID: shopID,
+            dateCreated: new Date().toISOString()
+          }).then((docRef) => {
+            const cityRef = doc(db, 'feedproducts', docRef.id);
+            setDoc(cityRef, { prodID: docRef.id }, { merge: true });
+            setParentProdID(docRef.id)
+            addDoc(collection(db, "users", userID, "shop", shopID, "products"), {
+              productName: inputs.productName,
+              productPrice: inputs.productPrice,
+              productDescription: inputs.productDescription,
+              productQuantity: inputs.productQuantity,
+              rating: inputs.rating,
+              productImage: downloadURL,
+              prodID: docRef.id,
+              dateCreated: new Date().toISOString()
+            }).then((newRef) => {
+              setDoc(cityRef, { parentProductID: newRef.id }, { merge: true });
+              navigation.navigate("MyProducts", {
+                userinfo: userID,
+                shopID: shopID,
+              });
+              Alert.alert("Successfully create a product");
+              setLoading(false);
+            })
           })
         })
       }
     )
   }
 
+  console.log(parentProdID)
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -159,19 +185,20 @@ const CreateProduct = ({ navigation, route }) => {
     }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
+      //allowsEditing: true,
+      //aspect: [1, 2],
+      quality: 1,
     });
 
     if (!result.cancelled) {
       setImage(result.uri);
     }
-
-    console.log(result)
   };
 
   return (
     <View style={styles.root}>
       <Loader visible={loading} />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 50}}>
         <SafeAreaView style={styles.container}>
           <StatusBar
             backgroundColor={COLOURS.white}
@@ -203,11 +230,20 @@ const CreateProduct = ({ navigation, route }) => {
               error={errors.productName}
             />
             <Input
+              keyboardType="numeric"
               onChangeText={text => handleOnchange(text, 'productPrice')}
               onFocus={() => handleError(null, 'productPrice')}
               label="Product Price *"
               placeholder="Enter your product price"
               error={errors.productPrice}
+            />
+            <Input
+              keyboardType="numeric"
+              onChangeText={text => handleOnchange(text, 'productQuantity')}
+              onFocus={() => handleError(null, 'productQuantity')}
+              label="Product Quantity *"
+              placeholder="Enter your product quantity"
+              error={errors.productQuantity}
             />
             <View style={styles.textFieldSubContainer}>
               <Text style={{ marginBottom: 10, fontSize: 14, color: COLOURS.grey, }}>
@@ -310,6 +346,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     bottom: 0,
+    backgroundColor: COLOURS.dirtyWhiteBackground
   },
   btnContainer2: {
     alignSelf: 'center',
