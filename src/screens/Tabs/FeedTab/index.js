@@ -26,6 +26,7 @@ const FeedTab = ({ navigation }) => {
     const [value, setValue] = useState();
 
     const [productData, setProductData] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);
     const [userID, setUserID] = useState('');
@@ -55,29 +56,9 @@ const FeedTab = ({ navigation }) => {
             })
         return unsubscribe;
     }, [navigation])
-    console.log(productData)
 
     const updateSearch = (value) => {
 
-    }
-    const [products, setProducts] = useState([]);
-
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            getDataFromDb();
-        })
-
-        return unsubscribe;
-    }, [navigation])
-
-    const getDataFromDb = () => {
-        let productList = [];
-        for (let index = 0; index < Items.length; index++) {
-            if (Items[index].category == "product") {
-                productList.push(Items[index]);
-            }
-        }
-        setProducts(productList);
     }
 
     const ProductCard = ({ data, productID }) => {
@@ -108,8 +89,8 @@ const FeedTab = ({ navigation }) => {
                 <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
                 <View style={styles.headerContainer}>
                     <SearchBarComponent
-                        value={value}
-                        updateSearch={updateSearch}
+                        value={searchTerm}
+                        updateSearch={setSearchTerm}
                     />
                     <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
                         <MaterialCommunityIcons name="cart" style={styles.shoppingBagIcon} />

@@ -12,7 +12,10 @@ import { StatusBar } from 'expo-status-bar'
 import { COLOURS } from '../../../../utils/database/Database'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const PurchaseScreen = ({ navigation }) => {
+const PurchaseScreen = ({ navigation, route }) => {
+
+  const {productID} = route.params;
+
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>

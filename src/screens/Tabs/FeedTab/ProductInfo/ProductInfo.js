@@ -161,15 +161,6 @@ const ProductInfo = ({ route, navigation }) => {
                     </View>
                 </View>
                 <View style={{ paddingHorizontal: 16, marginTop: 6, }}>
-                    {/* <View style={styles.shoppingContainer}>
-                        <Entypo
-                            name="shopping-cart"
-                            style={styles.shoppingCartIconStyle}
-                        />
-                        <Text style={styles.textShoppingCartStyle}>
-                            Shopping
-                        </Text>
-                    </View> */}
                     <View style={styles.productNameContainer}>
                         <Text style={styles.productNameStyle}>
                             {product.productName}
@@ -206,6 +197,7 @@ const ProductInfo = ({ route, navigation }) => {
                                         Discount Rate 2%~ &#x20B1;{product.productPrice / 20} (&#x20B1;
                                         {product.productPrice + product.productPrice / 20})
                                     </Text>
+                                    <Text>Available {product.productQuantity}</Text> 
                                 </View></>
                             : ""
                     }

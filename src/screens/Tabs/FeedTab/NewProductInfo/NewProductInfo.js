@@ -16,6 +16,9 @@ const NewProductInfo = ({ navigation, route }) => {
     const [loading, setLoading] = useState(false);
     const [buyNowButton, setBuyNowButton] = useState(false);
 
+    const [quantity, setQuantity] = useState(1);
+    const [total, setTotal] = useState();
+
     const [productInfo, setProductInfo] = useState({});
 
     useEffect(() => {
@@ -26,7 +29,6 @@ const NewProductInfo = ({ navigation, route }) => {
         return unsub;
     }, [navigation])
 
-    console.log(productInfo)
     return (
         <View style={styles.root}>
             <Loader visible={loading} />
@@ -98,6 +100,7 @@ const NewProductInfo = ({ navigation, route }) => {
                             </View>
                             :
                             <View style={styles.quantityView}>
+                                {/* <Text>Available {productInfo.productQuantity}</Text> */}
                                 <View style={styles.quantitySubView}>
                                     <View style={styles.imagesContainer}>
                                         <Image source={{ uri: productInfo.productImage }} alt="Product Image" style={styles.productImageStyle} />
@@ -112,17 +115,29 @@ const NewProductInfo = ({ navigation, route }) => {
                                             <View style={styles.quantitySubContainer}>
                                                 <View
                                                     style={[styles.plusIconContainer, { marginRight: 20 }]}>
-                                                    <MaterialCommunityIcons
-                                                        name="minus"
-                                                        style={styles.iconStyle}
-                                                    />
+                                                    <TouchableOpacity onPress={
+                                                        () => {
+                                                            if (quantity > 1) { setQuantity(quantity - 1) }
+                                                        }
+                                                    }>
+                                                        <MaterialCommunityIcons
+                                                            name="minus"
+                                                            style={styles.iconStyle}
+                                                        />
+                                                    </TouchableOpacity>
                                                 </View>
-                                                <Text>1</Text>
+                                                <Text>{quantity}</Text>
                                                 <View style={[styles.plusIconContainer, { marginLeft: 20 }]}>
-                                                    <MaterialCommunityIcons
-                                                        name="plus"
-                                                        style={styles.iconStyle}
-                                                    />
+                                                    <TouchableOpacity onPress={
+                                                        () => {
+                                                            if (quantity <= productInfo.productQuantity) { setQuantity(quantity + 1) }
+                                                        }
+                                                    }>
+                                                        <MaterialCommunityIcons
+                                                            name="plus"
+                                                            style={styles.iconStyle}
+                                                        />
+                                                    </TouchableOpacity>
                                                 </View>
                                             </View>
                                         </View>
@@ -162,11 +177,14 @@ const NewProductInfo = ({ navigation, route }) => {
                         <View style={styles.buyNowContainer2}>
                             <View style={styles.buyNowSubContainer2}>
                                 <TouchableOpacity
-                                    onPress={() => { navigation.navigate('Purchase'), setBuyNowButton(false) }}
+                                    onPress={() => {
+                                        navigation.navigate('Purchase', { productID: productInfo }),
+                                        setBuyNowButton(false)
+                                    }}
                                     style={styles.buyBtnContainer}
                                 >
                                     <Text style={styles.buyBtnText}>
-                                        Buy now
+                                        Buy now &#x20B1; {productInfo.productPrice * quantity}
                                     </Text>
                                 </TouchableOpacity>
                             </View>

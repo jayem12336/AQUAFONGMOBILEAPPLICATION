@@ -32,7 +32,7 @@ const SignUp = () => {
         email: '',
         phone: '',
         password: '',
-        username: '',
+        fullname: '',
         address: '',
         confirmPassword: ''
     });
@@ -80,8 +80,8 @@ const SignUp = () => {
             isValid = false;
         }
 
-        if (!inputs.username) {
-            handleError('Please input username', 'username');
+        if (!inputs.fullname) {
+            handleError('Please input fullname', 'fullname');
             isValid = false;
         }
 
@@ -143,7 +143,7 @@ const SignUp = () => {
                 const user = userCredential.user;
                 setDoc(doc(db, 'users', user.uid),
                     {
-                        username: inputs.username,
+                        fullname: inputs.fullname,
                         email: inputs.email,
                         address: inputs.address,
                         phone: inputs.phone,
@@ -209,12 +209,12 @@ const SignUp = () => {
                         error={errors.email}
                     />
                     <Input
-                        onChangeText={text => handleOnchange(text, 'username')}
-                        onFocus={() => handleError(null, 'username')}
+                        onChangeText={text => handleOnchange(text, 'fullname')}
+                        onFocus={() => handleError(null, 'fullname')}
                         iconName="account-outline"
-                        label="User name"
-                        placeholder="Enter your username"
-                        error={errors.username}
+                        label="Fullname"
+                        placeholder="Enter your fullname"
+                        error={errors.fullname}
                     />
                     <Input
                         keyboardType="numeric"

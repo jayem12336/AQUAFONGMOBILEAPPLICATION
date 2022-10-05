@@ -234,7 +234,7 @@ const EditProduct = ({ navigation, route }) => {
               keyboardType="numeric"
               onChangeText={text => handleOnchange(text, 'productQuantity')}
               onFocus={() => handleError(null, 'productQuantity')}
-              label="Product Quantity *"
+              label="Product Quantity"
               placeholder="Enter your product quantity"
               error={errors.productQuantity}
             />

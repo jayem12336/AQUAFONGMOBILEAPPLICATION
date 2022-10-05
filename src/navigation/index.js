@@ -42,6 +42,7 @@ import ShopList from '../screens/Tabs/ProfileTab/ShopList/ShopList';
 import CreateProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/CreateProduct';
 import EditProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/EditProduct';
 import NewProductInfo from '../screens/Tabs/FeedTab/NewProductInfo/NewProductInfo';
+import UpdateProfile from '../screens/Tabs/ProfileTab/AccountSetting/UpdateProfile';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -195,9 +196,6 @@ const Navigation = ({ navigation }) => {
             }
         })
     }, [navigation])
-
-    console.log(user)
-    console.log(isLoggedIn)
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -256,6 +254,10 @@ const Navigation = ({ navigation }) => {
                             initialParams={{
                                 userinfo: user
                             }}
+                        />
+                        <Stack.Screen
+                            name="UpdateProfile"
+                            component={UpdateProfile}
                         />
                         <Stack.Screen
                             name="CreateProduct"

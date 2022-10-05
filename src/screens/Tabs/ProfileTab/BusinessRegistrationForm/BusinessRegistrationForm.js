@@ -29,41 +29,12 @@ import uuid from 'react-native-uuid'
 
 const BusinessRegistrationForm = ({ navigation, route }) => {
 
-    const { userinfo } = route.params;
+    const { userinfo, userData } = route.params;
 
     const [inputs, setInputs] = useState({
         businessName: '',
         shopLocation: '',
-        fullName: '',
-        contactNo: '',
     })
-
-    const hasUnsavedChanges = Boolean(inputs);
-
-    useEffect(() => {
-        navigation.addListener('beforeRemove', (e) => {
-            if (!hasUnsavedChanges) {
-                // If we don't have unsaved changes, then we don't need to do anything
-                return;
-            }
-
-            e.preventDefault();
-            Alert.alert(
-                'Discard changes?',
-                'You have unsaved changes. Are you sure to discard them and leave the screen?',
-                [
-                    { text: "Don't leave", style: 'cancel', onPress: () => { } },
-                    {
-                        text: 'Discard',
-                        style: 'destructive',
-                        // If the user confirmed, then we dispatch the action we blocked earlier
-                        // This will continue the action that had triggered the removal of the screen
-                        onPress: () => navigation.dispatch(e.data.action),
-                    },
-                ]
-            );
-        })
-    }, [navigation, hasUnsavedChanges])
 
     const [selected, setSelected] = useState("");
 
@@ -112,19 +83,6 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
 
         if (!inputs.shopLocation) {
             handleError('Please input shop location', 'shopLocation');
-            isValid = false;
-        }
-
-        if (!inputs.fullName) {
-            handleError('Please input full name', 'fullName');
-            isValid = false;
-        }
-
-        if (!inputs.contactNo) {
-            handleError('Please input phone number', 'contactNo');
-            isValid = false;
-        } else if (/^(09|\+639)\d{9}$/.test(inputs.contactNo) === false && /^[0-9]{8}$/.test(inputs.contactNo) === false) {
-            handleError('Please enter a valid phone number', 'contactNo');
             isValid = false;
         }
 
@@ -192,8 +150,8 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                     addDoc(collection(db, "users", userinfo, "shop"), {
                         businessName: inputs.businessName,
                         shopLocation: inputs.shopLocation,
-                        fullName: inputs.fullName,
-                        contactNo: inputs.contactNo,
+                        fullName: userData.fullname,
+                        contactNo: userData.phone,
                         imageShop: downloadURL,
                         userID: userinfo,
                         dateCreated: new Date().toISOString()
@@ -268,23 +226,6 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                             label="Shop Location *"
                             placeholder="Enter your shop location"
                             error={errors.shopLocation}
-                        />
-                        <Input
-                            onChangeText={text => handleOnchange(text, 'fullName')}
-                            onFocus={() => handleError(null, 'fullName')}
-                            iconName="account-outline"
-                            label="Full Name *"
-                            placeholder="Enter your full name"
-                            error={errors.fullName}
-                        />
-                        <Input
-                            keyboardType="numeric"
-                            onChangeText={text => handleOnchange(text, 'contactNo')}
-                            onFocus={() => handleError(null, 'contactNo')}
-                            iconName="phone-outline"
-                            label="Phone Number*"
-                            placeholder="Enter your contact no"
-                            error={errors.contactNo}
                         />
                         <View style={styles.textFieldSubContainer}>
                             <Text style={{ marginBottom: 10 }}>

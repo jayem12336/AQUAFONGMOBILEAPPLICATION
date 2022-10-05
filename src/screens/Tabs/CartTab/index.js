@@ -115,14 +115,15 @@ const CartTab = ({ navigation }) => {
                 </TouchableOpacity>
                 <View style={styles.producSubContainer}>
                     <View>
-                        <View style={{flexDirection: 'row', justifyContent:'space-between',marginBottom: 5}}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
                             <Text style={styles.productNameStyle}>
                                 {data.productName}
                             </Text>
-                            <TouchableOpacity style={styles.transactButton}>
-                                <Text style={styles.transactText}>
-                                    Transact
-                                </Text>
+                            <TouchableOpacity onPress={() => removeItemFromCart(data.id)}>
+                                <MaterialCommunityIcons
+                                    name="delete-outline"
+                                    style={styles.deleteIcon}
+                                />
                             </TouchableOpacity>
                         </View>
 
@@ -135,30 +136,6 @@ const CartTab = ({ navigation }) => {
                                 {data.productPrice + data.productPrice / 20})
                             </Text>
                         </View>
-                    </View>
-                    <View style={styles.productQuantityContainer}>
-                        <View style={styles.quantitySubContainer}>
-                            <View
-                                style={[styles.plusIconContainer, { marginRight: 20 }]}>
-                                <MaterialCommunityIcons
-                                    name="minus"
-                                    style={styles.iconStyle}
-                                />
-                            </View>
-                            <Text>1</Text>
-                            <View style={[styles.plusIconContainer, { marginLeft: 20 }]}>
-                                <MaterialCommunityIcons
-                                    name="plus"
-                                    style={styles.iconStyle}
-                                />
-                            </View>
-                        </View>
-                        <TouchableOpacity onPress={() => removeItemFromCart(data.id)}>
-                            <MaterialCommunityIcons
-                                name="delete-outline"
-                                style={styles.deleteIcon}
-                            />
-                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
@@ -282,7 +259,7 @@ const CartTab = ({ navigation }) => {
                     onPress={() => (total != 0 ? checkOut() : null)}
                     style={styles.buttonStyle}>
                     <Text style={styles.buttonText}>
-                        CHECKOUT (&#x20B1;{total + total / 20} )
+                        CHECKOUT ALL (&#x20B1;{total + total / 20} )
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -604,7 +581,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     transactText: {
-        color:COLOURS.white,
+        color: COLOURS.white,
         textTransform: 'uppercase',
         fontSize: 10
     }

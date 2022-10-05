@@ -38,11 +38,10 @@ const ProfileTab = ({ navigation }) => {
             itemArray = JSON.parse(itemArray);
             setUserData(itemArray);
             setUserID(itemArray.uid);
-            const unsub = onSnapshot(doc(db, "users", itemArray.uid), (doc) => {
+            onSnapshot(doc(db, "users", itemArray.uid), (doc) => {
                 console.log("Current data: ", doc.data());
                 setUserData(doc.data());
             })
-            console.log(unsub);
             setIsLoading(false);
         }
         fetchData().catch((error) => {
@@ -75,15 +74,23 @@ const ProfileTab = ({ navigation }) => {
                             </View>
                             : <>
                                 <View style={styles.userHeaderContainer}>
-                                    <Avatar.Image
-                                        source={require('../../../images/Jpeg/KoiFish.jpg')}
-                                        size={80}
-                                    />
-                                    <View style={{ marginLeft: 10 }}>
+                                    {
+                                        userData.photoURL === '' ?
+                                            <Avatar.Text
+                                                label={userData.fullname.substring(0,1)}
+                                                size={80}
+                                                style={{ color: COLOURS.white }}
+                                            /> :
+                                            <Avatar.Image
+                                                source={{ uri: userData.photoURL }}
+                                                size={80}
+                                            />
+                                    }
+                                    <View style={{ marginLeft: 10, maxWidth: 130 }}>
                                         <Title style={[styles.title, {
                                             marginTop: 15,
                                             marginBottom: 5,
-                                        }]}>{userData.username}</Title>
+                                        }]}>{userData.fullname}</Title>
                                     </View>
                                     <View style={styles.headerIconContainer}>
                                         <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
@@ -100,7 +107,7 @@ const ProfileTab = ({ navigation }) => {
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                                <View style={{marginTop: 20}}>
+                                <View style={{ marginTop: 20 }}>
                                     <View style={styles.row}>
                                         <Icon name="map-marker-radius" color={COLOURS.black} size={20} />
                                         <Text style={styles.userInformation}>{userData.address}</Text>
@@ -146,7 +153,9 @@ const ProfileTab = ({ navigation }) => {
                             : ''
                         }
                         {userData.hasShop === false ?
-                            <TouchableRipple onPress={() => navigation.navigate('BusinessRegistrationForm')}>
+                            <TouchableRipple onPress={() => navigation.navigate('BusinessRegistrationForm', {
+                                userData: userData
+                            })}>
                                 <View style={styles.menuItem}>
                                     <Icon name="cart" size={25} style={styles.iconColor} />
                                     <Text style={styles.menuItemText}>Start Business</Text>
@@ -166,10 +175,13 @@ const ProfileTab = ({ navigation }) => {
                                 <Text style={styles.menuItemText}>My Wallet</Text>
                             </View>
                         </TouchableRipple>
-                        <TouchableRipple>
+                        <TouchableRipple onPress={() => navigation.navigate('UpdateProfile', {
+                            userID: userID,
+                            userData: userData
+                        })}>
                             <View style={styles.menuItem}>
                                 <IonIcon name="settings-outline" style={styles.iconColor} size={25} />
-                                <Text style={styles.menuItemText}>Settings</Text>
+                                <Text style={styles.menuItemText}>Account Settings</Text>
                             </View>
                         </TouchableRipple>
                         <TouchableRipple>
@@ -205,7 +217,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLOURS.backgroundPrimary
     },
     title: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     caption: {
