@@ -6,140 +6,66 @@ import {
     TouchableOpacity,
     Image,
     ToastAndroid,
-    StyleSheet
+    StyleSheet,
+    ActivityIndicator
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Items, COLOURS } from '../../../utils/database/Database';
 import { Checkbox } from 'react-native-paper';
+import { db } from '../../../utils/firebase';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import RenderProduct from './RenderProduct/RenderProduct';
 
 
-const CartTab = ({ navigation }) => {
-
-    const [checked, setChecked] = React.useState(false);
+const CartTab = ({ navigation, route }) => {
+    const { userinfo } = route.params;
+    const [checked, setChecked] = useState(false);
     const [product, setProduct] = useState();
-    const [total, setTotal] = useState(null);
+    const [total, setTotal] = useState(0);
+
+    const [userData, setUserData] = useState({})
+    const [cartProducts, setCartProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            getDataFromDB();
-        });
+        const unsub = onSnapshot(doc(db, "users", userinfo), (doc) => {
+            setUserData(doc.data());
+        })
+        return unsub;
+    }, [navigation])
 
+    useEffect(() => {
+        setIsLoading(true);
+        const q = query(collection(db, "Mycart", userinfo, "CartOrder"), where("buyerID", "==", userinfo));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            const total = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+                total.push({
+                    priceTotal: doc.data().productPrice * doc.data().quantity,
+                })
+            });
+            setCartProducts(data);
+            getTotal(total)
+            setIsLoading(false);
+        });
         return unsubscribe;
     }, [navigation]);
 
-    //get data from local DB by ID
-    const getDataFromDB = async () => {
-        let items = await AsyncStorage.getItem('cartItems');
-        items = JSON.parse(items);
-        let productData = [];
-        if (items) {
-            Items.forEach(data => {
-                if (items.includes(data.id)) {
-                    productData.push(data);
-                    return;
-                }
-            });
-            setProduct(productData);
-            getTotal(productData);
-        } else {
-            setProduct(false);
-            getTotal(false);
-        }
-    };
-
     //get total price of all items in the cart
-    const getTotal = productData => {
+    const getTotal = data => {
         let total = 0;
-        for (let index = 0; index < productData.length; index++) {
-            let productPrice = productData[index].productPrice;
-            total = total + productPrice;
+        for (let index = 0; index < data.length; index++) {
+            let productPrice = data[index].priceTotal;
+            total += productPrice;
         }
         setTotal(total);
-    };
-
-    //remove data from Cart
-
-    const removeItemFromCart = async id => {
-        let itemArray = await AsyncStorage.getItem('cartItems');
-        itemArray = JSON.parse(itemArray);
-        if (itemArray) {
-            let array = itemArray;
-            for (let index = 0; index < array.length; index++) {
-                if (array[index] == id) {
-                    array.splice(index, 1);
-                }
-
-                await AsyncStorage.setItem('cartItems', JSON.stringify(array));
-                getDataFromDB();
-            }
-        }
-    };
-
-    //checkout
-
-    const checkOut = async () => {
-        try {
-            await AsyncStorage.removeItem('cartItems');
-        } catch (error) {
-            return error;
-        }
-
-        ToastAndroid.show('Items will be Deliverd SOON!', ToastAndroid.SHORT);
-
-        navigation.navigate('FeedTab');
-    };
-
-    const renderProducts = (data, index) => {
-        return (
-            <View
-                key={data.id}
-                style={styles.productRoot}>
-                <View style={{
-                    position: 'relative',
-                    paddingBottom: 68,
-                }}>
-                    <Checkbox
-                        status={checked ? 'checked' : 'unchecked'}
-                        onPress={() => {
-                            setChecked(!checked);
-                        }}
-                    />
-                </View>
-                <TouchableOpacity style={styles.productImageContainer} onPress={() => navigation.navigate('ProductInfo', { productID: data.id })}>
-                    <Image
-                        source={data.productImage}
-                        style={styles.productImageStyle}
-                    />
-                </TouchableOpacity>
-                <View style={styles.producSubContainer}>
-                    <View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-                            <Text style={styles.productNameStyle}>
-                                {data.productName}
-                            </Text>
-                            <TouchableOpacity onPress={() => removeItemFromCart(data.id)}>
-                                <MaterialCommunityIcons
-                                    name="delete-outline"
-                                    style={styles.deleteIcon}
-                                />
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={styles.productPriceStyle}>
-                            <Text style={styles.productPriceText}>
-                                &#x20B1;{data.productPrice}
-                            </Text>
-                            <Text>
-                                (&#x20B1;
-                                {data.productPrice + data.productPrice / 20})
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-        );
     };
 
     return (
@@ -172,7 +98,23 @@ const CartTab = ({ navigation }) => {
                     </Text>
                 </View>
                 <View style={{ paddingHorizontal: 16 }}>
-                    {product ? product.map(renderProducts) : null}
+                    {
+                        isLoading === true ?
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 }}>
+                                <ActivityIndicator size={60} color={COLOURS.backgroundPrimary} />
+                            </View> :
+                            <>
+                                {
+                                    cartProducts.map(({ data, id }) => (
+                                        <View
+                                            key={id}
+                                            style={styles.productRoot}>
+                                            <RenderProduct data={data} check={checked} userid={userData.ownerId} id={id} />
+                                        </View>
+                                    ))
+                                }
+                            </>
+                    }
                 </View>
                 <View>
                     <View style={{ paddingHorizontal: 16, marginVertical: 10 }}>
@@ -189,10 +131,10 @@ const CartTab = ({ navigation }) => {
                                 </View>
                                 <View>
                                     <Text style={styles.streetStyle}>
-                                        2 Conception Street
+                                        Address
                                     </Text>
                                     <Text style={styles.addressStyle}>
-                                        Bustos Bulacan
+                                        {userData.address}
                                     </Text>
                                 </View>
                             </View>
@@ -216,7 +158,7 @@ const CartTab = ({ navigation }) => {
                                         Gcash
                                     </Text>
                                     <Text style={styles.methodNumber}>
-                                        ******9092
+                                        {userData.phone}
                                     </Text>
                                 </View>
                             </View>
@@ -483,7 +425,7 @@ const styles = StyleSheet.create({
     buttonStyle: {
         width: '86%',
         height: '90%',
-        backgroundColor: COLOURS.blue,
+        backgroundColor: COLOURS.backgroundPrimary,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
@@ -585,5 +527,4 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         fontSize: 10
     }
-
 })

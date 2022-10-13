@@ -6,89 +6,150 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { COLOURS } from '../../../../utils/database/Database'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { addDoc, collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../../../../utils/firebase';
+import Loader from '../../../../components/Loader/Loader';
 
 const PurchaseScreen = ({ navigation, route }) => {
 
-  const {productID} = route.params;
+  const { productID, userinfo, quantity } = route.params;
+
+  const [buyerData, setBuyerData] = useState({});
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "users", userinfo), (doc) => {
+      setBuyerData(doc.data());
+    })
+    return unsub;
+  }, [navigation])
+
+  const placeOrder = () => {
+    Alert.alert(
+      "Notification",
+      "Are you sure you want to place order?",
+      [
+        {
+          text: "No",
+          onPress: () => {
+            setLoading(false);
+          },
+          style: "cancel"
+        },
+        {
+          text: "Yes", onPress: () => {
+            setLoading(true)
+            addDoc(collection(db, "Orders"), {
+              productName: productID.productName,
+              productPrice: productID.productPrice,
+              sellerID: productID.userID,
+              productDescription: productID.productDescription,
+              rating: productID.rating,
+              productImage: productID.productImage,
+              quantity: quantity,
+              buyerID: userinfo,
+              shopID: productID.shopID,
+              dateOrder: new Date().toISOString(),
+              status: "Ordered",
+            }).then(() => {
+              const cityRef = doc(db, 'feedproducts', productID.prodID);
+              setDoc(cityRef, { productQuantity: productID.productQuantity - quantity }, { merge: true })
+              .then(() => {
+                const docRef = doc(db, 'users', productID.userID, 'shop', productID.shopID, 'products', productID.parentProductID);
+                setDoc(docRef, { productQuantity: productID.productQuantity - quantity }, { merge: true })
+                navigation.navigate('PurchaseComplete')
+                setLoading(false)
+              });
+            })
+          }
+        }
+      ]
+    );
+  }
 
   return (
-    <View style={styles.root}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
-        <SafeAreaView>
-          <StatusBar
-            backgroundColor={COLOURS.white}
-            barStyle="dark-content"
-          />
-          <View style={styles.iconContainer}>
-            <TouchableOpacity>
-              <MaterialCommunityIcons
-                onPress={() => navigation.goBack()}
-                name="chevron-left"
-                style={styles.iconStyle}
-              />
+    <>
+      <View style={styles.root}>
+        <Loader visible={loading} />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <SafeAreaView>
+            <StatusBar
+              backgroundColor={COLOURS.white}
+              barStyle="dark-content"
+            />
+            <View style={styles.iconContainer}>
+              <TouchableOpacity>
+                <MaterialCommunityIcons
+                  onPress={() => navigation.goBack()}
+                  name="chevron-left"
+                  style={styles.iconStyle}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.headerContainer}>
+              <Text style={styles.textHeader}>
+                Purchase
+              </Text>
+            </View>
+            <View style={styles.shippingContainer}>
+              <Text style={styles.shippingTitle}>
+                Shipping Information
+              </Text>
+              <Text style={styles.shippingName}>
+                {buyerData.fullname}
+              </Text>
+              <Text style={styles.shippingNumber}>
+                {buyerData.phone}
+              </Text>
+              <Text style={styles.shippingAddress}>
+                {buyerData.address}
+              </Text>
+            </View>
+            <View style={styles.subContainer}>
+              <View style={{ height: '100%', justifyContent: 'center' }}>
+                <Image
+                  source={{ uri: productID.productImage }}
+                  alt="product name"
+                  style={styles.productImage}
+                />
+              </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoName}>
+                  {productID.productName}
+                </Text>
+                <Text style={styles.infoItem}>
+                  {quantity} Item
+                </Text>
+                <Text style={styles.infoPrice}>
+                  &#x20B1; {productID.productPrice}
+                </Text>
+              </View>
+            </View>
+          </SafeAreaView>
+        </ScrollView>
+        <View style={styles.footerContainer}>
+          <Text>
+            Total: &#x20B1; {quantity * productID.productPrice}
+          </Text>
+          <View style={styles.footerSubContainer}>
+            <TouchableOpacity
+              onPress={placeOrder}
+              style={styles.btnContainer}>
+              <Text style={styles.btnText}>
+                Place Order
+              </Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.headerContainer}>
-            <Text style={styles.textHeader}>
-              Purchase
-            </Text>
-          </View>
-          <View style={styles.shippingContainer}>
-            <Text style={styles.shippingTitle}>
-              Shipping Information
-            </Text>
-            <Text style={styles.shippingName}>
-              Maria Falcon
-            </Text>
-            <Text style={styles.shippingNumber}>
-              09876555367
-            </Text>
-            <Text style={styles.shippingAddress}>
-              San Miguel,Bulacan
-            </Text>
-          </View>
-          <View style={styles.subContainer}>
-            <View style={{ height: '100%' }}>
-              <Image
-                source={require('../../../../images/Jpeg/Corals.jpg')}
-                alt="product name"
-                style={styles.productImage}
-              />
-            </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoName}>
-                Gold Fish
-              </Text>
-              <Text style={styles.infoItem}>
-                1 Item
-              </Text>
-              <Text style={styles.infoPrice}>
-                &#x20B1; 380
-              </Text>
-            </View>
-          </View>
-        </SafeAreaView>
-      </ScrollView>
-      <View style={styles.footerContainer}>
-        <Text>
-          Total: &#x20B1; 380
-        </Text>
-        <View style={styles.footerSubContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('PurchaseComplete')}
-            style={styles.btnContainer}>
-            <Text style={styles.btnText}>
-              Place Order
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </>
   )
 }
 
@@ -97,7 +158,9 @@ export default PurchaseScreen
 const styles = StyleSheet.create({
   root: {
     backgroundColor: COLOURS.white,
-    height: '100%'
+    height: '100%',
+    flex: 1,
+    justifyContent: 'center',
   },
   iconContainer: {
     width: '100%',
@@ -176,8 +239,8 @@ const styles = StyleSheet.create({
   },
   productImage: {
     resizeMode: 'contain',
-    height: '100%',
-    maxWidth: 120,
+    height: 100,
+    width: 100,
     borderRadius: 20
   },
   infoContainer: {
@@ -218,7 +281,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: COLOURS.backgroundLight,
     width: '100%',
-    padding: 8,
+    padding: 10,
     borderRadius: 2
   },
   btnText: {

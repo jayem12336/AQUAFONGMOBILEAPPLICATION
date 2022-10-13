@@ -6,11 +6,12 @@ import React, { useEffect, useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Loader from '../../../../components/Loader/Loader';
 import { COLOURS } from '../../../../utils/database/Database';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db, storage } from '../../../../utils/firebase';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { auth, db, storage } from '../../../../utils/firebase';
 import Input from '../../../../components/Input/Input';
 import * as ImagePicker from 'expo-image-picker';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { updateEmail, updateProfile } from 'firebase/auth/react-native';
 
 const UpdateProfile = ({ navigation, route }) => {
 
@@ -48,7 +49,6 @@ const UpdateProfile = ({ navigation, route }) => {
                 [
                     {
                         text: "No",
-                        onPress: () => console.log("Cancel Pressed"),
                         style: "cancel"
                     },
                     {
@@ -59,8 +59,7 @@ const UpdateProfile = ({ navigation, route }) => {
                 ]
             );
         } else {
-            if (image !== null) {
-                setLoading(true);
+            if (image !== "") {
                 const blob = await new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
                     xhr.onload = function () {
@@ -109,9 +108,7 @@ const UpdateProfile = ({ navigation, route }) => {
                     },
                     () => {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            inputs.photoURL = downloadURL;
-                            setLoading(false)
-                            console.warn("success");
+                            setImage(downloadURL);
                         })
                     }
                 )
@@ -129,7 +126,30 @@ const UpdateProfile = ({ navigation, route }) => {
                     },
                     {
                         text: "Yes", onPress: async () => {
-
+                            setLoading(true);
+                            if (inputs.email !== userData.email) {
+                                updateEmail(auth.currentUser, inputs.email)
+                            }
+                            const cityRef = doc(db, "users", userData.ownerId);
+                            await setDoc(cityRef, {
+                                address: inputs.address,
+                                email: inputs.email,
+                                fullname: inputs.fullname,
+                                phone: inputs.phone,
+                                photoURL: image
+                            }, { merge: true }).then(async () => {
+                                if (userData.hasShop === true) {
+                                    const docRef = doc(db, "users", userData.ownerId, "shop", userData.shopID);
+                                    await setDoc(docRef, {
+                                        address: inputs.address,
+                                        email: inputs.email,
+                                        fullName: inputs.fullname,
+                                        phone: inputs.phone,
+                                    }, { merge: true })
+                                }
+                                Alert.alert("Successfully updated profile");
+                                navigation.navigate("ProfileTab");
+                            })
                         }
                     }
                 ]
@@ -152,7 +172,6 @@ const UpdateProfile = ({ navigation, route }) => {
             setImage(result.uri);
         }
 
-        console.log(result)
     };
 
     return (
@@ -265,7 +284,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                 height: 50,
                                 width: '100%',
                                 maxWidth: 150,
-                                backgroundColor: COLOURS.dirtyWhiteBackground,
+                                backgroundColor: COLOURS.backgroundPrimary,
                                 borderRadius: 5,
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -276,7 +295,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                     fontSize: 14,
                                     fontWeight: '500',
                                     letterSpacing: 1,
-                                    color: COLOURS.black,
+                                    color: COLOURS.white,
                                     textTransform: 'uppercase',
                                     alignItems: 'center',
                                     justifyContent: 'center'
@@ -311,9 +330,9 @@ const styles = StyleSheet.create({
     },
     backIconStyle: {
         fontSize: 20,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.white,
         padding: 12,
-        backgroundColor: COLOURS.backgroundLight,
+        backgroundColor: COLOURS.backgroundPrimary,
         borderRadius: 12,
     },
     myShopText: {

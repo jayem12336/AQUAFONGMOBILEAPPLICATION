@@ -9,7 +9,6 @@ const Items = ({ data, userID, shopID, productID }) => {
 
     const navigation = useNavigation();
 
-    console.log(productID)
     const showAlert = (e) => {
         e.preventDefault();
         Alert.alert(

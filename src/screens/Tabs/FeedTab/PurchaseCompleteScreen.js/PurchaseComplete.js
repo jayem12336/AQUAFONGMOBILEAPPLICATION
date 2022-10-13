@@ -13,7 +13,7 @@ import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLOURS } from '../../../../utils/database/Database';
 
-const windowHeight = Dimensions.get('window').height - 150;
+const windowHeight = Dimensions.get('window').height - 80;
 
 const PurchaseCompleteScreen = ({ navigation }) => {
     return (
@@ -25,13 +25,13 @@ const PurchaseCompleteScreen = ({ navigation }) => {
                         barStyle="dark-content"
                     />
                     <View style={styles.backIconContainer}>
-                        <TouchableOpacity>
+                        {/* <TouchableOpacity>
                             <MaterialCommunityIcons
                                 onPress={() => navigation.goBack()}
                                 name="chevron-left"
                                 style={styles.backIconStyle}
                             />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                     <View style={styles.subContainer}>
                         <View style={styles.successContainer}>
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         color: COLOURS.black,
         textTransform: 'uppercase',
+        fontWeight: 'bold'
     },
     backIconContainer: {
         width: '100%',

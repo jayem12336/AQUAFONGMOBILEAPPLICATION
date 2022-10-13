@@ -28,13 +28,13 @@ const CreateProduct = ({ navigation, route }) => {
 
   const [inputs, setInputs] = useState({
     productName: '',
-    rating: '',
+    rating: 0,
     productImage: '',
-    productPrice: '',
+    productPrice: 0,
     productDescription: '',
     shopID: '',
     userID: '',
-    productQuantity: '',
+    productQuantity: 0,
   })
 
   const [image, setImage] = useState(null);
@@ -139,11 +139,11 @@ const CreateProduct = ({ navigation, route }) => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           addDoc(collection(db, "feedproducts"), {
             productName: inputs.productName,
-            productPrice: inputs.productPrice,
+            productPrice: Number(inputs.productPrice),
             productDescription: inputs.productDescription,
             rating: inputs.rating,
             productImage: downloadURL,
-            productQuantity: inputs.productQuantity,
+            productQuantity: Number(inputs.productQuantity),
             userID: userID,
             shopID: shopID,
             dateCreated: new Date().toISOString()
@@ -153,9 +153,9 @@ const CreateProduct = ({ navigation, route }) => {
             setParentProdID(docRef.id)
             addDoc(collection(db, "users", userID, "shop", shopID, "products"), {
               productName: inputs.productName,
-              productPrice: inputs.productPrice,
+              productPrice: Number(inputs.productPrice),
               productDescription: inputs.productDescription,
-              productQuantity: inputs.productQuantity,
+              productQuantity: Number(inputs.productQuantity),
               rating: inputs.rating,
               productImage: downloadURL,
               prodID: docRef.id,
@@ -175,7 +175,6 @@ const CreateProduct = ({ navigation, route }) => {
     )
   }
 
-  console.log(parentProdID)
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -210,7 +209,10 @@ const CreateProduct = ({ navigation, route }) => {
               <View style={{ flexDirection: 'row', }}>
                 <TouchableOpacity>
                   <MaterialCommunityIcons
-                    onPress={() => navigation.navigate('MyShop')}
+                    onPress={() => navigation.navigate('MyProducts', {
+                      userID: userID,
+                      shopID: shopID,
+                    })}
                     name="chevron-left"
                     style={styles.backIconStyle}
                   />

@@ -145,16 +145,16 @@ const EditProduct = ({ navigation, route }) => {
               const cityRef = doc(db, "users", userID, "shop", shopID, "products", productID);
               await setDoc(cityRef, {
                 productName: inputs.productName,
-                productPrice: inputs.productPrice,
+                productPrice: Number(inputs.productPrice),
                 productImage: inputs.productImage,
-                productQuantity: inputs.productQuantity
+                productQuantity: Number(inputs.productQuantity)
               }, { merge: true }).then(async () => {
                 const docRef = doc(db, "feedproducts", productData.prodID);
                 await setDoc(docRef, {
                   productName: inputs.productName,
-                  productPrice: inputs.productPrice,
+                  productPrice: Number(inputs.productPrice),
                   productImage: inputs.productImage,
-                  productQuantity: inputs.productQuantity
+                  productQuantity: Number(inputs.productQuantity)
                 }, { merge: true }).then(() => {
                   navigation.navigate("MyProducts", {
                     userinfo: userID,
@@ -184,8 +184,6 @@ const EditProduct = ({ navigation, route }) => {
     if (!result.cancelled) {
       setImage(result.uri);
     }
-
-    console.log(result)
   };
 
   return (
@@ -203,7 +201,10 @@ const EditProduct = ({ navigation, route }) => {
               <View style={{ flexDirection: 'row', }}>
                 <TouchableOpacity>
                   <MaterialCommunityIcons
-                    onPress={() => navigation.navigate('MyShop')}
+                    onPress={() => navigation.navigate('MyProducts', {
+                      userID: userID,
+                      shopID: shopID,
+                    })}
                     name="chevron-left"
                     style={styles.backIconStyle}
                   />

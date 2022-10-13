@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
     },
     backIconStyle: {
         fontSize: 20,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.white,
         padding: 12,
-        backgroundColor: COLOURS.backgroundLight,
+        backgroundColor: COLOURS.backgroundPrimary,
         borderRadius: 12,
     },
     orderContainer: {

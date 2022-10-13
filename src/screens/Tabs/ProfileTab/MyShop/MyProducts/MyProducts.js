@@ -51,8 +51,6 @@ const MyProducts = ({ navigation, route }) => {
         return unsubscribe;
     }, [navigation])
 
-    console.log(productData)
-
     const FirstRoute = () => (
         <ScrollView contentContainerStyle={{
             paddingBottom: 60
@@ -80,8 +78,6 @@ const MyProducts = ({ navigation, route }) => {
         first: FirstRoute,
         second: SecondRoute,
     });
-
-    console.log(productData)
 
     const [index, setIndex] = useState(0);
     const [routes] = useState([

@@ -212,10 +212,16 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="NewProductInfo"
                             component={NewProductInfo}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="Purchase"
                             component={PurchaseScreen}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="PurchaseComplete"
@@ -274,6 +280,9 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="CartTab"
                             component={CartTab}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="RegisterSuccess"

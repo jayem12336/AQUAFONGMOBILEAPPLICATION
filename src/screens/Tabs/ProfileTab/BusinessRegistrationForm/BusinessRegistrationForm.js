@@ -69,7 +69,6 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
             setImage(result.uri);
         }
 
-        console.log(result)
     };
 
     const validate = () => {
@@ -158,7 +157,6 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                     }).then((docRef) => {
                         const cityRef = doc(db, 'users', userinfo);
                         setDoc(cityRef, { hasShop: true, shopID: docRef.id }, { merge: true });
-                        console.log("Document written with ID: ", docRef.id);
                         setInputs({});
                         setSelected('');
                         setImage(null);
@@ -167,15 +165,12 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                             userID: userinfo
                         });
                         Alert.alert("Success");
-                        console.log(downloadURL);
                         setLoading(false);
                     })
                 })
             }
         )
     }
-
-    console.log(userinfo);
 
     const handleOnchange = (text, input) => {
         setInputs(prevState => ({ ...prevState, [input]: text }));
@@ -235,7 +230,14 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                             {
                                 selected ?
                                     <View style={styles.btnValidIDContainer}>
-                                        <Button title="Insert Valid ID" onPress={pickImage} />
+                                        <TouchableOpacity
+                                            style={styles.buttonStyle}
+                                            onPress={pickImage}
+                                        >
+                                            <Text style={styles.buttonText}>
+                                                Insert Valid ID
+                                            </Text>
+                                        </TouchableOpacity>
                                     </View> : ""
 
                             }
@@ -248,12 +250,16 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                         </View>
                     </View>
                     <View style={styles.btnContainer}>
-                        <View style={styles.btnSubContainer}>
-                            <View style={styles.btnSubmitContainer}>
-                                <Button title="Submit" onPress={validate} />
-                            </View>
-                        </View>
+                        <TouchableOpacity
+                            style={styles.buttonStyle}
+                            onPress={validate}
+                        >
+                            <Text style={styles.buttonText}>
+                                Submit
+                            </Text>
+                        </TouchableOpacity>
                     </View>
+
                 </SafeAreaView>
             </ScrollView>
         </View>
@@ -321,7 +327,8 @@ const styles = StyleSheet.create({
     },
     btnValidIDContainer: {
         marginTop: 20,
-        width: 150
+        width: 150,
+        height: 50
     },
     imageContainer: {
         width: '100%',
@@ -339,7 +346,8 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 20
+        padding: 20,
+        height: 100
     },
     btnSubContainer: {
         width: '100%',
@@ -352,5 +360,20 @@ const styles = StyleSheet.create({
     btnSubmitContainer: {
         marginTop: 20,
         width: 200,
-    }
+    },
+    buttonStyle: {
+        width: '86%',
+        height: '90%',
+        backgroundColor: COLOURS.backgroundPrimary,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontSize: 12,
+        fontWeight: '500',
+        letterSpacing: 1,
+        color: COLOURS.white,
+        textTransform: 'uppercase',
+    },
 })

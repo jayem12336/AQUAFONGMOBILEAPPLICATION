@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Loader from '../../../../components/Loader/Loader';
 import { COLOURS } from '../../../../utils/database/Database';
@@ -6,28 +6,78 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Rating } from 'react-native-ratings';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../../utils/firebase';
 
 const NewProductInfo = ({ navigation, route }) => {
 
-    const { productID } = route.params;
+    const { productID, userinfo } = route.params;
 
     const [loading, setLoading] = useState(false);
     const [buyNowButton, setBuyNowButton] = useState(false);
+    const [addToCart, setAddToCart] = useState(false);
 
     const [quantity, setQuantity] = useState(1);
     const [total, setTotal] = useState();
 
     const [productInfo, setProductInfo] = useState({});
+    const [buyerData, setBuyerData] = useState({});
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "feedproducts", productID), (doc) => {
-            console.log("Current data: ", doc.data());
             setProductInfo(doc.data());
         })
         return unsub;
     }, [navigation])
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, "users", userinfo), (doc) => {
+            setBuyerData(doc.data());
+        })
+        return unsub;
+    }, [navigation])
+
+    const addToCartBtn = () => {
+        Alert.alert(
+            "Notification",
+            "Add to cart?",
+            [
+                {
+                    text: "No",
+                    onPress: () => {
+                        setLoading(false);
+                    },
+                    style: "cancel"
+                },
+                {
+                    text: "Yes", onPress: () => {
+                        setLoading(true);
+                        addDoc(collection(db, "Mycart", userinfo, 'CartOrder'), {
+                            buyerID: userinfo,
+                            shopID: productInfo.shopID,
+                            sellerID: productInfo.userID,
+                            prodID: productInfo.prodID,
+                            parentProdID: productInfo.parentProductID,
+                            productName: productInfo.productName,
+                            productPrice: productInfo.productPrice,
+                            productDescription: productInfo.productDescription,
+                            productImage: productInfo.productImage,
+                            rating: productInfo.rating,
+                            quantity: quantity,
+                        }).then(() => {
+                            setLoading(false);
+                            Alert.alert('Successfully added to cart')
+                            navigation.navigate('Home')
+                            setBuyNowButton(false)
+                            setAddToCart(false)
+                            setQuantity(1)
+                        });
+                    }
+                }
+            ]
+        );
+
+    }
 
     return (
         <View style={styles.root}>
@@ -156,7 +206,10 @@ const NewProductInfo = ({ navigation, route }) => {
                                     <TouchableOpacity>
                                         <Ionicons name="mail-outline" style={styles.shoppingBagIcon} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={() => {
+                                        setBuyNowButton(true)
+                                        setAddToCart(true)
+                                    }}>
                                         <MaterialCommunityIcons name="cart" style={styles.shoppingBagIcon} />
                                     </TouchableOpacity>
                                 </View>
@@ -176,17 +229,29 @@ const NewProductInfo = ({ navigation, route }) => {
                     <View style={styles.footerContainer}>
                         <View style={styles.buyNowContainer2}>
                             <View style={styles.buyNowSubContainer2}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        navigation.navigate('Purchase', { productID: productInfo }),
-                                        setBuyNowButton(false)
-                                    }}
-                                    style={styles.buyBtnContainer}
-                                >
-                                    <Text style={styles.buyBtnText}>
-                                        Buy now &#x20B1; {productInfo.productPrice * quantity}
-                                    </Text>
-                                </TouchableOpacity>
+                                {
+                                    addToCart === false ?
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                navigation.navigate('Purchase', { productID: productInfo, quantity: quantity }),
+                                                setBuyNowButton(false)
+                                                setQuantity(1)
+                                            }}
+                                            style={styles.buyBtnContainer}
+                                        >
+                                            <Text style={styles.buyBtnText}>
+                                                Buy now &#x20B1; {productInfo.productPrice * quantity}
+                                            </Text>
+                                        </TouchableOpacity> :
+                                        <TouchableOpacity
+                                            onPress={addToCartBtn}
+                                            style={styles.buyBtnContainer}
+                                        >
+                                            <Text style={styles.buyBtnText}>
+                                                Add to Cart &#x20B1; {productInfo.productPrice * quantity}
+                                            </Text>
+                                        </TouchableOpacity>
+                                }
                             </View>
                         </View>
                     </View>
