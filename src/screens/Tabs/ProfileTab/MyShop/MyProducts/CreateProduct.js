@@ -24,7 +24,7 @@ import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 const CreateProduct = ({ navigation, route }) => {
 
-  const { userID, shopID } = route.params;
+  const { userID, shopID, shopDetails } = route.params;
 
   const [inputs, setInputs] = useState({
     productName: '',
@@ -165,6 +165,7 @@ const CreateProduct = ({ navigation, route }) => {
               navigation.navigate("MyProducts", {
                 userinfo: userID,
                 shopID: shopID,
+                shopDetails: shopDetails
               });
               Alert.alert("Successfully create a product");
               setLoading(false);

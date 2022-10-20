@@ -3,10 +3,10 @@ import React, { useState } from 'react'
 import { Checkbox } from 'react-native-paper';
 import { COLOURS } from '../../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../utils/firebase';
 
-const RenderProduct = ({ data, navigation, check, userid, id }) => {
+const RenderProduct = ({ data, navigation, check, userid, id, userinfo }) => {
 
   const [checked, setChecked] = useState(false);
 
@@ -29,9 +29,16 @@ const RenderProduct = ({ data, navigation, check, userid, id }) => {
     );
   }
 
-  const onChecked = () => {
+
+  const onChecked = async (id) => {
     setChecked(!checked);
+    const cityRef = doc(db, "Mycart", userinfo, "CartOrder", id);
+    await setDoc(cityRef, {
+      checked: checked
+    }, { merge: true })
   }
+
+
 
   return (
     <>
@@ -40,8 +47,8 @@ const RenderProduct = ({ data, navigation, check, userid, id }) => {
         paddingBottom: 68,
       }}>
         <Checkbox
-          status={checked === true || check === true ? 'checked' : 'unchecked'}
-          onPress={onChecked}
+          status={data.checked === true ? 'checked' : 'unchecked'}
+          onPress={() => onChecked(id)}
         />
       </View>
       <TouchableOpacity style={styles.productImageContainer}>

@@ -32,7 +32,8 @@ const SignUp = () => {
         email: '',
         phone: '',
         password: '',
-        fullname: '',
+        firstName: '',
+        lastName: '',
         address: '',
         confirmPassword: ''
     });
@@ -80,8 +81,13 @@ const SignUp = () => {
             isValid = false;
         }
 
-        if (!inputs.fullname) {
-            handleError('Please input fullname', 'fullname');
+        if (!inputs.firstName) {
+            handleError('Please input first name', 'firstName');
+            isValid = false;
+        }
+
+        if (!inputs.lastName) {
+            handleError('Please input last name', 'lastName');
             isValid = false;
         }
 
@@ -143,7 +149,9 @@ const SignUp = () => {
                 const user = userCredential.user;
                 setDoc(doc(db, 'users', user.uid),
                     {
-                        fullname: inputs.fullname,
+                        firstname: inputs.firstName,
+                        lastname: inputs.lastName,
+                        fullname: inputs.firstName + " " + inputs.lastName,
                         email: inputs.email,
                         address: inputs.address,
                         phone: inputs.phone,
@@ -209,12 +217,20 @@ const SignUp = () => {
                         error={errors.email}
                     />
                     <Input
-                        onChangeText={text => handleOnchange(text, 'fullname')}
-                        onFocus={() => handleError(null, 'fullname')}
+                        onChangeText={text => handleOnchange(text, 'firstName')}
+                        onFocus={() => handleError(null, 'firstName')}
                         iconName="account-outline"
-                        label="Fullname"
-                        placeholder="Enter your fullname"
-                        error={errors.fullname}
+                        label="First Name"
+                        placeholder="Enter your first name"
+                        error={errors.firstName}
+                    />
+                    <Input
+                        onChangeText={text => handleOnchange(text, 'lastName')}
+                        onFocus={() => handleError(null, 'lastName')}
+                        iconName="account-outline"
+                        label="Last name"
+                        placeholder="Enter your last name"
+                        error={errors.lastName}
                     />
                     <Input
                         keyboardType="numeric"

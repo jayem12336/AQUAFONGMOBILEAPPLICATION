@@ -43,6 +43,11 @@ import CreateProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/CreatePr
 import EditProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/EditProduct';
 import NewProductInfo from '../screens/Tabs/FeedTab/NewProductInfo/NewProductInfo';
 import UpdateProfile from '../screens/Tabs/ProfileTab/AccountSetting/UpdateProfile';
+import Ordered from '../screens/Tabs/ProfileTab/MyShop/Ordered';
+import OrderHistory from '../screens/Tabs/ProfileTab/MyShop/MyProducts/OrderHistory/OrderHistory';
+import CancelledOrder from '../screens/Tabs/ProfileTab/MyShop/CancelledOrder';
+import OrderDetails from '../screens/Tabs/ProfileTab/MyShop/MyProducts/OrderHistory/OrderDetails';
+import About from '../screens/Tabs/ProfileTab/About/About';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -236,6 +241,10 @@ const Navigation = ({ navigation }) => {
                             component={Message}
                         />
                         <Stack.Screen
+                            name="About"
+                            component={About}
+                        />
+                        <Stack.Screen
                             name="BusinessRegistrationForm"
                             component={BusinessRegistrationForm}
                             initialParams={{
@@ -253,6 +262,31 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="MyShop"
                             component={MyShop}
+                        />
+                        <Stack.Screen
+                            name="Ordered"
+                            component={Ordered}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="OrderDetails"
+                            component={OrderDetails}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="OrderHistory"
+                            component={OrderHistory}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="CancelledOrder"
+                            component={CancelledOrder}
                         />
                         <Stack.Screen
                             name="MyProducts"

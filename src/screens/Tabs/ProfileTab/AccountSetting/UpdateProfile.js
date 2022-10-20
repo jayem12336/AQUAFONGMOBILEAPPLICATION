@@ -25,6 +25,8 @@ const UpdateProfile = ({ navigation, route }) => {
     const [inputs, setInputs] = useState({
         address: userData.address,
         email: userData.email,
+        firstName: userData.firstname,
+        lastName: userData.lastname,
         fullname: userData.fullname,
         phone: userData.phone,
         photoURL: userData.photoURL,
@@ -134,7 +136,9 @@ const UpdateProfile = ({ navigation, route }) => {
                             await setDoc(cityRef, {
                                 address: inputs.address,
                                 email: inputs.email,
-                                fullname: inputs.fullname,
+                                fullname: inputs.firstName + " " + inputs.lastName,
+                                firstname: inputs.firstName,
+                                lastname: inputs.lastName,
                                 phone: inputs.phone,
                                 photoURL: image
                             }, { merge: true }).then(async () => {
@@ -143,10 +147,13 @@ const UpdateProfile = ({ navigation, route }) => {
                                     await setDoc(docRef, {
                                         address: inputs.address,
                                         email: inputs.email,
-                                        fullName: inputs.fullname,
+                                        firstname: inputs.firstName,
+                                        lastname: inputs.lastName,
+                                        fullName: inputs.firstName + " " + inputs.lastName,
                                         phone: inputs.phone,
                                     }, { merge: true })
                                 }
+                                setLoading(false);
                                 Alert.alert("Successfully updated profile");
                                 navigation.navigate("ProfileTab");
                             })
@@ -254,11 +261,18 @@ const UpdateProfile = ({ navigation, route }) => {
                                 error={errors.productName}
                             />
                             <Input
-                                onChangeText={text => handleOnchange(text, 'fullname')}
-                                onFocus={() => handleError(null, 'fullname')}
-                                label="New Fullname"
-                                placeholder="Enter new fullname"
-                                error={errors.fullname}
+                                onChangeText={text => handleOnchange(text, 'firstName')}
+                                onFocus={() => handleError(null, 'firstName')}
+                                label="New first name"
+                                placeholder="Enter new first name"
+                                error={errors.firstName}
+                            />
+                            <Input
+                                onChangeText={text => handleOnchange(text, 'lastName')}
+                                onFocus={() => handleError(null, 'lastName')}
+                                label="New last name"
+                                placeholder="Enter new last name"
+                                error={errors.lastName}
                             />
                             <Input
                                 keyboardType="numeric"

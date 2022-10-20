@@ -56,6 +56,8 @@ const PurchaseScreen = ({ navigation, route }) => {
               quantity: quantity,
               buyerID: userinfo,
               shopID: productID.shopID,
+              prodID: productID.prodID,
+              parentProdID: productID.parentProdID,
               dateOrder: new Date().toISOString(),
               status: "Ordered",
             }).then(() => {

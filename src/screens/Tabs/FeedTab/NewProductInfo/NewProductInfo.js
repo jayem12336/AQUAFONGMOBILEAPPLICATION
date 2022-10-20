@@ -64,6 +64,7 @@ const NewProductInfo = ({ navigation, route }) => {
                             productImage: productInfo.productImage,
                             rating: productInfo.rating,
                             quantity: quantity,
+                            checked: false,
                         }).then(() => {
                             setLoading(false);
                             Alert.alert('Successfully added to cart')

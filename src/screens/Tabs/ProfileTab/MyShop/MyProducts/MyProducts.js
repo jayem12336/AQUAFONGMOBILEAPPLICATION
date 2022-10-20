@@ -28,7 +28,7 @@ const initialLayout = { width: Dimensions.get('window').width };
 
 const MyProducts = ({ navigation, route }) => {
 
-    const { userinfo, shopID } = route.params;
+    const { userinfo, shopID, shopDetails } = route.params;
 
     const [productData, setProductData] = useState([]);
 
@@ -55,17 +55,25 @@ const MyProducts = ({ navigation, route }) => {
         <ScrollView contentContainerStyle={{
             paddingBottom: 60
         }}>
-            {isLoading ?
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
-                    <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
-                </View>
-                : <>
-                    {productData.map(({ data, id }) => (
-                        <View key={id}>
-                            <ItemsComponent data={data} userID={userinfo} shopID={shopID} productID={id}/>
-                        </View>
-                    ))}
-                </>
+            {
+                shopDetails.isShopVerified === false ?
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                        <Text>Please wait for your shop to be verified</Text>
+                    </View> :
+                    <>
+                        {isLoading ?
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                            </View>
+                            : <>
+                                {productData.map(({ data, id }) => (
+                                    <View key={id}>
+                                        <ItemsComponent data={data} userID={userinfo} shopID={shopID} productID={id} />
+                                    </View>
+                                ))}
+                            </>
+                        }
+                    </>
             }
         </ScrollView>
     );
@@ -137,14 +145,33 @@ const MyProducts = ({ navigation, route }) => {
             {
                 index === 0 ?
                     <View style={styles.footerContainer}>
-                        <TouchableOpacity style={styles.btnContainer} onPress={() => navigation.navigate('CreateProduct', {
-                            userID: userinfo,
-                            shopID: shopID
-                        })}>
-                            <Text style={styles.btnText}>
-                                Add items
-                            </Text>
-                        </TouchableOpacity>
+                        {
+                            shopDetails.isShopVerified === false ?
+                                <TouchableOpacity
+                                    style={styles.btnContainer1}
+                                    onPress={() => navigation.navigate('CreateProduct', {
+                                        userID: userinfo,
+                                        shopID: shopID
+                                    })}
+                                    disabled
+                                >
+                                    <Text style={styles.btnText}>
+                                        Add items
+                                    </Text>
+                                </TouchableOpacity> :
+                                <TouchableOpacity
+                                    style={styles.btnContainer}
+                                    onPress={() => navigation.navigate('CreateProduct', {
+                                        userID: userinfo,
+                                        shopID: shopID,
+                                        shopDetails: shopDetails
+                                    })}
+                                >
+                                    <Text style={styles.btnText}>
+                                        Add items
+                                    </Text>
+                                </TouchableOpacity>
+                        }
                     </View> : ""
             }
         </View>
@@ -225,6 +252,13 @@ const styles = StyleSheet.create({
         backgroundColor: COLOURS.dirtyWhiteBackground
     },
     btnContainer: {
+        alignSelf: 'center',
+        backgroundColor: COLOURS.backgroundPrimary,
+        width: '100%',
+        padding: 15,
+        borderRadius: 2
+    },
+    btnContainer1: {
         alignSelf: 'center',
         backgroundColor: COLOURS.backgroundLight,
         width: '100%',

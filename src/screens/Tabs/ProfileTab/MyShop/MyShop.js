@@ -8,30 +8,47 @@ import {
   View,
   Dimensions,
   Image,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { COLOURS } from '../../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import { TouchableRipple } from 'react-native-paper';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../../utils/firebase';
 
 const MyShop = ({ navigation, route }) => {
 
-  const {shopID, userID} = route.params;
+  const { shopID, userID } = route.params;
 
   const [shopDetails, setShopDetails] = useState({});
+
+  const [orderCount, setOrderCount] = useState();
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "users", userID, "shop", shopID), (doc) => {
       console.log("Current data: ", doc.data());
       setShopDetails(doc.data());
     })
-
     return unsub;
   }, [navigation])
-  
+
+  useEffect(() => {
+    const q = query(collection(db, "Orders"), where("sellerID", "==", userID), where("status", "==", "Ordered"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+            data.push({
+                id: doc.id,
+                data: doc.data()
+            })
+        });
+        setOrderCount(data.length);
+    });
+    return unsubscribe;
+}, [navigation])
+
 
   console.log(shopID);
   console.log(userID);
@@ -89,7 +106,7 @@ const MyShop = ({ navigation, route }) => {
                 {shopDetails.businessName}
               </Text>
               <Text>
-              {shopDetails.shopLocation}
+                {shopDetails.shopLocation}
               </Text>
             </View>
           </View>
@@ -98,37 +115,44 @@ const MyShop = ({ navigation, route }) => {
               Item Status
             </Text>
             <View style={styles.itemStatusContainer}>
-              <View style={styles.toShopContainer}>
-                <Text>
-                  0
-                </Text>
-                <Text style={{ marginTop: 5 }}>
-                  To Ship
-                </Text>
-              </View>
-              <View style={styles.toShopContainer}>
-                <Text>
-                  0
-                </Text>
-                <Text style={{ marginTop: 5 }}>
-                  Cancelled
-                </Text>
-              </View>
-              <View style={styles.purchaseContainer}>
-                <MaterialCommunityIcons
-                  name="account-supervisor"
-                  style={{ fontSize: 35 }}
-                />
-                <Text style={{ textAlign: 'center' }}>
-                  Order History
-                </Text>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('Ordered')}>
+                <View style={styles.toShopContainer}>
+                  <Text>
+                    {orderCount}
+                  </Text>
+                  <Text style={{ marginTop: 5 }}>
+                    Ordered
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('CancelledOrder')}>
+                <View style={styles.toShopContainer}>
+                  <Text>
+                    0
+                  </Text>
+                  <Text style={{ marginTop: 5 }}>
+                    Cancelled
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('OrderHistory')}>
+                <View style={styles.purchaseContainer}>
+                  <MaterialCommunityIcons
+                    name="account-supervisor"
+                    style={{ fontSize: 35 }}
+                  />
+                  <Text style={{ textAlign: 'center' }}>
+                    Order History
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.footerSection}>
             <View style={styles.linkItem}>
               <TouchableOpacity onPress={() => navigation.navigate('MyProducts', {
-                shopID: shopID
+                shopID: shopID,
+                shopDetails: shopDetails
               })}>
                 <View style={styles.menuItem}>
                   <MaterialCommunityIcons name="shopping" color="black" size={25} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -7,7 +7,9 @@ import {
     Image,
     ToastAndroid,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert,
+    BackHandler
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,19 +17,49 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Items, COLOURS } from '../../../utils/database/Database';
 import { Checkbox } from 'react-native-paper';
 import { db } from '../../../utils/firebase';
-import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import RenderProduct from './RenderProduct/RenderProduct';
+import { async } from '@firebase/util';
+import Loader from '../../../components/Loader/Loader';
+import { useFocusEffect } from '@react-navigation/native';
+import SelectDropdown from 'react-native-select-dropdown';
 
-
+const countries = ["Gcash", "Cash on Delivery"]
 const CartTab = ({ navigation, route }) => {
     const { userinfo } = route.params;
+
     const [checked, setChecked] = useState(false);
+
     const [product, setProduct] = useState();
     const [total, setTotal] = useState(0);
 
     const [userData, setUserData] = useState({})
     const [cartProducts, setCartProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     const [isLoading, setIsLoading] = useState(false);
+
+    const [handlePaymentMethod, setHandlePaymentMethod] = useState('');
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                // Do Whatever you want to do on back button click
+                // Return true to stop default back navigaton
+                // Return false to keep default back navigaton
+                return true;
+            };
+
+            BackHandler.addEventListener(
+                'hardwareBackPress', onBackPress
+            );
+
+            return () =>
+                BackHandler.removeEventListener(
+                    'hardwareBackPress', onBackPress
+                );
+        }, [])
+    );
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "users", userinfo), (doc) => {
@@ -50,13 +82,90 @@ const CartTab = ({ navigation, route }) => {
                 total.push({
                     priceTotal: doc.data().productPrice * doc.data().quantity,
                 })
+                if (doc.data().checked === false) {
+                    setChecked(false)
+                }
             });
             setCartProducts(data);
-            getTotal(total)
             setIsLoading(false);
         });
         return unsubscribe;
     }, [navigation]);
+
+    const [dataState, setDataState] = useState([]);
+    useEffect(() => {
+        const q = query(collection(db, "Mycart", userinfo, "CartOrder"), where("checked", "==", true));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            const total = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+                total.push({
+                    priceTotal: doc.data().productPrice * doc.data().quantity,
+                })
+            });
+            setDataState(data);
+            getTotal(total)
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+    const [productDataID, setProductDataID] = useState();
+
+    const checkOutFunc = async () => {
+        if (dataState.length === 0) {
+            Alert.alert("Please select any product in the cart to proceed!")
+        }else if(handlePaymentMethod === ''){
+            Alert.alert("Please select payment method to proceed!")
+        }else {
+            setLoading(true)
+            for (let index = 0; index < dataState.length; index++) {
+                await addDoc(collection(db, "Orders"), {
+                    productName: dataState[index].data.productName,
+                    productPrice: dataState[index].data.productPrice,
+                    sellerID: dataState[index].data.sellerID,
+                    productDescription: dataState[index].data.productDescription,
+                    rating: dataState[index].data.rating,
+                    productImage: dataState[index].data.productImage,
+                    quantity: dataState[index].data.quantity,
+                    buyerID: userinfo,
+                    shopID: dataState[index].data.shopID,
+                    prodID: dataState[index].data.prodID,
+                    parentProdID: dataState[index].data.parentProdID,
+                    dateOrder: new Date().toISOString(),
+                    paymentMethod: handlePaymentMethod,
+                    status: "Ordered",
+                }).then(async () => {
+                    const docRef = doc(db, 'feedproducts', dataState[index].data.prodID)
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const feedData = Object.assign({}, docSnap.data());
+                        setDoc(docRef, { productQuantity: feedData.productQuantity - dataState[index].data.quantity }, { merge: true })
+                            .then(() => {
+                                const shopRef = doc(db, 'users', dataState[index].data.sellerID, 'shop', dataState[index].data.shopID, 'products', dataState[index].data.parentProdID);
+                                setDoc(shopRef, { productQuantity: feedData.productQuantity - dataState[index].data.quantity }, { merge: true })
+                            })
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                    }
+                })
+
+            }
+            cartProducts.forEach(async ({ id }) => {
+                const cityRef = doc(db, "Mycart", userinfo, "CartOrder", id);
+                await setDoc(cityRef, {
+                    checked: false
+                }, { merge: true })
+            })
+            setLoading(false)
+            Alert.alert("Success")
+            navigation.navigate('Home')
+        }
+    }
 
     //get total price of all items in the cart
     const getTotal = data => {
@@ -68,11 +177,48 @@ const CartTab = ({ navigation, route }) => {
         setTotal(total);
     };
 
+    const onChecked = async () => {
+        cartProducts.forEach(async ({ id }) => {
+            const cityRef = doc(db, "Mycart", userinfo, "CartOrder", id);
+            await setDoc(cityRef, {
+                checked: !checked
+            }, { merge: true })
+            setChecked(!checked)
+        })
+    }
+
+    const backbtn = () => {
+        cartProducts.forEach(async ({ id }) => {
+            const cityRef = doc(db, "Mycart", userinfo, "CartOrder", id);
+            await setDoc(cityRef, {
+                checked: false
+            }, { merge: true })
+        })
+        navigation.goBack();
+    }
+
+    const checkOut = async () => {
+        const q = query(collection(db, "Mycart", userinfo, "CartOrder"), where("checked", "==", true));
+        await onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setDataState(data)
+        });
+        checkOutFunc();
+    }
+    console.log(handlePaymentMethod);
+
     return (
         <View style={styles.root}>
+            <Loader visible={loading} />
             <ScrollView>
                 <View style={styles.headerContainer}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <TouchableOpacity onPress={backbtn}>
                         <MaterialCommunityIcons
                             name="chevron-left"
                             style={styles.backIconStyle}
@@ -88,10 +234,8 @@ const CartTab = ({ navigation, route }) => {
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 16 }}>
                     <Checkbox
-                        status={checked ? 'checked' : 'unchecked'}
-                        onPress={() => {
-                            setChecked(!checked);
-                        }}
+                        status={checked === true ? 'checked' : 'unchecked'}
+                        onPress={onChecked}
                     />
                     <Text style={styles.headerSubCapstionStyle}>
                         Select All
@@ -109,7 +253,7 @@ const CartTab = ({ navigation, route }) => {
                                         <View
                                             key={id}
                                             style={styles.productRoot}>
-                                            <RenderProduct data={data} check={checked} userid={userData.ownerId} id={id} />
+                                            <RenderProduct data={data} check={checked} userid={userData.ownerId} id={id} userinfo={userinfo} />
                                         </View>
                                     ))
                                 }
@@ -148,19 +292,22 @@ const CartTab = ({ navigation, route }) => {
                         </Text>
                         <View style={styles.paymentSubContainer}>
                             <View style={styles.paymentAlignment}>
-                                <View style={styles.methodContainer}>
-                                    <Text style={styles.methodTextStyle}>
-                                        GCASH
-                                    </Text>
-                                </View>
-                                <View>
-                                    <Text style={styles.methodCaption}>
-                                        Gcash
-                                    </Text>
-                                    <Text style={styles.methodNumber}>
-                                        {userData.phone}
-                                    </Text>
-                                </View>
+                                <SelectDropdown
+                                    data={countries}
+                                    onSelect={(selectedItem) => {
+                                        setHandlePaymentMethod(selectedItem)
+                                    }}
+                                    buttonTextAfterSelection={(selectedItem, index) => {
+                                        // text represented after item is selected
+                                        // if data array is an array of objects then return selectedItem.property to render after item is selected
+                                        return selectedItem
+                                    }}
+                                    rowTextForSelection={(item, index) => {
+                                        // text represented for each item in dropdown
+                                        // if data array is an array of objects then return item.property to represent item in dropdown
+                                        return item
+                                    }}
+                                />
                             </View>
                             <MaterialCommunityIcons name="chevron-right" style={styles.iconRightStyle} />
                         </View>
@@ -198,10 +345,10 @@ const CartTab = ({ navigation, route }) => {
             </ScrollView>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
-                    onPress={() => (total != 0 ? checkOut() : null)}
+                    onPress={checkOut}
                     style={styles.buttonStyle}>
                     <Text style={styles.buttonText}>
-                        CHECKOUT ALL (&#x20B1;{total + total / 20} )
+                        CHECKOUT (&#x20B1;{total + total / 20} )
                     </Text>
                 </TouchableOpacity>
             </View>

@@ -153,7 +153,8 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                         contactNo: userData.phone,
                         imageShop: downloadURL,
                         userID: userinfo,
-                        dateCreated: new Date().toISOString()
+                        dateCreated: new Date().toISOString(),
+                        isShopVerified: false,
                     }).then((docRef) => {
                         const cityRef = doc(db, 'users', userinfo);
                         setDoc(cityRef, { hasShop: true, shopID: docRef.id }, { merge: true });

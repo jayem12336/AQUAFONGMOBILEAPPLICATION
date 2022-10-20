@@ -61,11 +61,11 @@ const ProfileTab = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {isLoading ?
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <ActivityIndicator size={100} color={COLOURS.backgroundPrimary} />
                 </View>
                 :
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
                     <SafeAreaView>
                         <StatusBar
                             backgroundColor={COLOURS.white}
@@ -121,19 +121,19 @@ const ProfileTab = ({ navigation }) => {
                                 </View>
                             </View>
                         </View>
-                        {/* <View style={styles.infoBoxWrapper}>
-                    <View style={[styles.infoBox, {
-                        borderRightColor: '#dddddd',
-                        borderRightWidth: 1
-                    }]}>
-                        <Title>140.50</Title>
-                        <Caption>Wallet</Caption>
-                    </View>
-                    <View style={styles.infoBox}>
-                        <Title>12</Title>
-                        <Caption>Orders</Caption>
-                    </View>
-                    </View> */}
+                        <View style={styles.infoBoxWrapper}>
+                            <View style={[styles.infoBox, {
+                                borderRightColor: '#dddddd',
+                                borderRightWidth: 1
+                            }]}>
+                                <Title>140.50</Title>
+                                <Caption>Wallet</Caption>
+                            </View>
+                            <View style={styles.infoBox}>
+                                <Title>0</Title>
+                                <Caption>My Orders</Caption>
+                            </View>
+                        </View>
                         <View style={styles.menuWrapper}>
                             {userData.hasShop === true ?
                                 <TouchableRipple onPress={() => {
@@ -181,7 +181,7 @@ const ProfileTab = ({ navigation }) => {
                                     <Text style={styles.menuItemText}>Account Settings</Text>
                                 </View>
                             </TouchableRipple>
-                            <TouchableRipple>
+                            <TouchableRipple onPress={() => navigation.navigate('About')}>
                                 <View style={styles.menuItem}>
                                     <IonIcon name="help-circle-outline" style={styles.iconColor} size={25} />
                                     <Text style={styles.menuItemText}>About</Text>
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: COLOURS.white,
         height: '100%',
-        flex: 1
+        flex: 1,
     },
     userInfoSection: {
         paddingHorizontal: 30,
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     menuWrapper: {
-        paddingTop: 30
+        paddingTop: 10
     },
     menuItem: {
         flexDirection: 'row',
