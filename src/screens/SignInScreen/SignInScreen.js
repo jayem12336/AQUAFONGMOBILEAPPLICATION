@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import {
     StyleSheet,
@@ -7,14 +7,15 @@ import {
     useWindowDimensions,
     ScrollView,
     StatusBar,
-    Keyboard
+    Keyboard,
+    BackHandler
 } from 'react-native';
 
 import Logo from '../../images/aqualogo.png';
 import CustomButton from '../../components/CustomButton';
 import SocialSignInButtons from '../../components/SocialSignInButtons';
 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { COLOURS } from '../../utils/database/Database';
 import Input from '../../components/Input/Input';
 import Loader from '../../components/Loader/Loader';
@@ -36,6 +37,26 @@ const Login = () => {
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                // Do Whatever you want to do on back button click
+                // Return true to stop default back navigaton
+                // Return false to keep default back navigaton
+                return true;
+            };
+
+            BackHandler.addEventListener(
+                'hardwareBackPress', onBackPress
+            );
+
+            return () =>
+                BackHandler.removeEventListener(
+                    'hardwareBackPress', onBackPress
+                );
+        }, [])
+    );
 
     const validate = () => {
         Keyboard.dismiss();
@@ -160,7 +181,7 @@ const Login = () => {
                         onPress={onForgotPress}
                         type="TERTIARY"
                     />
-                    <SocialSignInButtons />
+                    {/* <SocialSignInButtons /> */}
                     <CustomButton
                         text="Don't have an account? Create one"
                         onPress={onSignUpPress}

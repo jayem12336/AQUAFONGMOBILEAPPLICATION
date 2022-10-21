@@ -77,7 +77,7 @@ const OrderHistory = ({ navigation, route }) => {
       marginTop: 10,
       marginBottom: 10
     }}>
-      <Text>OnHOld</Text>
+      <Text></Text>
     </ScrollView>
   );
 
@@ -103,7 +103,7 @@ const OrderHistory = ({ navigation, route }) => {
     <ScrollView contentContainerStyle={{
       paddingBottom: 60
     }}>
-      <Text>Hello fourth</Text>
+      <Text></Text>
     </ScrollView>
   );
 

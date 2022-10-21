@@ -78,7 +78,11 @@ const MyShop = ({ navigation, route }) => {
                 </View>
               </View>
               <View style={styles.iconContainer}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('ShopSettings', {
+                  shopID: shopID,
+                  userID: userID,
+                  shopDetails: shopDetails
+                })}>
                   <IonIcons
                     name="settings-outline"
                     style={styles.headerIconStyle}

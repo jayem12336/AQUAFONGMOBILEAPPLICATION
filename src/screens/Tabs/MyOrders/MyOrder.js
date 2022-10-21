@@ -1,5 +1,5 @@
-import { Dimensions, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import { ActivityIndicator, Dimensions, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { COLOURS } from '../../../utils/database/Database';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,39 +7,164 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import Completed from './Completed';
 import Cancelled from './Cancelled';
 import PurchaseHistory from './PurchaseHistory';
-
-const FirstRoute = () => (
-    <ScrollView>
-        <Completed />
-        <Completed />
-        <Completed />
-        <Completed />
-        <Completed />
-        <Completed />
-    </ScrollView>
-);
-
-const SecondRoute = () => (
-    <Cancelled />
-);
-
-const ThirdRoute = () => (
-    <PurchaseHistory />
-);
-
-const renderScene = SceneMap({
-    first: FirstRoute,
-    second: SecondRoute,
-    third: ThirdRoute,
-});
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from '../../../utils/firebase';
+import AllOrders from '../ProfileTab/MyShop/MyProducts/OrderHistory/AllOrders'
 
 const initialLayout = { width: Dimensions.get('window').width };
 
-const MyOrder = ({ navigation }) => {
+const MyOrder = ({ navigation, route }) => {
 
+    const { userinfo } = route.params;
+    const [isLoading, setIsLoading] = useState(false)
+    const [toShipProducts, setToShipProducts] = useState([]);
+    const [cancelledProducts, setCancelledProducts] = useState([]);
+    const [deliveredProducts, setDeliveredProducts] = useState([]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        const q = query(collection(db, "Orders"), where("buyerID", "==", userinfo), where("status", "in", ["Ordered", "To Ship"]));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setToShipProducts(data);
+            setIsLoading(false);
+        });
+        return unsubscribe;
+    }, [navigation])
+
+    useEffect(() => {
+        setIsLoading(true);
+        const q = query(collection(db, "Orders"), where("buyerID", "==", userinfo), where("status", "==", "Cancelled"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setCancelledProducts(data);
+            setIsLoading(false);
+        });
+        return unsubscribe;
+    }, [navigation])
+
+    useEffect(() => {
+        setIsLoading(true);
+        const q = query(collection(db, "Orders"), where("buyerID", "==", userinfo), where("status", "==", "Delivered"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setDeliveredProducts(data);
+            setIsLoading(false);
+        });
+        return unsubscribe;
+    }, [navigation])
+
+    const FirstRoute = () => (
+        <ScrollView>
+            <View style={{
+                marginTop: 10,
+                marginBottom: 10
+            }}>
+                {
+                    toShipProducts === []?
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                            <Text>There is no ordered item to show</Text>
+                        </View> :
+                        <>
+                            {isLoading ?
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                    <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                                </View>
+                                : <>
+                                    {toShipProducts.map(({ data, id }) => (
+                                        <AllOrders data={data} key={id} location={"myOrders"} id={id} />
+                                    ))}
+                                </>
+                            }
+                        </>
+                }
+            </View>
+        </ScrollView>
+    );
+
+    const SecondRoute = () => (
+        <ScrollView>
+            <View style={{
+                marginTop: 10,
+                marginBottom: 10
+            }}>
+                {
+                    cancelledProducts === [] ?
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                            <Text>There is no cancelled item to show</Text>
+                        </View> :
+                        <>
+                            {isLoading ?
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                    <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                                </View>
+                                : <>
+                                    {cancelledProducts.map(({ data, id }) => (
+                                        <AllOrders data={data} key={id} location={"cancelledOrders"} id={id} />
+                                    ))}
+                                </>
+                            }
+                        </>
+                }
+
+            </View>
+        </ScrollView>
+    );
+
+    const ThirdRoute = () => (
+        <ScrollView>
+            <View style={{
+                marginTop: 10,
+                marginBottom: 10
+            }}>
+                {
+                    deliveredProducts === [] ?
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                            <Text>There is no products to show</Text>
+                        </View> :
+                        <>
+                            {isLoading ?
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                    <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                                </View>
+                                : <>
+                                    {deliveredProducts.map(({ data, id }) => (
+                                        <AllOrders data={data} key={id} location={"PurchaseHistory"} id={id} />
+                                    ))}
+                                </>
+                            }
+                        </>
+                }
+            </View>
+        </ScrollView>
+    );
+
+    const renderScene = SceneMap({
+        first: FirstRoute,
+        second: SecondRoute,
+        third: ThirdRoute,
+    });
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
-        { key: 'first', title: 'Completed' },
+        { key: 'first', title: 'Ordered' },
         { key: 'second', title: 'Cancelled' },
         { key: 'third', title: 'Purchase History' },
     ]);
@@ -54,7 +179,7 @@ const MyOrder = ({ navigation }) => {
                             size={20}
                             category="Medium"
                             color={focused ? 'BLACK' : 'GRAY3'}
-                            style={{textAlign: 'center'}}
+                            style={{ textAlign: 'center' }}
                         >
                             {route.title}
                         </Text>

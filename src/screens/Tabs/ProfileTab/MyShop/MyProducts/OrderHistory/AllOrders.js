@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { doc, setDoc } from 'firebase/firestore'
 import { db } from '../../../../../../utils/firebase'
 
-const AllOrders = ({ data, location, id, }) => {
+const AllOrders = ({ data, location, id }) => {
 
     const navigation = useNavigation();
 
@@ -141,6 +141,22 @@ const AllOrders = ({ data, location, id, }) => {
                 >
                     <Text>Details</Text>
                 </TouchableOpacity>
+                {data.status != "To Ship" && location === "myOrders" ? <TouchableOpacity style={{
+                    padding: 7,
+                    borderColor: COLOURS.black,
+                    borderWidth: 1,
+                    borderRadius: 18,
+                    width: 90,
+                    alignItems: 'center'
+                }}
+                    onPress={() => navigation.navigate('OrderDetails', {
+                        productData: data,
+                        productID: id,
+                        location: location
+                    })}
+                >
+                    <Text>Cancel</Text>
+                </TouchableOpacity> : ''}
                 <View style={{
                     flexDirection: 'row',
                     alignItems: 'center'
@@ -155,7 +171,7 @@ const AllOrders = ({ data, location, id, }) => {
                         fontSize: 15,
                         fontWeight: 'bold',
                         marginLeft: 10,
-                        color: COLOURS.green
+                        color: data.status === "Cancelled"? COLOURS.red : data.status === "To Ship" ? COLOURS.orange : COLOURS.green
                     }}>
                         {data.status}
                     </Text>

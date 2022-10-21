@@ -9,12 +9,20 @@ import moment from 'moment/moment';
 
 const OrderDetails = ({ route, navigation }) => {
 
-    const { userinfo, productData, productID } = route.params;
+    const { userinfo, productData, productID, location } = route.params;
 
     const [buyerData, setBuyerData] = useState({});
+    const [sellerData, setSellerData] = useState({});
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "users", productData.buyerID), (doc) => {
+            setBuyerData(doc.data());
+        })
+        return unsub;
+    }, [navigation])
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, "users", productData.sellerID), (doc) => {
             setBuyerData(doc.data());
         })
         return unsub;
@@ -136,14 +144,14 @@ const OrderDetails = ({ route, navigation }) => {
                             paddingVertical: 10
                         }}>
                             {
-                                buyerData.photoURL === '' ?
+                                buyerData.photoURL === '' || sellerData.photoURL === ''?
                                     <Avatar.Text
-                                        label={buyerData.fullname.substring(0, 1)}
+                                        label={location === "PurchaseHistory" ? sellerData.fullname.substring(0, 1) : buyerData.fullname.substring(0, 1)}
                                         size={50}
                                         style={{ color: COLOURS.white, backgroundColor: COLOURS.backgroundPrimary }}
                                     /> :
                                     <Avatar.Image
-                                        source={{ uri: buyerData.photoURL }}
+                                        source={{ uri: location === "PurchaseHistory" ? sellerData.photoURL : buyerData.photoURL}}
                                         size={80}
                                     />
                             }
@@ -152,7 +160,7 @@ const OrderDetails = ({ route, navigation }) => {
                                 fontWeight: 'bold',
                                 marginLeft: 10,
                                 color: COLOURS.backgroundPrimary
-                            }}>{buyerData.fullname}</Text>
+                            }}>{location === "PurchaseHistory" ? sellerData.fullname : buyerData.fullname}</Text>
                         </View>
                         <View style={{
                             paddingHorizontal: 10,
@@ -174,7 +182,7 @@ const OrderDetails = ({ route, navigation }) => {
                                         marginTop: 5,
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                    }}>{buyerData.phone}</Text>
+                                    }}>{location === "PurchaseHistory" ? sellerData.phone : buyerData.phone}</Text>
                                 </View>
                                 <View style={{
                                     width: '50%',
@@ -188,7 +196,7 @@ const OrderDetails = ({ route, navigation }) => {
                                         marginTop: 5,
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                    }}>{buyerData.email}</Text>
+                                    }}>{location === "PurchaseHistory" ? sellerData.email : buyerData.email}</Text>
                                 </View>
                             </View>
                             <View style={{
@@ -223,7 +231,7 @@ const OrderDetails = ({ route, navigation }) => {
                                         marginTop: 5,
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                    }}>{buyerData.address}</Text>
+                                    }}>{location === "PurchaseHistory" ? sellerData.address : buyerData.address}</Text>
                                 </View>
                             </View>
                         </View>

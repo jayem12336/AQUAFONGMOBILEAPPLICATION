@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
     StyleSheet,
@@ -8,7 +8,8 @@ import {
     StatusBar,
     TouchableOpacity,
     SafeAreaView,
-    Image
+    Image,
+    ActivityIndicator
 } from 'react-native'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,8 +17,40 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLOURS } from '../../../utils/database/Database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { auth, db } from '../../../utils/firebase';
+import NotificationCard from './NotificationCard';
+import Loader from '../../../components/Loader/Loader';
 
-const NotificationTabScreen = () => {
+const NotificationTabScreen = ({ navigation }) => {
+
+    const [userID, setUserID] = useState('');
+    const [isLoading, setIsLoading] = useState(true)
+    const [orders, setOrders] = useState([])
+
+    useEffect(() => {
+        auth.onAuthStateChanged((authUser) => {
+            setIsLoading(true)
+            if (authUser) {
+                const q = query(collection(db, "Orders"), where("buyerID", "==", authUser.uid), where("status", "in", ['To Ship', 'Cancelled', 'Delivered']));
+                onSnapshot(q, (querySnapshot) => {
+                    const data = [];
+                    querySnapshot.forEach((doc) => {
+                        data.push({
+                            id: doc.id,
+                            data: doc.data()
+                        })
+                    });
+                    setOrders(data);
+                    setIsLoading(false)
+                });
+            } else {
+                setUserID(null)
+            }
+        })
+    }, [navigation])
+
     return (
         <View style={styles.root}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -40,98 +73,18 @@ const NotificationTabScreen = () => {
                             </Text>
                         </View>
                     </View>
-                    <View style={styles.notifContainer}>
-                        <View style={styles.notifCardContainer}>
-                            <View style={styles.cardContainer}>
-                                <Image source={require('../../../images/Jpeg/Corals.jpg')} alt="Profile"
-                                    style={styles.notifImage}
-                                />
-                                <View style={styles.notifTextContainer}>
-                                    <Text style={styles.textStatus}>
-                                        Your order has been packed
-                                    </Text>
-                                    <Text>
-                                        The seller is preparing to ship your order
-                                    </Text>
-                                </View>
-                                <View style={styles.fixedIconContainer}>
-                                    <FontAwesome
-                                        name="circle"
-                                        style={[styles.fixedIconStyle, {color: COLOURS.green}]}
-                                    />
-                                </View>
-                            </View>
+                    {isLoading ?
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                            <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
                         </View>
-                    </View>
-                    <View style={styles.notifContainer}>
-                        <View style={styles.notifCardContainer}>
-                            <View style={styles.cardContainer}>
-                                <Image source={require('../../../images/Jpeg/Corals.jpg')} alt="Profile"
-                                    style={styles.notifImage}
-                                />
-                                <View style={styles.notifTextContainer}>
-                                    <Text style={styles.textStatus}>
-                                        Cancelled Order
-                                    </Text>
-                                    <Text>
-                                        Your order is successfully cancelled
-                                    </Text>
+                        : <>
+                            {orders.map(({ data, id }) => (
+                                <View key={id}>
+                                    <NotificationCard data={data} id={id} />
                                 </View>
-                                <View style={styles.fixedIconContainer}>
-                                    <FontAwesome
-                                        name="circle"
-                                        style={[styles.fixedIconStyle, {color: COLOURS.red}]}
-                                    />
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.notifContainer}>
-                        <View style={styles.notifCardContainer}>
-                            <View style={styles.cardContainer}>
-                                <Image source={require('../../../images/Jpeg/Corals.jpg')} alt="Profile"
-                                    style={styles.notifImage}
-                                />
-                                <View style={styles.notifTextContainer}>
-                                    <Text style={styles.textStatus}>
-                                        Your order has been packed
-                                    </Text>
-                                    <Text>
-                                        The seller is preparing to ship your order
-                                    </Text>
-                                </View>
-                                <View style={styles.fixedIconContainer}>
-                                    <FontAwesome
-                                        name="circle"
-                                        style={[styles.fixedIconStyle, {color: COLOURS.green}]}
-                                    />
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.notifContainer}>
-                        <View style={styles.notifCardContainer}>
-                            <View style={styles.cardContainer}>
-                                <Image source={require('../../../images/Jpeg/Corals.jpg')} alt="Profile"
-                                    style={styles.notifImage}
-                                />
-                                <View style={styles.notifTextContainer}>
-                                    <Text style={styles.textStatus}>
-                                        Hello KaFishy!
-                                    </Text>
-                                    <Text>
-                                        Your order is successfully cancelled
-                                    </Text>
-                                </View>
-                                <View style={styles.fixedIconContainer}>
-                                    <FontAwesome
-                                        name="circle"
-                                        style={[styles.fixedIconStyle, {color: COLOURS.green}]}
-                                    />
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                            ))}
+                        </>
+                    }
                 </SafeAreaView>
             </ScrollView>
         </View>
@@ -168,58 +121,4 @@ const styles = StyleSheet.create({
         padding: 12,
         borderRadius: 12,
     },
-    notificationTitle: {
-        fontSize: 17,
-        letterSpacing: 1,
-        marginTop: 5
-    },
-    notifContainer: {
-        width: '100%',
-        maxWidth: 400,
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignItems: 'center'
-    },
-    notifCardContainer: {
-        width: '95%',
-        height: 100,
-        paddingTop: 16,
-        maxWidth: 400,
-        paddingBottom: 16,
-        paddingHorizontal: 16,
-        backgroundColor: COLOURS.dirtyWhiteBackground,
-        borderBottomColor: COLOURS.backgroundMedium,
-        borderBottomWidth: 3,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    cardContainer: {
-        justifyContent: 'center',
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    notifImage: {
-        width: 80,
-        height: '100%',
-        maxHeight: 100,
-        borderRadius: 15
-    },
-    notifTextContainer: {
-        paddingHorizontal: 10,
-        maxWidth: 250,
-        marginTop: 20
-    },
-    textStatus: {
-        fontWeight: '500',
-        letterSpacing: .5
-    },
-    fixedIconContainer: {
-        position: 'absolute',
-        top: 2,
-        right: 2
-    },
-    fixedIconStyle: {
-        fontSize: 12,
-        marginRight: 6,
-    }
 })

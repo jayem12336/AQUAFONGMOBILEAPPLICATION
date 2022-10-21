@@ -48,6 +48,7 @@ import OrderHistory from '../screens/Tabs/ProfileTab/MyShop/MyProducts/OrderHist
 import CancelledOrder from '../screens/Tabs/ProfileTab/MyShop/CancelledOrder';
 import OrderDetails from '../screens/Tabs/ProfileTab/MyShop/MyProducts/OrderHistory/OrderDetails';
 import About from '../screens/Tabs/ProfileTab/About/About';
+import ShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -310,6 +311,16 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="MyOrder"
                             component={MyOrder}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="ShopSettings"
+                            component={ShopSettings}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="CartTab"

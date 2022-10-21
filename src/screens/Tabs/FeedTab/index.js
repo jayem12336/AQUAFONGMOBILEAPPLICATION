@@ -60,7 +60,7 @@ const FeedTab = ({ navigation }) => {
     const updateSearch = (value) => {
 
     }
-
+    
     const ProductCard = ({ data, productID }) => {
         return (
             <TouchableOpacity
@@ -106,7 +106,7 @@ const FeedTab = ({ navigation }) => {
                                 <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
                             </View>
                             : <>
-                                {productData.map(({ data, id }) => (
+                                {productData.filter(({data}) => data.productName.includes(searchTerm)).map(({ data, id }) => (
                                     <View key={id} style={styles.productCardContainer}>
                                         <ProductCard data={data} key={data.id} productID={id} />
                                     </View>
