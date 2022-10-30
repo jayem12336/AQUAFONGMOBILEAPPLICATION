@@ -23,7 +23,7 @@ const OrderDetails = ({ route, navigation }) => {
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "users", productData.sellerID), (doc) => {
-            setBuyerData(doc.data());
+            setSellerData(doc.data());
         })
         return unsub;
     }, [navigation])
@@ -60,7 +60,7 @@ const OrderDetails = ({ route, navigation }) => {
                 backgroundColor={COLOURS.white}
                 barStyle="dark-content"
             />
-            <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
                 <View style={styles.headerContainer}>
                     <View style={styles.subHeaderContainer}>
                         <TouchableOpacity>
@@ -144,14 +144,14 @@ const OrderDetails = ({ route, navigation }) => {
                             paddingVertical: 10
                         }}>
                             {
-                                buyerData.photoURL === '' || sellerData.photoURL === ''?
+                                buyerData.photoURL === '' || sellerData.photoURL === '' ?
                                     <Avatar.Text
-                                        label={location === "PurchaseHistory" ? sellerData.fullname.substring(0, 1) : buyerData.fullname.substring(0, 1)}
+                                        label={location === "PurchaseHistory" ? sellerData.fullname?.substring(0, 1) : buyerData.fullname?.substring(0, 1)}
                                         size={50}
                                         style={{ color: COLOURS.white, backgroundColor: COLOURS.backgroundPrimary }}
                                     /> :
                                     <Avatar.Image
-                                        source={{ uri: location === "PurchaseHistory" ? sellerData.photoURL : buyerData.photoURL}}
+                                        source={{ uri: location === "PurchaseHistory" || location === "myOrders" ? sellerData.photoURL : buyerData.photoURL }}
                                         size={80}
                                     />
                             }
@@ -160,7 +160,7 @@ const OrderDetails = ({ route, navigation }) => {
                                 fontWeight: 'bold',
                                 marginLeft: 10,
                                 color: COLOURS.backgroundPrimary
-                            }}>{location === "PurchaseHistory" ? sellerData.fullname : buyerData.fullname}</Text>
+                            }}>{location === "PurchaseHistory" || location === "myOrders" ? sellerData.fullname : buyerData.fullname}</Text>
                         </View>
                         <View style={{
                             paddingHorizontal: 10,
@@ -182,7 +182,7 @@ const OrderDetails = ({ route, navigation }) => {
                                         marginTop: 5,
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                    }}>{location === "PurchaseHistory" ? sellerData.phone : buyerData.phone}</Text>
+                                    }}>{location === "PurchaseHistory" || location === "myOrders" ? sellerData.phone : buyerData.phone}</Text>
                                 </View>
                                 <View style={{
                                     width: '50%',
@@ -196,7 +196,7 @@ const OrderDetails = ({ route, navigation }) => {
                                         marginTop: 5,
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                    }}>{location === "PurchaseHistory" ? sellerData.email : buyerData.email}</Text>
+                                    }}>{location === "PurchaseHistory" || location === "myOrders" ? sellerData.email : buyerData.email}</Text>
                                 </View>
                             </View>
                             <View style={{
@@ -216,7 +216,7 @@ const OrderDetails = ({ route, navigation }) => {
                                         marginTop: 5,
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                        color: COLOURS.green
+                                        color: productData.status === "Cancelled" ? COLOURS.red : productData.status === "To Ship" ? COLOURS.orange : COLOURS.green
                                     }}>{productData.status}</Text>
                                 </View>
                                 <View style={{
@@ -231,7 +231,7 @@ const OrderDetails = ({ route, navigation }) => {
                                         marginTop: 5,
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                    }}>{location === "PurchaseHistory" ? sellerData.address : buyerData.address}</Text>
+                                    }}>{location === "PurchaseHistory" || location === "myOrders" ? sellerData.address : buyerData.address}</Text>
                                 </View>
                             </View>
                         </View>
@@ -251,21 +251,37 @@ const OrderDetails = ({ route, navigation }) => {
                                 Payment Method
                             </Text>
                             <View style={styles.paymentSubContainer}>
-                                <View style={styles.paymentAlignment}>
-                                    <View style={styles.methodContainer}>
-                                        <Text style={styles.methodTextStyle}>
-                                            GCASH
-                                        </Text>
-                                    </View>
-                                    <View>
-                                        <Text style={styles.methodCaption}>
-                                            Gcash
-                                        </Text>
-                                        <Text style={styles.methodNumber}>
-                                            ******9092
-                                        </Text>
-                                    </View>
-                                </View>
+                                {
+                                    productData.paymentMethod === "Cash on Delivery" ?
+                                        <View style={styles.paymentAlignment}>
+                                            <View style={styles.methodContainer}>
+                                                <Text style={styles.methodTextStyle}>
+                                                    COD
+                                                </Text>
+                                            </View>
+                                            <View>
+                                                <Text style={styles.methodCaption}>
+                                                    Cash on Delivery
+                                                </Text>
+                                            </View>
+                                        </View> :
+                                        <View style={styles.paymentAlignment}>
+                                            <View style={styles.methodContainer}>
+                                                <Text style={styles.methodTextStyle}>
+                                                    GCASH
+                                                </Text>
+                                            </View>
+                                            <View>
+                                                <Text style={styles.methodCaption}>
+                                                    Gcash
+                                                </Text>
+                                                <Text style={styles.methodNumber}>
+                                                    ******9092
+                                                </Text>
+                                            </View>
+                                        </View>
+                                }
+
                             </View>
                         </View>
                     </View>
@@ -324,10 +340,91 @@ const OrderDetails = ({ route, navigation }) => {
                             </View>
                         </View>
                     </View>
+                    {
+                        location === "Delivered" ?
+                            <View style={{
+                                marginTop: 10,
+                                backgroundColor: COLOURS.white,
+                                borderRadius: 10,
+                                elevation: 5,
+                                width: '100%',
+                                padding: 10,
+                                paddingVertical: 20,
+                                paddingHorizontal: 20
+                            }}
+                            >
+                                <View style={{
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    alignContent: 'center'
+                                }}>
+                                    <Text style={{
+                                        textAlign: 'center',
+                                        fontWeight: '900',
+                                        color: COLOURS.green,
+                                        letterSpacing: 1,
+                                    }}>
+                                        Successfully Delivered on {moment(productData.DeliveredDate).format("ll")}
+                                    </Text>
+                                </View>
+                            </View> : location === "cancelledOrders" ?
+                                <View style={{
+                                    marginTop: 10,
+                                    backgroundColor: COLOURS.white,
+                                    borderRadius: 10,
+                                    elevation: 5,
+                                    width: '100%',
+                                    padding: 10,
+                                    paddingVertical: 20,
+                                    paddingHorizontal: 20
+                                }}
+                                >
+                                    <View style={{
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        alignContent: 'center'
+                                    }}>
+                                        <Text style={{
+                                            textAlign: 'center',
+                                            fontWeight: '900',
+                                            color: COLOURS.red,
+                                            letterSpacing: 1,
+                                        }}>
+                                            You successfully cancelled on {moment(productData.cancelledDate).format("ll")}
+                                        </Text>
+                                    </View>
+                                </View>  : location === "cancelledOrderss" ? 
+                                 <View style={{
+                                    marginTop: 10,
+                                    backgroundColor: COLOURS.white,
+                                    borderRadius: 10,
+                                    elevation: 5,
+                                    width: '100%',
+                                    padding: 10,
+                                    paddingVertical: 20,
+                                    paddingHorizontal: 20
+                                }}
+                                >
+                                    <View style={{
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        alignContent: 'center'
+                                    }}>
+                                        <Text style={{
+                                            textAlign: 'center',
+                                            fontWeight: '900',
+                                            color: COLOURS.red,
+                                            letterSpacing: 1,
+                                        }}>
+                                            Buyer cancel the order on {moment(productData.cancelledDate).format("ll")}
+                                        </Text>
+                                    </View>
+                                </View> : ''
+                    }
                 </View>
             </ScrollView>
             {
-                productData.status === "Ordered" ?
+                productData.status === "Ordered" && location !== "myOrders" ?
                     <View style={styles.footerContainer}>
                         <View style={{
                             flexDirection: 'row',

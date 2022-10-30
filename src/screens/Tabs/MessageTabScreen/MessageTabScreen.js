@@ -1,4 +1,5 @@
 import {
+    ActivityIndicator,
     SafeAreaView,
     ScrollView,
     StatusBar,
@@ -7,107 +8,91 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { COLOURS } from '../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Avatar } from 'react-native-paper';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../../utils/firebase';
+import MessageCard from './MessageCard';
 
-const MessageTabScreen = ({ navigation }) => {
+const MessageTabScreen = ({ navigation, route }) => {
+
+    const { userinfo } = route.params;
+
+    const [users, setUsers] = useState([]);
+    const [users1, setUsers1] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+        const q = query(collection(db, "rooms", userinfo, "chatUsers"))
+        const unsub = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data(),
+                })
+            });
+            setUsers(data);
+            setLoading(false);
+        });
+        return unsub;
+    }, [navigation]);
     return (
         <View style={styles.root}>
+            <StatusBar
+                backgroundColor={COLOURS.white}
+                barStyle="dark-content"
+            />
+            <View style={styles.mainContainer}>
+                <View style={styles.headerContainer}>
+                    <View style={styles.iconContainer}>
+                        <TouchableOpacity>
+                            <MaterialCommunityIcons
+                                onPress={() => navigation.goBack()}
+                                name="chevron-left"
+                                style={styles.backIconStyle}
+                            />
+                        </TouchableOpacity>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.messageStyle}>
+                                Messages
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={styles.iconButtonContainer}>
+                        <TouchableOpacity>
+                            <MaterialCommunityIcons
+                                name="magnify"
+                                style={styles.headerIconStyle}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <MaterialCommunityIcons
+                                name="dots-horizontal"
+                                style={styles.headerIconStyle}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <SafeAreaView style={styles.container}>
-                    <StatusBar
-                        backgroundColor={COLOURS.white}
-                        barStyle="dark-content"
-                    />
-                    <View style={styles.mainContainer}>
-                        <View style={styles.iconContainer}>
-                            <TouchableOpacity>
-                                <MaterialCommunityIcons
-                                    onPress={() => navigation.goBack()}
-                                    name="chevron-left"
-                                    style={styles.backIconStyle}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.headerContainer}>
-                            <View style={styles.textContainer}>
-                                <Text style={styles.messageStyle}>
-                                    Messages
-                                </Text>
+                {loading ?
+                    <View style={{ flex: 1, alignItems: 'center', height: 500, marginTop: 50 }}>
+                        <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                    </View>
+                    : <>
+                        {users.map(({ data, id }) => (
+                            <View key={id}>
+                                <MessageCard data={data} id={id} userinfo={userinfo} />
                             </View>
-                            <View style={styles.iconButtonContainer}>
-                                <TouchableOpacity>
-                                    <MaterialCommunityIcons
-                                        name="magnify"
-                                        style={styles.headerIconStyle}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <MaterialCommunityIcons
-                                        name="dots-horizontal"
-                                        style={styles.headerIconStyle}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.messageBoxContainer}>
-                        <View style={styles.avatarContainer}>
-                            <Avatar.Image size={50} source={require('../../../images/Jpeg/GoldFish.jpg')} />
-                            <Text style={styles.textMessage}>NDRRMC</Text>
-                        </View>
-                        <View style={styles.dateContainer}>
-                            <Text>Friday</Text>
-                            <Text>4:50</Text>
-                        </View>
-                    </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('Message')}>
-                        <View style={styles.messageBoxContainer}>
-                            <View style={styles.avatarContainer}>
-                                <Avatar.Image size={50} source={require('../../../images/Jpeg/Corals.jpg')} />
-                                <Text style={styles.textMessage}>AquaFond Fisheries</Text>
-                            </View>
-                            <View style={styles.dateContainer}>
-                                <Text>Friday</Text>
-                                <Text>4:50</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    <View style={styles.messageBoxContainer}>
-                        <View style={styles.avatarContainer}>
-                            <Avatar.Image size={50} source={require('../../../images/Jpeg/GoldFish.jpg')} />
-                            <Text style={styles.textMessage}>Jayson</Text>
-                        </View>
-                        <View style={styles.dateContainer}>
-                            <Text>Friday</Text>
-                            <Text>4:50</Text>
-                        </View>
-                    </View>
-                    <View style={styles.messageBoxContainer}>
-                        <View style={styles.avatarContainer}>
-                            <Avatar.Image size={50} source={require('../../../images/Jpeg/GoldFish.jpg')} />
-                            <Text style={styles.textMessage}>Maria</Text>
-                        </View>
-                        <View style={styles.dateContainer}>
-                            <Text>Friday</Text>
-                            <Text>4:50</Text>
-                        </View>
-                    </View>
-                    <View style={styles.messageBoxContainer}>
-                        <View style={styles.avatarContainer}>
-                            <Avatar.Image size={50} source={require('../../../images/Jpeg/GoldFish.jpg')} />
-                            <Text style={styles.textMessage}>Lolong</Text>
-                        </View>
-                        <View style={styles.dateContainer}>
-                            <Text>Friday</Text>
-                            <Text>4:50</Text>
-                        </View>
-                    </View>
-                </SafeAreaView>
+                        ))}
+                    </>
+                }
             </ScrollView>
-        </View>
+        </View >
     )
 }
 
@@ -118,7 +103,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         height: '100%',
-        backgroundColor: COLOURS.white
+        backgroundColor: COLOURS.backgroundLight
     },
     buttonContainer: {
         position: 'absolute',
@@ -149,12 +134,14 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
         paddingHorizontal: 16,
         borderBottomColor: COLOURS.backgroundMedium,
-        borderBottomWidth: 2.5,
+        borderBottomWidth: 1,
+        backgroundColor: COLOURS.white
     },
     iconContainer: {
         justifyContent: 'flex-start',
         alignContent: 'flex-start',
-        alignItems: 'flex-start'
+        alignItems: 'center',
+        flexDirection: 'row'
     },
     backIconStyle: {
         fontSize: 20,
@@ -164,8 +151,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     headerContainer: {
-        marginTop: 20,
-        marginBottom: -15,
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
@@ -176,7 +161,8 @@ const styles = StyleSheet.create({
     },
     messageStyle: {
         fontSize: 17,
-        letterSpacing: 1
+        letterSpacing: 1,
+        fontWeight: 'bold'
     },
     iconButtonContainer: {
         flexDirection: 'row',
@@ -190,7 +176,6 @@ const styles = StyleSheet.create({
     },
     messageBoxContainer: {
         width: '100%',
-        height: 80,
         paddingTop: 16,
         maxWidth: 400,
         paddingBottom: 16,

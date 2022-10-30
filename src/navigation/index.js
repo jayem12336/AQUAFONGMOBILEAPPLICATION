@@ -38,7 +38,6 @@ import MyOrder from '../screens/Tabs/MyOrders/MyOrder';
 import Message from '../screens/Tabs/MessageTabScreen/Message';
 
 import { auth } from '../utils/firebase'
-import ShopList from '../screens/Tabs/ProfileTab/ShopList/ShopList';
 import CreateProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/CreateProduct';
 import EditProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/EditProduct';
 import NewProductInfo from '../screens/Tabs/FeedTab/NewProductInfo/NewProductInfo';
@@ -48,7 +47,9 @@ import OrderHistory from '../screens/Tabs/ProfileTab/MyShop/MyProducts/OrderHist
 import CancelledOrder from '../screens/Tabs/ProfileTab/MyShop/CancelledOrder';
 import OrderDetails from '../screens/Tabs/ProfileTab/MyShop/MyProducts/OrderHistory/OrderDetails';
 import About from '../screens/Tabs/ProfileTab/About/About';
-import ShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings';
+import ShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings/ShopSettings';
+import EditShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings/EditShopSettings';
+import MyWallet from '../screens/Tabs/ProfileTab/MyWallet/MyWallet';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -236,10 +237,16 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="MessageTabScreen"
                             component={MessageTabScreen}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="Message"
                             component={Message}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="About"
@@ -253,12 +260,15 @@ const Navigation = ({ navigation }) => {
                             }}
                         />
                         <Stack.Screen
-                            name="SuccessBusinessScreen"
-                            component={SuccessBusinessScreen}
+                            name="MyWallet"
+                            component={MyWallet}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
-                            name="ShopList"
-                            component={ShopList}
+                            name="SuccessBusinessScreen"
+                            component={SuccessBusinessScreen}
                         />
                         <Stack.Screen
                             name="MyShop"
@@ -288,6 +298,9 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="CancelledOrder"
                             component={CancelledOrder}
+                            initialParams={{
+                                userinfo: user
+                            }}
                         />
                         <Stack.Screen
                             name="MyProducts"
@@ -318,6 +331,13 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="ShopSettings"
                             component={ShopSettings}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="EditShopSettings"
+                            component={EditShopSettings}
                             initialParams={{
                                 userinfo: user
                             }}

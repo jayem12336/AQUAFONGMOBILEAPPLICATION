@@ -34,6 +34,59 @@ const AllOrders = ({ data, location, id }) => {
         );
     }
 
+    const cancelBtn = () => {
+        Alert.alert(
+            "Warning",
+            "Are you sure you want to cancel your order?",
+            [
+                {
+                    text: "No",
+                    onPress: () => {
+                    },
+                    style: "cancel"
+                },
+                {
+                    text: "Yes", onPress: async () => {
+                        const cityRef = doc(db, "Orders", id);
+                        await setDoc(cityRef, {
+                            status: 'Cancelled',
+                            cancelledData: new Date().toISOString(),
+                        }, { merge: true }).then(() => {
+                            Alert.alert("Successfuly cancelled order!")
+                        })
+                    }
+                }
+            ]
+        );
+    }
+
+
+    const deliverdButton = () => {
+        Alert.alert(
+            "Alert",
+            "Delivered Order?",
+            [
+                {
+                    text: "No",
+                    onPress: () => {
+                    },
+                    style: "cancel"
+                },
+                {
+                    text: "Yes", onPress: async () => {
+                        const cityRef = doc(db, "Orders", id);
+                        await setDoc(cityRef, {
+                            status: 'Delivered',
+                            deliveredDate: new Date().toISOString(),
+                        }, { merge: true }).then(() => {
+                            Alert.alert("Successfuly Delivered order!")
+                        })
+                    }
+                }
+            ]
+        );
+    }
+
     return (
         <View style={{
             marginTop: 5,
@@ -41,7 +94,8 @@ const AllOrders = ({ data, location, id }) => {
             borderRadius: 10,
             elevation: 5,
             width: '100%',
-            padding: 10
+            padding: 10,
+            marginBottom: 5
         }}
         >
             <View style={{
@@ -136,24 +190,35 @@ const AllOrders = ({ data, location, id }) => {
                 }}
                     onPress={() => navigation.navigate('OrderDetails', {
                         productData: data,
-                        productID: id
+                        productID: id,
+                        location: location
                     })}
                 >
                     <Text>Details</Text>
                 </TouchableOpacity>
+                {data.status === "To Ship" && location === "to ship"? 
+                    <TouchableOpacity style={{
+                        padding: 7,
+                        borderColor: COLOURS.black,
+                        borderWidth: 1,
+                        borderRadius: 18,
+                        width: 90,
+                        alignItems: 'center'
+                    }}
+                    onPress={deliverdButton}
+                    >
+                        <Text>Delivered</Text>
+                    </TouchableOpacity> : ""
+                }
                 {data.status != "To Ship" && location === "myOrders" ? <TouchableOpacity style={{
                     padding: 7,
-                    borderColor: COLOURS.black,
+                    borderColor: COLOURS.red,
                     borderWidth: 1,
                     borderRadius: 18,
                     width: 90,
                     alignItems: 'center'
                 }}
-                    onPress={() => navigation.navigate('OrderDetails', {
-                        productData: data,
-                        productID: id,
-                        location: location
-                    })}
+                    onPress={cancelBtn}
                 >
                     <Text>Cancel</Text>
                 </TouchableOpacity> : ''}

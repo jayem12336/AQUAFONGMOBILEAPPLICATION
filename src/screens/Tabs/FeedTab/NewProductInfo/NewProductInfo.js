@@ -6,7 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Rating } from 'react-native-ratings';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { addDoc, collection, doc, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../../../../utils/firebase';
 
 const NewProductInfo = ({ navigation, route }) => {
@@ -77,7 +77,46 @@ const NewProductInfo = ({ navigation, route }) => {
                 }
             ]
         );
+    }
 
+    const goToMessage = async () => {
+        const refBuyer = doc(db,
+            "rooms",
+            userinfo,
+            "chatUsers",
+            productInfo.userID,);
+        const refSeller = doc(db,
+            "rooms",
+            productInfo.userID,
+            "chatUsers",
+            userinfo,);
+        try {
+            if (userinfo && productInfo.userID) {
+                await setDoc(refBuyer,
+                    {
+                        buyerID: userinfo,
+                        shopID: productInfo.shopID,
+                        sellerID: productInfo.userID,
+                        prodID: productInfo.prodID,
+                        parentProdID: productInfo.parentProductID,
+                    }
+                )
+                await setDoc(
+                    refSeller, {
+                    buyerID: userinfo,
+                    shopID: productInfo.shopID,
+                    sellerID: productInfo.userID,
+                    prodID: productInfo.prodID,
+                    parentProdID: productInfo.parentProductID,
+                }
+                );
+            }
+            navigation.navigate("Message", {
+                buyerID: userinfo,
+                sellerID:  productInfo.userID,
+            })
+        } catch (error) {
+        }
     }
 
     return (
@@ -204,7 +243,7 @@ const NewProductInfo = ({ navigation, route }) => {
                         <View style={{ alignItems: 'center' }}>
                             <View style={styles.buttonContainer}>
                                 <View style={styles.buttonSubContainer}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={goToMessage}>
                                         <Ionicons name="mail-outline" style={styles.shoppingBagIcon} />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => {
@@ -235,7 +274,7 @@ const NewProductInfo = ({ navigation, route }) => {
                                         <TouchableOpacity
                                             onPress={() => {
                                                 navigation.navigate('Purchase', { productID: productInfo, quantity: quantity }),
-                                                setBuyNowButton(false)
+                                                    setBuyNowButton(false)
                                                 setQuantity(1)
                                             }}
                                             style={styles.buyBtnContainer}

@@ -25,10 +25,10 @@ const MyShop = ({ navigation, route }) => {
   const [shopDetails, setShopDetails] = useState({});
 
   const [orderCount, setOrderCount] = useState();
+  const [cancelledCount, setCancelledCount] = useState();
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "users", userID, "shop", shopID), (doc) => {
-      console.log("Current data: ", doc.data());
       setShopDetails(doc.data());
     })
     return unsub;
@@ -37,23 +37,33 @@ const MyShop = ({ navigation, route }) => {
   useEffect(() => {
     const q = query(collection(db, "Orders"), where("sellerID", "==", userID), where("status", "==", "Ordered"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const data = [];
-        querySnapshot.forEach((doc) => {
-            data.push({
-                id: doc.id,
-                data: doc.data()
-            })
-        });
-        setOrderCount(data.length);
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      setOrderCount(data.length);
     });
     return unsubscribe;
-}, [navigation])
+  }, [navigation])
 
-
-  console.log(shopID);
-  console.log(userID);
-  console.log(shopDetails);
-
+  useEffect(() => {
+    const q = query(collection(db, "Orders"), where("sellerID", "==", userID), where("status", "==", "Cancelled"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      setCancelledCount(data.length);
+    });
+    return unsubscribe;
+  }, [navigation])
+  
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -88,7 +98,7 @@ const MyShop = ({ navigation, route }) => {
                     style={styles.headerIconStyle}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
                   <IonIcons
                     name="mail-outline"
                     style={styles.headerIconStyle}
@@ -132,7 +142,7 @@ const MyShop = ({ navigation, route }) => {
               <TouchableOpacity onPress={() => navigation.navigate('CancelledOrder')}>
                 <View style={styles.toShopContainer}>
                   <Text>
-                    0
+                    {cancelledCount}
                   </Text>
                   <Text style={{ marginTop: 5 }}>
                     Cancelled

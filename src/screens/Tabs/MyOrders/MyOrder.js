@@ -4,9 +4,6 @@ import { COLOURS } from '../../../utils/database/Database';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import Completed from './Completed';
-import Cancelled from './Cancelled';
-import PurchaseHistory from './PurchaseHistory';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
 import AllOrders from '../ProfileTab/MyShop/MyProducts/OrderHistory/AllOrders'
@@ -104,7 +101,8 @@ const MyOrder = ({ navigation, route }) => {
         <ScrollView>
             <View style={{
                 marginTop: 10,
-                marginBottom: 10
+                marginBottom: 10,
+                paddingHorizontal: 5
             }}>
                 {
                     cancelledProducts === [] ?

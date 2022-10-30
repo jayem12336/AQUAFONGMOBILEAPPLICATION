@@ -156,17 +156,31 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                         dateCreated: new Date().toISOString(),
                         isShopVerified: false,
                     }).then((docRef) => {
-                        const cityRef = doc(db, 'users', userinfo);
-                        setDoc(cityRef, { hasShop: true, shopID: docRef.id }, { merge: true });
-                        setInputs({});
-                        setSelected('');
-                        setImage(null);
-                        navigation.navigate('MyShop', {
+                        const shopRef = doc(db, 'shops', docRef.id);
+                        setDoc(shopRef, {
+                            userID: userinfo,
                             shopID: docRef.id,
-                            userID: userinfo
-                        });
-                        Alert.alert("Success");
-                        setLoading(false);
+                            sellerID: userinfo,
+                            isShopVerified: false,
+                            businessName: inputs.businessName,
+                            shopLocation: inputs.shopLocation,
+                            fullName: userData.fullname,
+                            contactNo: userData.phone,
+                            imageShop: downloadURL,
+                            dateCreated: new Date().toISOString(),
+                        }).then(() => {
+                            const cityRef = doc(db, 'users', userinfo);
+                            setDoc(cityRef, { hasShop: true, shopID: docRef.id }, { merge: true });
+                            setInputs({});
+                            setSelected('');
+                            setImage(null);
+                            navigation.navigate('MyShop', {
+                                shopID: docRef.id,
+                                userID: userinfo
+                            });
+                            Alert.alert("Success");
+                            setLoading(false);
+                        }) 
                     })
                 })
             }

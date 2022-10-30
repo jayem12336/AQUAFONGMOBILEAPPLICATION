@@ -1,6 +1,6 @@
 import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { COLOURS } from '../../../../utils/database/Database'
+import React, { useState } from 'react'
+import { COLOURS } from '../../../../../utils/database/Database'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
@@ -231,6 +231,10 @@ const ShopSettings = ({ navigation, route }) => {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}
+                        onPress={() => navigation.navigate('EditShopSettings', {
+                            shopID: shopID,
+                            shopDetails: shopDetails
+                        })}
                         >
                             <Text style={{
                                 color: COLOURS.white,

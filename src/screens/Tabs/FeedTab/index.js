@@ -37,14 +37,16 @@ const FeedTab = ({ navigation }) => {
             auth.onAuthStateChanged((authUser) => {
                 if (authUser) {
                     setUserID(authUser.uid)
-                    const q = query(collection(db, "feedproducts"), where("userID", "!=", authUser.uid));
+                    const q = query(collection(db, "feedproducts"),where("userID", "!=", authUser.uid));
                     onSnapshot(q, (querySnapshot) => {
                         const data = [];
                         querySnapshot.forEach((doc) => {
-                            data.push({
-                                id: doc.id,
-                                data: doc.data()
-                            })
+                            if(doc.data().productQuantity > 0) {
+                                data.push({
+                                    id: doc.id,
+                                    data: doc.data()
+                                })
+                            }
                         });
                         setProductData(data);
                         setIsLoading(false);
@@ -60,11 +62,11 @@ const FeedTab = ({ navigation }) => {
     const updateSearch = (value) => {
 
     }
-    
+
     const ProductCard = ({ data, productID }) => {
         return (
             <TouchableOpacity
-             onPress={() => navigation.navigate("NewProductInfo", { productID: productID })}
+                onPress={() => navigation.navigate("NewProductInfo", { productID: productID })}
             >
                 <View style={styles.productImageContainer}>
                     <Image
@@ -85,28 +87,28 @@ const FeedTab = ({ navigation }) => {
     }
     return (
         <View style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
-                <View style={styles.headerContainer}>
-                    <SearchBarComponent
-                        value={searchTerm}
-                        updateSearch={setSearchTerm}
-                    />
-                    <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
-                        <MaterialCommunityIcons name="cart" style={styles.shoppingBagIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
-                        <IonIcons name="mail-outline" style={styles.shoppingBagIcon} />
-                    </TouchableOpacity>
-                </View>
-                <View style={{ width: '100%' }}>
+            <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
+            <View style={styles.headerContainer}>
+                <SearchBarComponent
+                    value={searchTerm}
+                    updateSearch={setSearchTerm}
+                />
+                <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
+                    <MaterialCommunityIcons name="cart" style={styles.shoppingBagIcon} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
+                    <IonIcons name="mail-outline" style={styles.shoppingBagIcon} />
+                </TouchableOpacity>
+            </View>
+            <View style={{ width: '100%' }}>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 80}}>
                     <View style={styles.productContainer}>
                         {isLoading ?
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
                                 <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
                             </View>
                             : <>
-                                {productData.filter(({data}) => data.productName.includes(searchTerm)).map(({ data, id }) => (
+                                {productData.filter(({ data }) => data.productName.toLowerCase().includes(searchTerm.toLowerCase())).map(({ data, id }) => (
                                     <View key={id} style={styles.productCardContainer}>
                                         <ProductCard data={data} key={data.id} productID={id} />
                                     </View>
@@ -114,8 +116,8 @@ const FeedTab = ({ navigation }) => {
                             </>
                         }
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </View>
         </View>
     )
 }

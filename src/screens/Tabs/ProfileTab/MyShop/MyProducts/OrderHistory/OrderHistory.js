@@ -18,6 +18,8 @@ const OrderHistory = ({ navigation, route }) => {
 
   const [toShipProducts, setToShipProducts] = useState([]);
 
+  const [deliverdProducts, setDeliveredProducts] = useState([]);
+
   useEffect(() => {
     setIsLoading(true);
     const q = query(collection(db, "Orders"), where("sellerID", "==", userinfo));
@@ -52,11 +54,29 @@ const OrderHistory = ({ navigation, route }) => {
     return unsubscribe;
   }, [navigation])
 
+  useEffect(() => {
+    setIsLoading(true);
+    const q = query(collection(db, "Orders"), where("sellerID", "==", userinfo), where("status", "==", "Delivered"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      setDeliveredProducts(data);
+      setIsLoading(false);
+    });
+    return unsubscribe;
+  }, [navigation])
+
   const FirstRoute = () => (
     <ScrollView>
       <View style={{
         marginTop: 10,
-        marginBottom: 10
+        marginBottom: 10,
+        paddingHorizontal: 10,
       }}>
         {isLoading ?
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
@@ -75,16 +95,20 @@ const OrderHistory = ({ navigation, route }) => {
   const SecondRoute = () => (
     <ScrollView contentContainerStyle={{
       marginTop: 10,
-      marginBottom: 10
+      marginBottom: 10,
+      paddingHorizontal: 10,
     }}>
-      <Text></Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+        <Text>There is no hold item to show</Text>
+      </View>
     </ScrollView>
   );
 
   const ThirdRoute = () => (
     <ScrollView contentContainerStyle={{
       marginTop: 10,
-      marginBottom: 10
+      marginBottom: 10,
+      paddingHorizontal: 10,
     }}>
       {isLoading ?
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
@@ -101,9 +125,28 @@ const OrderHistory = ({ navigation, route }) => {
 
   const FourthRoute = () => (
     <ScrollView contentContainerStyle={{
-      paddingBottom: 60
+      marginTop: 10,
+      marginBottom: 10,
+      paddingHorizontal: 10,
     }}>
-      <Text></Text>
+      {
+        deliverdProducts === [] ?
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+            <Text>There is no delivered item to show</Text>
+          </View> :
+          <>
+            {isLoading ?
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+              </View>
+              : <>
+                {deliverdProducts.map(({ data, id }) => (
+                  <AllOrders data={data} key={id} location={"Delivered"} id={id} />
+                ))}
+              </>
+            }
+          </>
+      }
     </ScrollView>
   );
 
@@ -221,7 +264,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: COLOURS.white,
-    paddingHorizontal: 10,
     marginTop: 1
   },
   tabBar: {

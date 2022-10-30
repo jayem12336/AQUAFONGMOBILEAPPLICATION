@@ -15,6 +15,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { addDoc, collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../../../../utils/firebase';
 import Loader from '../../../../components/Loader/Loader';
+import SelectDropdown from 'react-native-select-dropdown';
+
+const countries = ["Gcash(not available)", "Cash on Delivery"]
 
 const PurchaseScreen = ({ navigation, route }) => {
 
@@ -24,6 +27,8 @@ const PurchaseScreen = ({ navigation, route }) => {
 
   const [loading, setLoading] = useState(false);
 
+  const [handlePaymentMethod, setHandlePaymentMethod] = useState('');
+
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "users", userinfo), (doc) => {
       setBuyerData(doc.data());
@@ -32,48 +37,53 @@ const PurchaseScreen = ({ navigation, route }) => {
   }, [navigation])
 
   const placeOrder = () => {
-    Alert.alert(
-      "Notification",
-      "Are you sure you want to place order?",
-      [
-        {
-          text: "No",
-          onPress: () => {
-            setLoading(false);
+    if (handlePaymentMethod === '') {
+      Alert.alert("Please select payment method to proceed!")
+    } else {
+      Alert.alert(
+        "Notification",
+        "Are you sure you want to place order?",
+        [
+          {
+            text: "No",
+            onPress: () => {
+              setLoading(false);
+            },
+            style: "cancel"
           },
-          style: "cancel"
-        },
-        {
-          text: "Yes", onPress: () => {
-            setLoading(true)
-            addDoc(collection(db, "Orders"), {
-              productName: productID.productName,
-              productPrice: productID.productPrice,
-              sellerID: productID.userID,
-              productDescription: productID.productDescription,
-              rating: productID.rating,
-              productImage: productID.productImage,
-              quantity: quantity,
-              buyerID: userinfo,
-              shopID: productID.shopID,
-              prodID: productID.prodID,
-              parentProdID: productID.parentProdID,
-              dateOrder: new Date().toISOString(),
-              status: "Ordered",
-            }).then(() => {
-              const cityRef = doc(db, 'feedproducts', productID.prodID);
-              setDoc(cityRef, { productQuantity: productID.productQuantity - quantity }, { merge: true })
-              .then(() => {
-                const docRef = doc(db, 'users', productID.userID, 'shop', productID.shopID, 'products', productID.parentProductID);
-                setDoc(docRef, { productQuantity: productID.productQuantity - quantity }, { merge: true })
-                navigation.navigate('PurchaseComplete')
-                setLoading(false)
-              });
-            })
+          {
+            text: "Yes", onPress: () => {
+              setLoading(true)
+              addDoc(collection(db, "Orders"), {
+                productName: productID.productName,
+                productPrice: productID.productPrice,
+                sellerID: productID.userID,
+                productDescription: productID.productDescription,
+                rating: productID.rating,
+                productImage: productID.productImage,
+                quantity: quantity,
+                buyerID: userinfo,
+                shopID: productID.shopID,
+                prodID: productID.prodID,
+                parentProdID: productID.parentProductID,
+                dateOrder: new Date().toISOString(),
+                paymentMethod: handlePaymentMethod,
+                status: "Ordered",
+              }).then(() => {
+                const cityRef = doc(db, 'feedproducts', productID.prodID);
+                setDoc(cityRef, { productQuantity: productID.productQuantity - quantity }, { merge: true })
+                  .then(() => {
+                    const docRef = doc(db, 'users', productID.userID, 'shop', productID.shopID, 'products', productID.parentProductID);
+                    setDoc(docRef, { productQuantity: productID.productQuantity - quantity }, { merge: true })
+                    navigation.navigate('PurchaseComplete')
+                    setLoading(false)
+                  });
+              })
+            }
           }
-        }
-      ]
-    );
+        ]
+      );
+    }
   }
 
   return (
@@ -132,6 +142,36 @@ const PurchaseScreen = ({ navigation, route }) => {
                 <Text style={styles.infoPrice}>
                   &#x20B1; {productID.productPrice}
                 </Text>
+              </View>
+            </View>
+            <View style={styles.paymentMethodContainer}>
+              <Text style={styles.paymentMethodStyle}>
+                Payment Method
+              </Text>
+              <View style={styles.paymentSubContainer}>
+                <View style={styles.paymentAlignment}>
+                  <SelectDropdown
+                    data={countries}
+                    onSelect={(selectedItem) => {
+                      setHandlePaymentMethod(selectedItem)
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                      // text represented after item is selected
+                      // if data array is an array of objects then return selectedItem.property to render after item is selected
+                      return selectedItem
+                    }}
+                    rowTextForSelection={(item, index) => {
+                      // text represented for each item in dropdown
+                      // if data array is an array of objects then return item.property to represent item in dropdown
+                      return item
+                    }}
+                    dropdownStyle={{
+                      marginTop: -25,
+                      borderRadius: 2,
+                    }}
+                  />
+                </View>
+                <MaterialCommunityIcons name="chevron-right" style={styles.iconRightStyle} />
               </View>
             </View>
           </SafeAreaView>
@@ -293,6 +333,54 @@ const styles = StyleSheet.create({
     color: COLOURS.black,
     textTransform: 'uppercase',
     textAlign: 'center'
-  }
+  },
+  paymentMethodContainer: {
+    paddingHorizontal: 16,
+    marginVertical: 10,
+  },
+  paymentMethodStyle: {
+    fontSize: 16,
+    color: COLOURS.black,
+    fontWeight: '500',
+    letterSpacing: 1,
+    marginBottom: 20,
+  },
+  paymentSubContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  paymentAlignment: {
+    flexDirection: 'row',
+    width: '80%',
+    alignItems: 'center',
+  },
+  methodContainer: {
+    color: COLOURS.blue,
+    backgroundColor: COLOURS.backgroundLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 10,
+    marginRight: 18,
+  },
+  methodTextStyle: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: COLOURS.blue,
+    letterSpacing: 1,
+  },
+  methodCaption: {
+    fontSize: 14,
+    color: COLOURS.black,
+    fontWeight: '500',
+  },
+  methodNumber: {
+    fontSize: 12,
+    color: COLOURS.black,
+    fontWeight: '400',
+    lineHeight: 20,
+    opacity: 0.5,
+  },
 
 })

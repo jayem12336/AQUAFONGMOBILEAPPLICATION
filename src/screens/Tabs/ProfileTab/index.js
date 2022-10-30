@@ -23,13 +23,14 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 
 import { auth, db } from '../../../utils/firebase'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 
 const ProfileTab = ({ navigation }) => {
 
     const [userData, setUserData] = useState({});
     const [userID, setUserID] = useState('');
     const [isLoading, setIsLoading] = useState(false)
+    const [orderCount, setOrderCount] = useState();
 
     useEffect(() => {
         setIsLoading(true);
@@ -45,6 +46,26 @@ const ProfileTab = ({ navigation }) => {
         }
         fetchData().catch((error) => {
             console.log(error)
+        })
+    }, [navigation])
+
+    useEffect(() => {
+        auth.onAuthStateChanged((authUser) => {
+            if (authUser) {
+                const q = query(collection(db, "Orders"), where("buyerID", "==", authUser.uid), where("status", "==", "Ordered"));
+                onSnapshot(q, (querySnapshot) => {
+                    const data = [];
+                    querySnapshot.forEach((doc) => {
+                        data.push({
+                            id: doc.id,
+                            data: doc.data()
+                        })
+                    });
+                    setOrderCount(data.length);
+                });
+            } else {
+
+            }
         })
     }, [navigation])
 
@@ -126,11 +147,11 @@ const ProfileTab = ({ navigation }) => {
                                 borderRightColor: '#dddddd',
                                 borderRightWidth: 1
                             }]}>
-                                <Title>140.50</Title>
+                                <Title>&#x20B1;0</Title>
                                 <Caption>Wallet</Caption>
                             </View>
                             <View style={styles.infoBox}>
-                                <Title>0</Title>
+                                <Title>{orderCount}</Title>
                                 <Caption>My Orders</Caption>
                             </View>
                         </View>
@@ -166,7 +187,7 @@ const ProfileTab = ({ navigation }) => {
                                     <Text style={styles.menuItemText}>My Orders</Text>
                                 </View>
                             </TouchableRipple>
-                            <TouchableRipple>
+                            <TouchableRipple onPress={() => navigation.navigate('MyWallet')}>
                                 <View style={styles.menuItem}>
                                     <Icon name="account-check-outline" style={styles.iconColor} size={25} />
                                     <Text style={styles.menuItemText}>My Wallet</Text>

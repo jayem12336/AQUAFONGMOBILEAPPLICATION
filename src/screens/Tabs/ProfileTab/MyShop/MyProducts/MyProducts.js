@@ -20,9 +20,10 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import ItemsComponent from './Items'
 import Sold from './Sold';
-import { collection, getDocs, onSnapshot, query } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../../../utils/firebase';
 import Loader from '../../../../../components/Loader/Loader';
+import AllOrders from './OrderHistory/AllOrders';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
@@ -33,6 +34,8 @@ const MyProducts = ({ navigation, route }) => {
     const [productData, setProductData] = useState([]);
 
     const [isLoading, setIsLoading] = useState(false)
+
+    const [deliveredItem , setDeliveredItem] = useState([]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -50,6 +53,23 @@ const MyProducts = ({ navigation, route }) => {
         });
         return unsubscribe;
     }, [navigation])
+
+    useEffect(() => {
+        setIsLoading(true);
+        const q = query(collection(db, "Orders"), where("sellerID", "==", userinfo), where("status", "==", "Delivered"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const data = [];
+          querySnapshot.forEach((doc) => {
+            data.push({
+              id: doc.id,
+              data: doc.data()
+            })
+          });
+          setDeliveredItem(data);
+          setIsLoading(false);
+        });
+        return unsubscribe;
+      }, [navigation])
 
     const FirstRoute = () => (
         <ScrollView contentContainerStyle={{
@@ -79,7 +99,32 @@ const MyProducts = ({ navigation, route }) => {
     );
 
     const SecondRoute = () => (
-        <Sold />
+        <ScrollView contentContainerStyle={{
+            paddingBottom: 10,
+            paddingTop: 10,
+            paddingHorizontal: 10
+        }}>
+            {
+                deliveredItem === false ?
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                        <Text>There are no sold items to show</Text>
+                    </View> :
+                    <>
+                        {isLoading ?
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                            </View>
+                            : <>
+                                {deliveredItem.map(({ data, id }) => (
+                                    <View key={id}>
+                                        <AllOrders data={data} key={id} location={"Delivered"} id={id} />
+                                    </View>
+                                ))}
+                            </>
+                        }
+                    </>
+            }
+        </ScrollView>
     );
 
     const renderScene = SceneMap({

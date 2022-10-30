@@ -201,10 +201,7 @@ const EditProduct = ({ navigation, route }) => {
               <View style={{ flexDirection: 'row', }}>
                 <TouchableOpacity>
                   <MaterialCommunityIcons
-                    onPress={() => navigation.navigate('MyProducts', {
-                      userID: userID,
-                      shopID: shopID,
-                    })}
+                    onPress={() => navigation.goBack()}
                     name="chevron-left"
                     style={styles.backIconStyle}
                   />

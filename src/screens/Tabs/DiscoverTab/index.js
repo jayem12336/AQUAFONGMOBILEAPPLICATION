@@ -5,7 +5,8 @@ import {
     ScrollView,
     StatusBar,
     TouchableOpacity,
-    Image
+    Image,
+    ActivityIndicator
 } from 'react-native'
 import React, { useState } from 'react';
 import MapView, { Callout, Marker } from 'react-native-maps';
@@ -13,26 +14,60 @@ import { COLOURS } from '../../../utils/database/Database';
 import SearchBar from '../../../components/Searchbar/SearchBar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import { auth, db } from '../../../utils/firebase';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { useEffect } from 'react';
 
-const DiscoverTab = () => {
+const DiscoverTab = ({ navigation }) => {
 
     const [value, setValue] = useState();
+    const [userID, setUserID] = useState('');
+    const [shopList, setShopList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const updateSearch = (value) => {
 
     }
+
+    useEffect(() => {
+        setIsLoading(true);
+        const unsubscribe =
+            auth.onAuthStateChanged((authUser) => {
+                if (authUser) {
+                    setUserID(authUser.uid)
+                    const q = query(collection(db, "shops"), where("userID", "!=", authUser.uid));
+                    onSnapshot(q, (querySnapshot) => {
+                        const data = [];
+                        querySnapshot.forEach((doc) => {
+                            data.push({
+                                id: doc.id,
+                                data: doc.data()
+                            })
+                        });
+                        setShopList(data);
+                        setIsLoading(false);
+                    });
+                } else {
+                    setUserID(null)
+                    setIsLoading(false);
+                }
+            })
+        return unsubscribe;
+    }, [navigation])
+
     return (
         <View style={styles.root}>
             <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
             <View style={styles.headerContainer}>
                 <SearchBar
-                    value={value}
-                    updateSearch={updateSearch}
+                    value={searchTerm}
+                    updateSearch={setSearchTerm}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('CartTab')}>
                     <MaterialCommunityIcons name="cart" style={styles.shoppingBagIcon} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
                     <IonIcons name="mail-outline" style={styles.shoppingBagIcon} />
                 </TouchableOpacity>
             </View>
@@ -66,72 +101,45 @@ const DiscoverTab = () => {
                 </Marker>
             </MapView>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-                <View style={styles.container}>
-                    <View style={{ flexDirection: 'row', }}>
-                        <View>
-                            <Image
-                                source={require('../../../../assets/icons/Shop.png')}
-                                alt="Shop Icon"
-                                style={styles.shopIconStyle}
-                            />
-                        </View>
-                        <View style={styles.addressContainer}>
-                            <Text style={styles.storeNameStyle}>Sheishei Fish Store</Text>
-                            <Text style={styles.addressStyle}>San Rafael Bulacan</Text>
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', }}>
-                        <Text style={styles.textStyle}>Visit</Text>
-                        <IonIcons
-                            name="chatbox-ellipses-outline"
-                            style={styles.messageIcon}
-                        />
-                    </View>
-                </View>
-                <View style={styles.container}>
-                    <View style={{ flexDirection: 'row', }}>
-                        <View>
-                            <Image
-                                source={require('../../../../assets/icons/Shop.png')}
-                                alt="Shop Icon"
-                                style={styles.shopIconStyle}
-                            />
-                        </View>
-                        <View style={styles.addressContainer}>
-                            <Text style={styles.storeNameStyle}>Pet Fisheries</Text>
-                            <Text style={styles.addressStyle}>San Miguel Bulacan</Text>
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', }}>
-                        <Text style={styles.textStyle}>Visit</Text>
-                        <IonIcons
-                            name="chatbox-ellipses-outline"
-                            style={styles.messageIcon}
-                        />
-                    </View>
-                </View>
-                <View style={styles.container}>
-                    <View style={{ flexDirection: 'row', }}>
-                        <View>
-                            <Image
-                                source={require('../../../../assets/icons/Shop.png')}
-                                alt="Shop Icon"
-                                style={styles.shopIconStyle}
-                            />
-                        </View>
-                        <View style={styles.addressContainer}>
-                            <Text style={styles.storeNameStyle}>KokaKola Fish Store</Text>
-                            <Text style={styles.addressStyle}>Baliwag Bulacan</Text>
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', }}>
-                        <Text style={styles.textStyle}>Visit</Text>
-                        <IonIcons
-                            name="chatbox-ellipses-outline"
-                            style={styles.messageIcon}
-                        />
-                    </View>
-                </View>
+                {
+                    shopList === [] ?
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                            <Text>There is no created shop to show</Text>
+                        </View> :
+                        <>
+                            {isLoading ?
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                    <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                                </View>
+                                : <>
+                                    {shopList.filter(({ data }) => data.businessName.toLowerCase().includes(searchTerm.toLowerCase())).map(({ data, id }) => (
+                                        <View style={styles.container} key={id}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <View>
+                                                    <Image
+                                                        source={require('../../../../assets/icons/Shop.png')}
+                                                        alt="Shop Icon"
+                                                        style={styles.shopIconStyle}
+                                                    />
+                                                </View>
+                                                <View style={styles.addressContainer}>
+                                                    <Text style={styles.storeNameStyle}>{data.businessName}</Text>
+                                                    <Text style={styles.addressStyle}>{data.shopLocation}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', marginTop: 5 }}>
+                                                <Text style={styles.textStyle}>Visit</Text>
+                                                <IonIcons
+                                                    name="chatbox-ellipses-outline"
+                                                    style={styles.messageIcon}
+                                                />
+                                            </View>
+                                        </View>
+                                    ))}
+                                </>
+                            }
+                        </>
+                }
             </ScrollView>
         </View>
     )
@@ -236,6 +244,7 @@ const styles = StyleSheet.create({
     },
     addressStyle: {
         marginLeft: 15,
+        marginTop: 5
     },
     textStyle: {
         marginLeft: 15,

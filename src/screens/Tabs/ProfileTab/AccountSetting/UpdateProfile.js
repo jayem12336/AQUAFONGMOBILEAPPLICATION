@@ -44,7 +44,7 @@ const UpdateProfile = ({ navigation, route }) => {
 
     const saveChanges = async (e) => {
         e.preventDefault();
-        if (inputs.fullname === userData.fullname && inputs.address === userData.address && inputs.phone === userData.phone && image === '') {
+        if (inputs.firstName === userData.firstname &&  inputs.lastName === userData.lastname && inputs.address === userData.address && inputs.phone === userData.phone && image === '') {
             Alert.alert(
                 "Notice",
                 "Are you sure you want to save changes?",
@@ -151,8 +151,19 @@ const UpdateProfile = ({ navigation, route }) => {
                                         lastname: inputs.lastName,
                                         fullName: inputs.firstName + " " + inputs.lastName,
                                         phone: inputs.phone,
-                                    }, { merge: true })
+                                    }, { merge: true }).then(async() => {
+                                        const shopRef = doc(db,"shops", userData.shopID);
+                                        await setDoc(shopRef, {
+                                            address: inputs.address,
+                                            email: inputs.email,
+                                            firstname: inputs.firstName,
+                                            lastname: inputs.lastName,
+                                            fullName: inputs.firstName + " " + inputs.lastName,
+                                            phone: inputs.phone,
+                                        }, { merge: true })
+                                    })
                                 }
+                            }).then(() => {
                                 setLoading(false);
                                 Alert.alert("Successfully updated profile");
                                 navigation.navigate("ProfileTab");

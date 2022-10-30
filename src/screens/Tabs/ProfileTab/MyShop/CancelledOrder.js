@@ -1,9 +1,38 @@
-import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { COLOURS } from '../../../../utils/database/Database'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useState } from 'react';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { useEffect } from 'react';
+import { db } from '../../../../utils/firebase';
+import AllOrders from './MyProducts/OrderHistory/AllOrders';
 
-const CancelledOrder = ({navigation}) => {
+const CancelledOrder = ({ navigation, route }) => {
+
+  const { userinfo } = route.params;
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [cancelProducts, setCancelProducts] = useState([]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const q = query(collection(db, "Orders"), where("sellerID", "==", userinfo), where("status", "==", "Cancelled"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      setCancelProducts(data);
+      setIsLoading(false);
+    });
+    return unsubscribe;
+  }, [navigation])
+
   return (
     <View style={styles.root}>
       <StatusBar
@@ -25,6 +54,23 @@ const CancelledOrder = ({navigation}) => {
             </View>
           </View>
         </View>
+        {isLoading ?
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+            <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+          </View>
+          : <>
+            {cancelProducts.map(({ data, id }) => (
+              <View style={{
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+              }}
+                key={id}
+              >
+                <AllOrders data={data} location={"cancelledOrderss"} id={id} />
+              </View>
+            ))}
+          </>
+        }
       </ScrollView>
     </View>
   )

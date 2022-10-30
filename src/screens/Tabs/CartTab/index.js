@@ -4,22 +4,18 @@ import {
     Text,
     ScrollView,
     TouchableOpacity,
-    Image,
-    ToastAndroid,
     StyleSheet,
     ActivityIndicator,
     Alert,
     BackHandler
 } from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Items, COLOURS } from '../../../utils/database/Database';
+import { COLOURS } from '../../../utils/database/Database';
 import { Checkbox } from 'react-native-paper';
 import { db } from '../../../utils/firebase';
 import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import RenderProduct from './RenderProduct/RenderProduct';
-import { async } from '@firebase/util';
 import Loader from '../../../components/Loader/Loader';
 import { useFocusEffect } from '@react-navigation/native';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -30,7 +26,6 @@ const CartTab = ({ navigation, route }) => {
 
     const [checked, setChecked] = useState(false);
 
-    const [product, setProduct] = useState();
     const [total, setTotal] = useState(0);
 
     const [userData, setUserData] = useState({})
@@ -118,9 +113,9 @@ const CartTab = ({ navigation, route }) => {
     const checkOutFunc = async () => {
         if (dataState.length === 0) {
             Alert.alert("Please select any product in the cart to proceed!")
-        }else if(handlePaymentMethod === ''){
+        } else if (handlePaymentMethod === '') {
             Alert.alert("Please select payment method to proceed!")
-        }else {
+        } else {
             setLoading(true)
             for (let index = 0; index < dataState.length; index++) {
                 await addDoc(collection(db, "Orders"), {
@@ -147,20 +142,15 @@ const CartTab = ({ navigation, route }) => {
                             .then(() => {
                                 const shopRef = doc(db, 'users', dataState[index].data.sellerID, 'shop', dataState[index].data.shopID, 'products', dataState[index].data.parentProdID);
                                 setDoc(shopRef, { productQuantity: feedData.productQuantity - dataState[index].data.quantity }, { merge: true })
+                            }).then(async () => {
+                                await deleteDoc(doc(db, "Mycart", userinfo, "CartOrder", dataState[index].id), where("checked", "==", true))
                             })
                     } else {
                         // doc.data() will be undefined in this case
-                        console.log("No such document!");
                     }
                 })
 
             }
-            cartProducts.forEach(async ({ id }) => {
-                const cityRef = doc(db, "Mycart", userinfo, "CartOrder", id);
-                await setDoc(cityRef, {
-                    checked: false
-                }, { merge: true })
-            })
             setLoading(false)
             Alert.alert("Success")
             navigation.navigate('Home')
@@ -211,7 +201,6 @@ const CartTab = ({ navigation, route }) => {
         });
         checkOutFunc();
     }
-    console.log(handlePaymentMethod);
 
     return (
         <View style={styles.root}>
