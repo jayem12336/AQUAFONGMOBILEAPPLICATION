@@ -76,7 +76,7 @@ const MyOrder = ({ navigation, route }) => {
                 marginBottom: 10
             }}>
                 {
-                    toShipProducts === []?
+                    toShipProducts && toShipProducts.length < 1?
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
                             <Text>There is no ordered item to show</Text>
                         </View> :
@@ -105,7 +105,7 @@ const MyOrder = ({ navigation, route }) => {
                 paddingHorizontal: 5
             }}>
                 {
-                    cancelledProducts === [] ?
+                    cancelledProducts && cancelledProducts.length < 1?
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
                             <Text>There is no cancelled item to show</Text>
                         </View> :
@@ -134,7 +134,7 @@ const MyOrder = ({ navigation, route }) => {
                 marginBottom: 10
             }}>
                 {
-                    deliveredProducts === [] ?
+                    deliveredProducts && deliveredProducts.length < 1?
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
                             <Text>There is no products to show</Text>
                         </View> :

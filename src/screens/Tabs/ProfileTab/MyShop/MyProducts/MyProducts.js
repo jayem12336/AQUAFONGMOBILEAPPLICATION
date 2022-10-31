@@ -19,7 +19,6 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import ItemsComponent from './Items'
-import Sold from './Sold';
 import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../../../utils/firebase';
 import Loader from '../../../../../components/Loader/Loader';
@@ -88,7 +87,7 @@ const MyProducts = ({ navigation, route }) => {
                             : <>
                                 {productData.map(({ data, id }) => (
                                     <View key={id}>
-                                        <ItemsComponent data={data} userID={userinfo} shopID={shopID} productID={id} />
+                                        <ItemsComponent data={data} userID={userinfo} shopID={shopID} productID={id} shopDetails={shopDetails}/>
                                     </View>
                                 ))}
                             </>
@@ -105,9 +104,9 @@ const MyProducts = ({ navigation, route }) => {
             paddingHorizontal: 10
         }}>
             {
-                deliveredItem === false ?
+                deliveredItem && deliveredItem.length < 1 ?
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
-                        <Text>There are no sold items to show</Text>
+                        <Text>There are no sold items</Text>
                     </View> :
                     <>
                         {isLoading ?

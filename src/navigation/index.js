@@ -50,6 +50,7 @@ import About from '../screens/Tabs/ProfileTab/About/About';
 import ShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings/ShopSettings';
 import EditShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings/EditShopSettings';
 import MyWallet from '../screens/Tabs/ProfileTab/MyWallet/MyWallet';
+import ShopView from '../screens/Tabs/DiscoverTab/ShopView/ShopView';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -298,6 +299,13 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="CancelledOrder"
                             component={CancelledOrder}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="ShopView"
+                            component={ShopView}
                             initialParams={{
                                 userinfo: user
                             }}

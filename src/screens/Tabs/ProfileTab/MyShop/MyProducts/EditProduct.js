@@ -23,7 +23,7 @@ import { db, storage } from '../../../../../utils/firebase';
 
 const EditProduct = ({ navigation, route }) => {
 
-  const { productData, userID, shopID, productID } = route.params;
+  const { productData, userID, shopID, productID, shopDetails } = route.params;
 
   const [image, setImage] = useState(null);
 
@@ -159,7 +159,9 @@ const EditProduct = ({ navigation, route }) => {
                   navigation.navigate("MyProducts", {
                     userinfo: userID,
                     shopID: shopID,
+                    shopDetails: shopDetails
                   });
+                  Alert.alert("Successfully updated product");
                   setLoading(false);
                 })
               })

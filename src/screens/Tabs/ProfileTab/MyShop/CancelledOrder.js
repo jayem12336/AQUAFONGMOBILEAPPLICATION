@@ -54,22 +54,30 @@ const CancelledOrder = ({ navigation, route }) => {
             </View>
           </View>
         </View>
-        {isLoading ?
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
-            <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
-          </View>
-          : <>
-            {cancelProducts.map(({ data, id }) => (
-              <View style={{
-                paddingHorizontal: 5,
-                paddingVertical: 5,
-              }}
-                key={id}
-              >
-                <AllOrders data={data} location={"cancelledOrderss"} id={id} />
-              </View>
-            ))}
-          </>
+        {
+          cancelProducts && cancelProducts.length < 1 ?
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+              <Text>There is no cancelled order</Text>
+            </View> :
+            <>
+              {isLoading ?
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                  <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                </View>
+                : <>
+                  {cancelProducts.map(({ data, id }) => (
+                    <View style={{
+                      paddingHorizontal: 5,
+                      paddingVertical: 5,
+                    }}
+                      key={id}
+                    >
+                      <AllOrders data={data} location={"cancelledOrderss"} id={id} />
+                    </View>
+                  ))}
+                </>
+              }
+            </>
         }
       </ScrollView>
     </View>

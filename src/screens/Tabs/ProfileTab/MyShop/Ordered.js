@@ -8,7 +8,7 @@ import { db } from '../../../../utils/firebase';
 import AllOrders from './MyProducts/OrderHistory/AllOrders';
 const Ordered = ({ navigation, route }) => {
 
-    const { userinfo } = route.params; 
+    const { userinfo } = route.params;
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -52,22 +52,30 @@ const Ordered = ({ navigation, route }) => {
                         </View>
                     </View>
                 </View>
-                {isLoading ?
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
-                        <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
-                    </View>
-                    : <>
-                        {orderProducts.map(({ data, id }) => (
-                            <View style={{
-                                paddingHorizontal: 5,
-                                paddingVertical: 5,
-                            }}
-                            key={id}
-                            >
-                                <AllOrders data={data} location={"pendingOrder"} id={id}/>
-                            </View>
-                        ))}
-                    </>
+                {
+                    orderProducts && orderProducts.length < 1 ?
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                            <Text>There is no pending order</Text>
+                        </View> :
+                        <>
+                            {isLoading ?
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                                    <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                                </View>
+                                : <>
+                                    {orderProducts.map(({ data, id }) => (
+                                        <View style={{
+                                            paddingHorizontal: 5,
+                                            paddingVertical: 5,
+                                        }}
+                                            key={id}
+                                        >
+                                            <AllOrders data={data} location={"pendingOrder"} id={id} />
+                                        </View>
+                                    ))}
+                                </>
+                            }
+                        </>
                 }
             </ScrollView>
         </View>

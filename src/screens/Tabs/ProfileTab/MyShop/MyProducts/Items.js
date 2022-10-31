@@ -5,7 +5,7 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { db } from '../../../../../utils/firebase';
 import { useNavigation } from '@react-navigation/native';
 
-const Items = ({ data, userID, shopID, productID }) => {
+const Items = ({ data, userID, shopID, productID, shopDetails }) => {
 
     const navigation = useNavigation();
 
@@ -56,6 +56,7 @@ const Items = ({ data, userID, shopID, productID }) => {
                         userID: userID,
                         shopID: shopID,
                         productID: productID,
+                        shopDetails: shopDetails
                     })}>
                         <Text style={styles.btnText}>
                             Edit

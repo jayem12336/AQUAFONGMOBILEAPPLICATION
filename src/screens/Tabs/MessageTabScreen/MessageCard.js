@@ -49,7 +49,7 @@ const MessageCard = ({ data, id, userinfo }) => {
                         {
                             buyerData.photoURL === '' || sellerData.photoURL === ''?
                                 <Avatar.Text
-                                    label={userinfo !== data.sellerID ? sellerData.fullname.substring(0, 1) : buyerData?.fullname.substring(0, 1)}
+                                    label={userinfo !== data.sellerID ? sellerData.fullname?.substring(0, 1) : buyerData.fullname?.substring(0, 1)}
                                     size={50}
                                     style={{ color: COLOURS.white }}
                                 /> :

@@ -78,15 +78,23 @@ const OrderHistory = ({ navigation, route }) => {
         marginBottom: 10,
         paddingHorizontal: 10,
       }}>
-        {isLoading ?
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
-            <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
-          </View>
-          : <>
-            {orderProducts.map(({ data, id }) => (
-              <AllOrders data={data} key={id} location={"allOrders"} id={id} />
-            ))}
-          </>
+        {
+          orderProducts && orderProducts.length < 1 ?
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+              <Text>There is no order to show</Text>
+            </View> :
+            <>
+              {isLoading ?
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                  <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                </View>
+                : <>
+                  {orderProducts.map(({ data, id }) => (
+                    <AllOrders data={data} key={id} location={"allOrders"} id={id} />
+                  ))}
+                </>
+              }
+            </>
         }
       </View>
     </ScrollView>
@@ -110,15 +118,23 @@ const OrderHistory = ({ navigation, route }) => {
       marginBottom: 10,
       paddingHorizontal: 10,
     }}>
-      {isLoading ?
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
-          <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
-        </View>
-        : <>
-          {toShipProducts.map(({ data, id }) => (
-            <AllOrders data={data} key={id} location={"to ship"} id={id} />
-          ))}
-        </>
+      {
+        toShipProducts && toShipProducts.length < 1 ?
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+            <Text>There is no to ship order</Text>
+          </View> :
+          <>
+            {isLoading ?
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
+                <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+              </View>
+              : <>
+                {toShipProducts.map(({ data, id }) => (
+                  <AllOrders data={data} key={id} location={"to ship"} id={id} />
+                ))}
+              </>
+            }
+          </>
       }
     </ScrollView>
   );
@@ -130,7 +146,7 @@ const OrderHistory = ({ navigation, route }) => {
       paddingHorizontal: 10,
     }}>
       {
-        deliverdProducts === [] ?
+        deliverdProducts && deliverdProducts.length < 1 ?
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>
             <Text>There is no delivered item to show</Text>
           </View> :
