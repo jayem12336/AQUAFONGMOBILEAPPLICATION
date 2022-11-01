@@ -13,7 +13,6 @@ import {
 
 import Logo from '../../images/aqualogo.png';
 import CustomButton from '../../components/CustomButton';
-import SocialSignInButtons from '../../components/SocialSignInButtons';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { COLOURS } from '../../utils/database/Database';
@@ -86,30 +85,35 @@ const Login = () => {
     const mapAuthCodeToMessage = (authCode) => {
         switch (authCode) {
             case "auth/wrong-password":
-                return "Password provided is not corrected";
+                return "Password provided is not correct";
             case "auth/invalid-email":
                 return "Email provided is invalid";
+            case "auth/requires-recent-login":
+                return "Sign in error";
+            case "auth/user-not-found":
+                return "User does not exist";
             // Many more authCode mapping here...
             default:
         }
     }
 
-    const login = async() => {
+    const login = async () => {
         setLoading(true);
         try {
             await signInWithEmailAndPassword(auth, inputs.email, inputs.password)
-            .then((userCredentials) => {
-                const user = userCredentials.user;
-                //AsyncStorage.setItem('@userid', user.uid.toString());
-                const jsonValue = JSON.stringify(user)
-                AsyncStorage.setItem('@storage_Key', jsonValue)
-                setLoading(false);
-                navigation.navigate('Home');
-            }).catch((error) => {
-                const errorMessage = error.code;
-                handleError(mapAuthCodeToMessage(errorMessage), 'password');
-                setLoading(false);
-            });
+                .then((userCredentials) => {
+                    const user = userCredentials.user;
+                    //AsyncStorage.setItem('@userid', user.uid.toString());
+                    const jsonValue = JSON.stringify(user)
+                    AsyncStorage.setItem('@storage_Key', jsonValue)
+                    setLoading(false);
+                    navigation.navigate('Home');
+                }).catch((error) => {
+                    const errorMessage = error.code;
+                    handleError(mapAuthCodeToMessage(errorMessage), 'password');
+                    console.log(errorMessage)
+                    setLoading(false);
+                });
         }
         catch (err) {
             console.warn(err)

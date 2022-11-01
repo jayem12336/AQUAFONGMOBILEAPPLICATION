@@ -213,6 +213,7 @@ const CreateProduct = ({ navigation, route }) => {
                     onPress={() => navigation.navigate('MyProducts', {
                       userID: userID,
                       shopID: shopID,
+                      shopDetails: shopDetails
                     })}
                     name="chevron-left"
                     style={styles.backIconStyle}

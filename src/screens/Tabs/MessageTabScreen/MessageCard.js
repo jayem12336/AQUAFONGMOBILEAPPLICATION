@@ -43,6 +43,7 @@ const MessageCard = ({ data, id, userinfo }) => {
             <TouchableOpacity key={id} onPress={() => navigation.navigate('Message', {
                 buyerID: data.buyerID,
                 sellerID: data.sellerID,
+                prodID: data.prodID
             })}>
                 <View style={styles.messageBoxContainer}>
                     <View style={styles.avatarContainer}>

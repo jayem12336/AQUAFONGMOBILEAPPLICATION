@@ -38,10 +38,12 @@ const ShopView = ({ navigation, route }) => {
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const data = [];
             querySnapshot.forEach((doc) => {
-                data.push({
-                    id: doc.id,
-                    data: doc.data()
-                })
+                if(doc.data().productQuantity > 0) {
+                    data.push({
+                        id: doc.id,
+                        data: doc.data()
+                    })
+                }
             });
             setProducts(data);
             setIsLoading(false);

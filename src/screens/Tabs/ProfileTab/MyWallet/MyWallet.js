@@ -13,7 +13,7 @@ const MyWallet = ({ navigation, route }) => {
             <ScrollView>
                 <View style={styles.headerContainer}>
                     <View style={styles.subHeaderContainer}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
                             <MaterialCommunityIcons
                                 name="chevron-left"
                                 style={styles.backIconContainer}

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { GiftedChat } from 'react-native-gifted-chat';
 import { Avatar } from 'react-native-paper';
@@ -9,12 +9,30 @@ import { db } from '../../../utils/firebase';
 
 const Message = ({ navigation, route }) => {
 
-  const { buyerID, sellerID, userinfo } = route.params;
+  const { buyerID, sellerID, userinfo, prodID } = route.params;
 
   const [messages, setMessages] = useState([]);
   const [buyerData, setBuyerData] = useState({});
   const [sellerData, setSellerData] = useState({});
+  const [prodData, setProdData] = useState({});
   const [allMessages, setAllMessages] = useState([]);
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "feedproducts", prodID), (doc) => {
+      setProdData(doc.data());
+    })
+    return unsub;
+  }, [navigation])
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "users", userinfo), (doc) => {
+      setUser(doc.data());
+    })
+    return unsub;
+  }, [navigation])
+
+
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "users", buyerID), (doc) => {
       setBuyerData(doc.data());
@@ -100,13 +118,70 @@ const Message = ({ navigation, route }) => {
           </View>
         </View>
       </View>
+      <View style={{
+        paddingHorizontal: 10,
+        height: '25%'
+      }}>
+        <View style={{
+          marginTop: 10,
+          backgroundColor: COLOURS.white,
+          borderRadius: 10,
+          elevation: 5,
+          width: '100%',
+          padding: 10,
+          paddingVertical: 10,
+        }}
+        >
+          <View style={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexDirection: 'row',
+            paddingHorizontal: 10
+          }}>
+            <View style={{
+              width: '60%'
+            }}>
+              <Image
+                source={{ uri: prodData.productImage }}
+                style={{
+                  width: 100,
+                  height: 100,
+                  resizeMode: 'cover',
+                  borderRadius: 10,
+                }}
+              />
+            </View>
+            <View style={{
+              width: '40%'
+            }}>
+              <Text style={{
+                fontSize: 20,
+                fontWeight: '600',
+                letterSpacing: 1,
+                textAlign: 'right'
+              }}>
+                {prodData.productName}
+              </Text>
+              <Text style={{
+                marginTop: 5,
+                fontSize: 13,
+                fontWeight: '600',
+                letterSpacing: 1,
+                textAlign: 'right'
+              }}>
+                &#x20B1;{prodData.productPrice}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
       <GiftedChat
         messages={messages}
         onSend={messages => onSend(messages)}
         user={{
-          _id: userinfo,
+          _id: userinfo !== sellerID ? sellerID : buyerID,
           name: userinfo !== sellerID ? sellerData.fullname : buyerData?.fullname,
-          avatar: userinfo !== sellerID ? sellerData.photoURL : buyerData?.photoURL,
+          avatar: userinfo !== sellerID ? sellerData.photoURL : buyerData?.photoURL
         }}
 
       />

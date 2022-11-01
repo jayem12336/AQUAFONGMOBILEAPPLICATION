@@ -114,6 +114,7 @@ const NewProductInfo = ({ navigation, route }) => {
             navigation.navigate("Message", {
                 buyerID: userinfo,
                 sellerID:  productInfo.userID,
+                prodID: productID
             })
         } catch (error) {
         }
@@ -316,7 +317,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 16,
-        borderColor: COLOURS.backgroundMedium,
+        borderColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.backgroundPrimary,
         borderBottomWidth: 2
     },
     backIconStyle: {
@@ -330,7 +332,9 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textTransform: 'uppercase',
         marginLeft: 5,
-        letterSpacing: 1
+        letterSpacing: 1,
+        color: COLOURS.white,
+        fontWeight: 'bold'
     },
     container: {
         width: '100%',
@@ -446,10 +450,8 @@ const styles = StyleSheet.create({
     },
     buyNowContainer2: {
         width: '80%',
-        padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLOURS.white
     },
     buyNowSubContainer2: {
         height: '100%',
@@ -458,7 +460,9 @@ const styles = StyleSheet.create({
     buyBtnContainer: {
         borderRadius: 5,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: COLOURS.white,
+        padding: 12,
     },
     buyBtnText: {
         fontSize: 15,

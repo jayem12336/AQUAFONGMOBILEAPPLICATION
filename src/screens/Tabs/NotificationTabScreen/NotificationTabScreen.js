@@ -21,6 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { auth, db } from '../../../utils/firebase';
 import NotificationCard from './NotificationCard';
+import NotificationProduct from './NotificationProduct';
 import Loader from '../../../components/Loader/Loader';
 
 const NotificationTabScreen = ({ navigation }) => {
@@ -28,6 +29,7 @@ const NotificationTabScreen = ({ navigation }) => {
     const [userID, setUserID] = useState('');
     const [isLoading, setIsLoading] = useState(true)
     const [orders, setOrders] = useState([])
+    const [products, setProducts] = useState([])
 
     useEffect(() => {
         auth.onAuthStateChanged((authUser) => {
@@ -50,6 +52,32 @@ const NotificationTabScreen = ({ navigation }) => {
             }
         })
     }, [navigation])
+
+    useEffect(() => {
+        auth.onAuthStateChanged((authUser) => {
+            setIsLoading(true)
+            if (authUser) {
+                const q = query(collection(db, "feedproducts"), where("userID", "==", authUser.uid));
+                onSnapshot(q, (querySnapshot) => {
+                    const data = [];
+                    querySnapshot.forEach((doc) => {
+                        if (doc.data().productQuantity === 0) {
+                            data.push({
+                                id: doc.id,
+                                data: doc.data()
+                            })
+                        }
+                    });
+                    setProducts(data);
+                    setIsLoading(false)
+                });
+            } else {
+                setUserID(null)
+            }
+        })
+    }, [navigation])
+
+    console.log("out of stock: ", products)
 
     return (
         <View style={styles.root}>
@@ -78,6 +106,11 @@ const NotificationTabScreen = ({ navigation }) => {
                             <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
                         </View>
                         : <>
+                            {products.map(({ data, id }) => (
+                                <View key={id}>
+                                    <NotificationProduct data={data} id={id} />
+                                </View>
+                            ))}
                             {orders.map(({ data, id }) => (
                                 <View key={id}>
                                     <NotificationCard data={data} id={id} />

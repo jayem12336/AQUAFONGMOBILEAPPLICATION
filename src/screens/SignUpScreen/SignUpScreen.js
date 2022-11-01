@@ -12,7 +12,6 @@ import {
 import Loader from '../../components/Loader/Loader';
 
 import CustomButton from '../../components/CustomButton';
-import SocialSignInButtons from '../../components/SocialSignInButtons';
 
 import { useNavigation } from '@react-navigation/native';
 import { COLOURS } from '../../utils/database/Database';

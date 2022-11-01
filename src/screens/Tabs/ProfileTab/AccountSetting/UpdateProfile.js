@@ -15,7 +15,6 @@ import { updateEmail, updateProfile } from 'firebase/auth/react-native';
 
 const UpdateProfile = ({ navigation, route }) => {
 
-
     const [errors, setErrors] = useState({});
 
     const [loading, setLoading] = useState(false);
@@ -44,7 +43,7 @@ const UpdateProfile = ({ navigation, route }) => {
 
     const saveChanges = async (e) => {
         e.preventDefault();
-        if (inputs.firstName === userData.firstname &&  inputs.lastName === userData.lastname && inputs.address === userData.address && inputs.phone === userData.phone && image === '') {
+        if (inputs.firstName === userData.firstname &&  inputs.lastName === userData.lastname && inputs.address === userData.address && inputs.phone === userData.phone && inputs.email === userData.email && image === '') {
             Alert.alert(
                 "Notice",
                 "Are you sure you want to save changes?",
@@ -130,7 +129,16 @@ const UpdateProfile = ({ navigation, route }) => {
                         text: "Yes", onPress: async () => {
                             setLoading(true);
                             if (inputs.email !== userData.email) {
-                                updateEmail(auth.currentUser, inputs.email)
+                                updateEmail(auth.currentUser, inputs.email).then(() => {
+                                    // Email updated!
+                                    // ...
+                                    console.log("Email Updated");
+                                  }).catch((error) => {
+                                    // An error occurred
+                                    // ...
+                                    console.log(error);
+                                  });
+                                  
                             }
                             const cityRef = doc(db, "users", userData.ownerId);
                             await setDoc(cityRef, {
