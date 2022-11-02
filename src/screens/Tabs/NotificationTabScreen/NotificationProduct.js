@@ -16,7 +16,7 @@ const NotificationProduct = ({ data, id, navigation }) => {
                     />
                     <View style={styles.notifTextContainer}>
                         <Text style={styles.textStatus}>
-                            Your order {data.productName} is out of stock
+                            Your product {data.productName} is out of stock
                         </Text>
                         <Text>
                             The seller is preparing to ship your order

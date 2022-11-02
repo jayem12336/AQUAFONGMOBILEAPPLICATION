@@ -77,8 +77,6 @@ const NotificationTabScreen = ({ navigation }) => {
         })
     }, [navigation])
 
-    console.log("out of stock: ", products)
-
     return (
         <View style={styles.root}>
             <ScrollView showsVerticalScrollIndicator={false}>

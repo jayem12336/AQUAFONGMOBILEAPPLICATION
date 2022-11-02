@@ -193,33 +193,9 @@ const ShopSettings = ({ navigation, route }) => {
             </ScrollView>
             <View style={styles.footerContainer}>
                 <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    justifyContent: 'center'
                 }}>
                     <View style={{
-                        width: '50%',
-                        alignItems: 'center',
-                    }}>
-                        <TouchableOpacity style={{
-                            padding: 7,
-                            borderColor: COLOURS.backgroundPrimary,
-                            borderWidth: 1,
-                            borderRadius: 5,
-                            width: 120,
-                            height: 40,
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}
-                        disabled
-                        >
-                            <Text style={{
-                                color: COLOURS.backgroundPrimary,
-                                fontWeight: 'bold'
-                            }}>Remove Shop</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{
-                        width: '50%',
                         alignItems: 'center'
                     }}>
                         <TouchableOpacity style={{

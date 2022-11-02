@@ -4,9 +4,11 @@ import { COLOURS } from '../../../../../utils/database/Database'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useState } from 'react';
 import Input from '../../../../../components/Input/Input';
-import { doc, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../../../../../utils/firebase';
 import Loader from '../../../../../components/Loader/Loader';
+import { async } from '@firebase/util';
+import { useEffect } from 'react';
 
 const EditShopSettings = ({ navigation, route }) => {
 
@@ -20,6 +22,8 @@ const EditShopSettings = ({ navigation, route }) => {
   const [image, setImage] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [dataCount, setDataCount] = useState([]);
+  const [smsData, setSmsData] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -29,6 +33,96 @@ const EditShopSettings = ({ navigation, route }) => {
   const handleError = (error, input) => {
     setErrors(prevState => ({ ...prevState, [input]: error }));
   };
+
+  useEffect(() => {
+    const q = query(collection(db, "Orders"), where("shopID", "==", shopID));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      setDataCount(data);
+    });
+    return unsubscribe;
+  }, [navigation])
+
+  useEffect(() => {
+    const sms = query(collection(db, "rooms", userinfo, "chatUsers"), where("shopID", "==", shopID));
+    const unsubscribe = onSnapshot(sms, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      setSmsData(data)
+    });
+    return unsubscribe;
+  }, [navigation])
+  console.log(dataCount);
+  console.log(smsData);
+  const removeShop = () => {
+    if (dataCount.length > 0) {
+      setLoading(false);
+      Alert.alert("Shop cannot be removed. Orders are still pending")
+    } else {
+      Alert.alert(
+        "Warning",
+        "Are you sure you want to delete your shop?",
+        [
+          {
+            text: "No",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          {
+            text: "Yes", onPress: () => {
+              setLoading(true);
+              const q = query(collection(db, "feedproducts"), where("shopID", "==", shopID));
+              //deleteMessages
+              smsData.forEach(({ data, id }) => {
+                const sellermessage = query(collection(db, "rooms", data.buyerID, "chatUsers", data.sellerID, "messages"));
+                onSnapshot(sellermessage, (querySnapshot) => {
+                  querySnapshot.forEach((docref) => {
+                    deleteDoc(doc(db, "rooms", data.buyerID, "chatUsers", data.sellerID, "messages", docref.id))
+                  });
+                })
+                const buyermessage = query(collection(db, "rooms", data.sellerID, "chatUsers", data.buyerID, "messages"));
+                onSnapshot(buyermessage, (querySnapshot) => {
+                  querySnapshot.forEach((refdoc) => {
+                    deleteDoc(doc(db, "rooms", data.sellerID, "chatUsers", data.buyerID, "messages", refdoc.id))
+                  });
+                })
+                deleteDoc(doc(db, "rooms", data.buyerID, "chatUsers", data.sellerID));
+                deleteDoc(doc(db, "rooms", data.sellerID, "chatUsers", data.buyerID));
+              })
+              //deleteProducts
+              onSnapshot(q, (querySnapshot) => {
+                const data = [];
+                querySnapshot.forEach((docref) => {
+                  deleteDoc(doc(db, "feedproducts", docref.data().prodID))
+                });
+              })
+              //deleteWholeShop
+              deleteDoc(doc(db, "shops", shopID)).then(() => {
+                deleteDoc(doc(db, "users", userinfo, "shop", shopID)).then(() => {
+                  const cityRef = doc(db, 'users', userinfo);
+                  setDoc(cityRef, { hasShop: false, shopID: '' }, { merge: true });
+                  setLoading(false);
+                })
+              }) 
+              Alert.alert("Removed Shop")
+              navigation.navigate('ProfileTab')
+            }
+          }
+        ]
+      );
+    }
+  }
 
   const updateSettings = async (e) => {
     e.preventDefault();
@@ -71,8 +165,8 @@ const EditShopSettings = ({ navigation, route }) => {
               await setDoc(cityRef, {
                 businessName: inputs.businessName,
                 shopLocation: inputs.shopLocation,
-              }, { merge: true }).then(async() => {
-                const cityRef = doc(db,"shops", shopID);
+              }, { merge: true }).then(async () => {
+                const cityRef = doc(db, "shops", shopID);
                 await setDoc(cityRef, {
                   businessName: inputs.businessName,
                   shopLocation: inputs.shopLocation,
@@ -80,7 +174,7 @@ const EditShopSettings = ({ navigation, route }) => {
                   setLoading(false);
                   Alert.alert("Successfully updated shop details");
                   navigation.navigate('MyShop', {
-                    shopID: shopID, 
+                    shopID: shopID,
                     userID: userinfo
                   })
                 })
@@ -152,7 +246,7 @@ const EditShopSettings = ({ navigation, route }) => {
               alignItems: 'center',
               justifyContent: 'center'
             }}
-              disabled
+              onPress={removeShop}
             >
               <Text style={{
                 color: COLOURS.backgroundPrimary,

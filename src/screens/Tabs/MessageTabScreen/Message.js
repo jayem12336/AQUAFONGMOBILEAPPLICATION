@@ -60,7 +60,7 @@ const Message = ({ navigation, route }) => {
       );
     });
     return () => unsubscribe();
-  }, []);
+  }, [navigation]);
 
   const onSend = useCallback((messages = []) => {
     setMessages(previousMessages =>
@@ -112,7 +112,7 @@ const Message = ({ navigation, route }) => {
             </TouchableOpacity>
             <View style={styles.textContainer}>
               <Text style={styles.messageStyle}>
-                {userinfo !== sellerID ? sellerData.fullname : buyerData?.fullname}{" "}
+                {userinfo !== sellerID ? sellerData?.fullname : buyerData?.fullname}{" "}
               </Text>
             </View>
           </View>
@@ -179,11 +179,10 @@ const Message = ({ navigation, route }) => {
         messages={messages}
         onSend={messages => onSend(messages)}
         user={{
-          _id: userinfo !== sellerID ? sellerID : buyerID,
-          name: userinfo !== sellerID ? sellerData.fullname : buyerData?.fullname,
-          avatar: userinfo !== sellerID ? sellerData.photoURL : buyerData?.photoURL
+          _id: userinfo === sellerID ? sellerID : buyerID,
+          name: userinfo === sellerID ? sellerData.fullname : buyerData?.fullname,
+          avatar: userinfo === sellerID ? sellerData.photoURL : buyerData.photoURL
         }}
-
       />
     </>
   )

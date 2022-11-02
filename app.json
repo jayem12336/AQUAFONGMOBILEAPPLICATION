@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "aquapong",
-    "slug": "aquapong",
+    "name": "AquaPond Fisheries",
+    "slug": "AquaPond Fisheries",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/icon3.png",
+    "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash2.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FF9967"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,12 +22,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon2.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.jayem.aquapong"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "604f7e1d-51be-4d89-900b-8e38bbb1dafd"
+      }
     }
   }
 }
