@@ -72,7 +72,7 @@ const EditProduct = ({ navigation, route }) => {
       );
     }
     else {
-      if (image !== null) {
+      if (image !== "") {
         setLoading(true);
         const blob = await new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();

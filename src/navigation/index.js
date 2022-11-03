@@ -51,6 +51,7 @@ import ShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings/ShopSet
 import EditShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings/EditShopSettings';
 import MyWallet from '../screens/Tabs/ProfileTab/MyWallet/MyWallet';
 import ShopView from '../screens/Tabs/DiscoverTab/ShopView/ShopView';
+import Reviews from '../screens/Tabs/FeedTab/NewProductInfo/Reviews';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -238,6 +239,13 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="MessageTabScreen"
                             component={MessageTabScreen}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                         <Stack.Screen
+                            name="Reviews"
+                            component={Reviews}
                             initialParams={{
                                 userinfo: user
                             }}

@@ -8,6 +8,7 @@ const Input = ({
   iconName,
   error,
   password,
+  multiline,
   onFocus = () => {},
   ...props
 }) => {
@@ -38,6 +39,7 @@ const Input = ({
             onFocus();
             setIsFocused(true);
           }}
+          multiline={multiline}
           onBlur={() => setIsFocused(false)}
           secureTextEntry={hidePassword}
           style={{color: COLOURS.darkBlue, flex: 1}}

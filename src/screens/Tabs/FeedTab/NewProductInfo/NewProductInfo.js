@@ -8,10 +8,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { addDoc, collection, doc, getDoc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../../../../utils/firebase';
+import Input from '../../../../components/Input/Input';
+import { useNavigation } from '@react-navigation/native';
 
-const NewProductInfo = ({ navigation, route }) => {
+const NewProductInfo = ({ route }) => {
 
     const { productID, userinfo } = route.params;
+
+    const navigation = useNavigation();
 
     const [loading, setLoading] = useState(false);
     const [buyNowButton, setBuyNowButton] = useState(false);
@@ -22,6 +26,18 @@ const NewProductInfo = ({ navigation, route }) => {
 
     const [productInfo, setProductInfo] = useState({});
     const [buyerData, setBuyerData] = useState({});
+    const [reviews, setReviews] = useState([])
+
+    const [inputs, setInputs] = useState({
+        comment: '',
+    })
+
+    const handleOnchange = (text, input) => {
+        setInputs(prevState => ({ ...prevState, [input]: text }));
+    };
+    const handleError = (error, input) => {
+        setErrors(prevState => ({ ...prevState, [input]: error }));
+    };
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "feedproducts", productID), (doc) => {
@@ -37,6 +53,22 @@ const NewProductInfo = ({ navigation, route }) => {
         return unsub;
     }, [navigation])
 
+    useEffect(() => {
+        const q = query(collection(db, "Feedbacks"), where("prodID", "==", productID));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setReviews(data)
+        });
+        return unsubscribe;
+    }, [navigation])
+
+    const [errors, setErrors] = useState({});
     const addToCartBtn = () => {
         Alert.alert(
             "Notification",
@@ -59,11 +91,7 @@ const NewProductInfo = ({ navigation, route }) => {
                             prodID: productInfo.prodID,
                             parentProdID: productInfo.parentProductID,
                             productName: productInfo.productName,
-                            productPrice: productInfo.productPrice,
-                            productDescription: productInfo.productDescription,
                             productImage: productInfo.productImage,
-                            rating: productInfo.rating,
-                            quantity: quantity,
                             checked: false,
                         }).then(() => {
                             setLoading(false);
@@ -113,17 +141,43 @@ const NewProductInfo = ({ navigation, route }) => {
             }
             navigation.navigate("Message", {
                 buyerID: userinfo,
-                sellerID:  productInfo.userID,
+                sellerID: productInfo.userID,
                 prodID: productID
             })
         } catch (error) {
         }
     }
 
+    const sendFeedback = () => {
+        if (inputs.comment === "") {
+            Alert.alert("Please input some comment")
+        } else {
+            setLoading(true);
+            addDoc(collection(db, "Feedbacks"), {
+                buyerID: userinfo,
+                shopID: productInfo.shopID,
+                sellerID: productInfo.userID,
+                prodID: productInfo.prodID,
+                parentProdID: productInfo.parentProductID,
+                productName: productInfo.productName,
+                productPrice: productInfo.productPrice,
+                productDescription: productInfo.productDescription,
+                productImage: productInfo.productImage,
+                quantity: quantity,
+                comment: inputs.comment,
+                dateCreated: new Date().toISOString() 
+            }).then(() => {
+                setLoading(false)
+                Alert.alert("Successfully sent feedback")
+                navigation.navigate('FeedTab')
+            })
+        }
+    }
+
     return (
         <View style={styles.root}>
             <Loader visible={loading} />
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
                 <SafeAreaView>
                     <StatusBar
                         backgroundColor={COLOURS.white}
@@ -154,14 +208,32 @@ const NewProductInfo = ({ navigation, route }) => {
                             marginTop: 10,
                             paddingLeft: 5
                         }}>
-                            <Text style={styles.textStyle}>
-                                {productInfo.productName}
-                            </Text>
+                            <View style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <Text style={styles.textStyle}>
+                                    {productInfo.productName}
+                                </Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('Reviews', {
+                                    reviews: reviews,
+                                })}>
+                                    <Text style={{
+                                        fontSize: 15,
+                                        fontWeight: '500',
+                                        color: COLOURS.blue,
+                                        letterSpacing: 1
+                                    }}>
+                                        Reviews({reviews.length})
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                             <Text style={styles.priceStyle}>
                                 &#x20B1;{productInfo.productPrice}
                             </Text>
                         </View>
-                        <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                        {/* <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                             <Rating
                                 //onFinishRating={(rating) => { Alert.alert('Star Rating: ' + JSON.stringify(rating)); }}
                                 imageSize={28}
@@ -169,7 +241,7 @@ const NewProductInfo = ({ navigation, route }) => {
                                 readonly
                                 style={{ paddingTop: 10 }}
                             />
-                        </View>
+                        </View> */}
                     </View>
                     {
                         buyNowButton === false ?
@@ -182,11 +254,47 @@ const NewProductInfo = ({ navigation, route }) => {
                                         <Text>Concepcion,{'\n'}Bustos, Bulacan</Text>
                                     </View>
                                     <Entypo name="chevron-right" style={{ fontSize: 22, color: COLOURS.backgroundDark, }} />
-                                </View><View>
+                                </View>
+                                {/* <View>
                                     <Text>
                                         Discount Rate 2%~ &#x20B1;{productInfo.productPrice / productInfo.productPrice} (&#x20B1;
                                         {productInfo.productPrice + productInfo.productPrice / 20})
                                     </Text>
+                                </View> */}
+                                <View style={{
+                                    marginTop: 10
+                                }}>
+                                    <Text style={{
+                                        fontSize: 18,
+                                        fontWeight: 'bold',
+                                        letterSpacing: 1
+                                    }}>Feedback(Optional)</Text>
+                                    <Input
+                                        multiline={true}
+                                        label="Comment"
+                                        placeholder="Enter your comment here"
+                                        onChangeText={text => handleOnchange(text, 'comment')}
+                                        onFocus={() => handleError(null, 'comment')}
+                                    />
+                                    <View style={{
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        alignContent: 'center'
+                                    }}>
+                                        <TouchableOpacity style={{
+                                            backgroundColor: COLOURS.blue,
+                                            padding: 10,
+                                            borderRadius: 5
+                                        }}
+                                            onPress={sendFeedback}
+                                        >
+                                            <Text style={{
+                                                fontSize: 13,
+                                                fontWeight: '500',
+                                                color: COLOURS.white
+                                            }}>Submit feedback</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                             :
@@ -240,7 +348,7 @@ const NewProductInfo = ({ navigation, route }) => {
             </ScrollView>
             {
                 buyNowButton === false ?
-                    <View style={styles.footerContainer}>
+                    <View style={styles.footerContainer2}>
                         <View style={{ alignItems: 'center' }}>
                             <View style={styles.buttonContainer}>
                                 <View style={styles.buttonSubContainer}>
@@ -518,6 +626,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         position: 'absolute',
         bottom: 0,
+        backgroundColor: COLOURS.dirtyWhiteBackground
+    },
+    footerContainer2: {
+        width: '100%',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
         backgroundColor: COLOURS.dirtyWhiteBackground
     },
     btnContainer2: {

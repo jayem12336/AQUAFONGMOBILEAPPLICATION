@@ -32,7 +32,7 @@ const UpdateProfile = ({ navigation, route }) => {
         firstLetter: userData.fullname.substring(0, 1)
     })
 
-    const [image, setImage] = useState(userData.photoURL);
+    const [image, setImage] = useState(null);
 
     const handleOnchange = (text, input) => {
         setInputs(prevState => ({ ...prevState, [input]: text }));
@@ -43,7 +43,7 @@ const UpdateProfile = ({ navigation, route }) => {
 
     const saveChanges = async (e) => {
         e.preventDefault();
-        if (inputs.firstName === userData.firstname &&  inputs.lastName === userData.lastname && inputs.address === userData.address && inputs.phone === userData.phone && inputs.email === userData.email && image === '') {
+        if (inputs.firstName === userData.firstname && inputs.lastName === userData.lastname && inputs.address === userData.address && inputs.phone === userData.phone && inputs.email === userData.email && image === '') {
             Alert.alert(
                 "Notice",
                 "Are you sure you want to save changes?",
@@ -110,6 +110,7 @@ const UpdateProfile = ({ navigation, route }) => {
                     () => {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                             setImage(downloadURL);
+                            inputs.photoURL = downloadURL;
                         })
                     }
                 )
@@ -133,12 +134,12 @@ const UpdateProfile = ({ navigation, route }) => {
                                     // Email updated!
                                     // ...
                                     console.log("Email Updated");
-                                  }).catch((error) => {
+                                }).catch((error) => {
                                     // An error occurred
                                     // ...
                                     console.log(error);
-                                  });
-                                  
+                                });
+
                             }
                             const cityRef = doc(db, "users", userData.ownerId);
                             await setDoc(cityRef, {
@@ -148,7 +149,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                 firstname: inputs.firstName,
                                 lastname: inputs.lastName,
                                 phone: inputs.phone,
-                                photoURL: image
+                                photoURL: inputs.photoURL,
                             }, { merge: true }).then(async () => {
                                 if (userData.hasShop === true) {
                                     const docRef = doc(db, "users", userData.ownerId, "shop", userData.shopID);
@@ -159,8 +160,8 @@ const UpdateProfile = ({ navigation, route }) => {
                                         lastname: inputs.lastName,
                                         fullName: inputs.firstName + " " + inputs.lastName,
                                         phone: inputs.phone,
-                                    }, { merge: true }).then(async() => {
-                                        const shopRef = doc(db,"shops", userData.shopID);
+                                    }, { merge: true }).then(async () => {
+                                        const shopRef = doc(db, "shops", userData.shopID);
                                         await setDoc(shopRef, {
                                             address: inputs.address,
                                             email: inputs.email,
@@ -231,14 +232,14 @@ const UpdateProfile = ({ navigation, route }) => {
                             alignItems: 'center',
                         }}>
                             {
-                                image === '' ?
+                                inputs.photoURL === '' ?
                                     <Avatar.Text
                                         label={inputs.firstLetter}
                                         size={80}
                                         style={{ color: COLOURS.white }}
                                     /> :
                                     <Avatar.Image
-                                        source={{ uri: image }}
+                                        source={{ uri: image === null ?  inputs.photoURL : image }}
                                         size={80}
                                     />
                             }
