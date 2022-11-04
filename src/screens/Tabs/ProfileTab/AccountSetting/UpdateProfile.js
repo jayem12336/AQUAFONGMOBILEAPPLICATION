@@ -41,9 +41,10 @@ const UpdateProfile = ({ navigation, route }) => {
         setErrors(prevState => ({ ...prevState, [input]: error }));
     };
 
-    const saveChanges = async (e) => {
-        e.preventDefault();
-        if (inputs.firstName === userData.firstname && inputs.lastName === userData.lastname && inputs.address === userData.address && inputs.phone === userData.phone && inputs.email === userData.email && image === '') {
+    console.log(userData)
+
+    const saveChanges = async () => {
+        if (inputs.firstName === userData.firstname && inputs.lastName === userData.lastname && inputs.address === userData.address && inputs.phone === userData.phone && inputs.email === userData.email && image === null) {
             Alert.alert(
                 "Notice",
                 "Are you sure you want to save changes?",
@@ -60,7 +61,7 @@ const UpdateProfile = ({ navigation, route }) => {
                 ]
             );
         } else {
-            if (image !== "") {
+            if (image !== null) {
                 const blob = await new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
                     xhr.onload = function () {

@@ -58,8 +58,6 @@ const PurchaseScreen = ({ navigation, route }) => {
                 productName: productID.productName,
                 productPrice: productID.productPrice,
                 sellerID: productID.userID,
-                productDescription: productID.productDescription,
-                rating: productID.rating,
                 productImage: productID.productImage,
                 quantity: quantity,
                 buyerID: userinfo,

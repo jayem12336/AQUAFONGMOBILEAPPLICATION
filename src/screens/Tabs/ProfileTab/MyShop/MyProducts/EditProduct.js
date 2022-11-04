@@ -48,8 +48,7 @@ const EditProduct = ({ navigation, route }) => {
     setErrors(prevState => ({ ...prevState, [input]: error }));
   };
 
-  const updateItem = async (e) => {
-    e.preventDefault();
+  const updateItem = async () => {
     if (inputs.productName === '' && inputs.productPrice === '' && image === null) {
       Alert.alert(
         "Notice",
@@ -72,7 +71,7 @@ const EditProduct = ({ navigation, route }) => {
       );
     }
     else {
-      if (image !== "") {
+      if (image !== null) {
         setLoading(true);
         const blob = await new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();

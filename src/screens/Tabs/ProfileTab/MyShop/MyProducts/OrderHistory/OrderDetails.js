@@ -341,7 +341,7 @@ const OrderDetails = ({ route, navigation }) => {
                         </View>
                     </View>
                     {
-                        location === "Delivered" ?
+                        location === "Delivered" || location === "PurchaseHistory" ?
                             <View style={{
                                 marginTop: 10,
                                 backgroundColor: COLOURS.white,

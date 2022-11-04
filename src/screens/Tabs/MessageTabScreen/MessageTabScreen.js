@@ -38,7 +38,7 @@ const MessageTabScreen = ({ navigation, route }) => {
             setUsers(data);
             setLoading(false);
         });
-        setIsLoading(false);
+        setLoading(false);
         return unsub;
     }, [navigation]);
     return (

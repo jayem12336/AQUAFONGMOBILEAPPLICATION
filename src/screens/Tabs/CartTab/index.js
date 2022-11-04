@@ -20,13 +20,13 @@ import Loader from '../../../components/Loader/Loader';
 import { useFocusEffect } from '@react-navigation/native';
 import SelectDropdown from 'react-native-select-dropdown';
 
-const countries = ["Gcash", "Cash on Delivery"]
+const countries = ["Gcash(not available)", "Cash on Delivery"]
 const CartTab = ({ navigation, route }) => {
     const { userinfo } = route.params;
 
     const [checked, setChecked] = useState(false);
 
-    const [total, setTotal] = useState(0);
+    const [total, setTotal] = useState();
 
     const [userData, setUserData] = useState({})
     const [cartProducts, setCartProducts] = useState([]);
@@ -100,7 +100,7 @@ const CartTab = ({ navigation, route }) => {
                     data: doc.data()
                 })
                 total.push({
-                    priceTotal: doc.data().productPrice * doc.data().quantity,
+                    priceTotal: doc.data().productPrice * doc.data().productQuantity,
                 })
             });
             setDataState(data);
@@ -123,10 +123,8 @@ const CartTab = ({ navigation, route }) => {
                     productName: dataState[index].data.productName,
                     productPrice: dataState[index].data.productPrice,
                     sellerID: dataState[index].data.sellerID,
-                    productDescription: dataState[index].data.productDescription,
-                    rating: dataState[index].data.rating,
                     productImage: dataState[index].data.productImage,
-                    quantity: dataState[index].data.quantity,
+                    quantity: dataState[index].data.productQuantity,
                     buyerID: userinfo,
                     shopID: dataState[index].data.shopID,
                     prodID: dataState[index].data.prodID,
@@ -139,10 +137,10 @@ const CartTab = ({ navigation, route }) => {
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         const feedData = Object.assign({}, docSnap.data());
-                        setDoc(docRef, { productQuantity: feedData.productQuantity - dataState[index].data.quantity }, { merge: true })
+                        setDoc(docRef, { productQuantity: feedData.productQuantity - dataState[index].data.productQuantity }, { merge: true })
                             .then(() => {
                                 const shopRef = doc(db, 'users', dataState[index].data.sellerID, 'shop', dataState[index].data.shopID, 'products', dataState[index].data.parentProdID);
-                                setDoc(shopRef, { productQuantity: feedData.productQuantity - dataState[index].data.quantity }, { merge: true })
+                                setDoc(shopRef, { productQuantity: feedData.productQuantity - dataState[index].data.productQuantity }, { merge: true })
                             }).then(async () => {
                                 await deleteDoc(doc(db, "Mycart", userinfo, "CartOrder", dataState[index].id), where("checked", "==", true))
                             })
@@ -159,13 +157,13 @@ const CartTab = ({ navigation, route }) => {
     }
 
     //get total price of all items in the cart
-    const getTotal = data => {
-        let total = 0;
+    const getTotal = (data) => {
+        let totalvalue = 0;
         for (let index = 0; index < data.length; index++) {
             let productPrice = data[index].priceTotal;
-            total += productPrice;
+            totalvalue += productPrice;
         }
-        setTotal(total);
+        setTotal(totalvalue);
     };
 
     const onChecked = async () => {

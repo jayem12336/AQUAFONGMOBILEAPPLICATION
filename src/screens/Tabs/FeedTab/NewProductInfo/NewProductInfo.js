@@ -91,7 +91,9 @@ const NewProductInfo = ({ route }) => {
                             prodID: productInfo.prodID,
                             parentProdID: productInfo.parentProductID,
                             productName: productInfo.productName,
+                            productPrice: productInfo.productPrice,
                             productImage: productInfo.productImage,
+                            productQuantity: quantity,
                             checked: false,
                         }).then(() => {
                             setLoading(false);
