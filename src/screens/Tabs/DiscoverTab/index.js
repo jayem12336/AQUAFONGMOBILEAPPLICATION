@@ -53,6 +53,7 @@ const DiscoverTab = ({ navigation }) => {
                     setIsLoading(false);
                 }
             })
+        setIsLoading(false);
         return unsubscribe;
     }, [navigation])
 

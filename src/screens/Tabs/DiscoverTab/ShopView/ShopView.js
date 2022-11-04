@@ -48,6 +48,7 @@ const ShopView = ({ navigation, route }) => {
             setProducts(data);
             setIsLoading(false);
         });
+        setIsLoading(false);
         return unsubscribe;
     }, [navigation])
 

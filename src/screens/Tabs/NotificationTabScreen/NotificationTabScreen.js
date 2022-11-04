@@ -75,6 +75,7 @@ const NotificationTabScreen = ({ navigation }) => {
                 setUserID(null)
             }
         })
+        setIsLoading(false);
     }, [navigation])
 
     return (

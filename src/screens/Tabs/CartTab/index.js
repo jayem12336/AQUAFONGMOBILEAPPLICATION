@@ -84,6 +84,7 @@ const CartTab = ({ navigation, route }) => {
             setCartProducts(data);
             setIsLoading(false);
         });
+        setIsLoading(false);
         return unsubscribe;
     }, [navigation]);
 

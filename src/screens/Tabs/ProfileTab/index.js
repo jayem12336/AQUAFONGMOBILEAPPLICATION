@@ -47,6 +47,7 @@ const ProfileTab = ({ navigation }) => {
         fetchData().catch((error) => {
             console.log(error)
         })
+        setIsLoading(false);
     }, [navigation])
 
     useEffect(() => {

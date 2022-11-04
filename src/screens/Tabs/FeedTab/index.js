@@ -37,11 +37,11 @@ const FeedTab = ({ navigation }) => {
             auth.onAuthStateChanged((authUser) => {
                 if (authUser) {
                     setUserID(authUser.uid)
-                    const q = query(collection(db, "feedproducts"),where("userID", "!=", authUser.uid));
+                    const q = query(collection(db, "feedproducts"), where("userID", "!=", authUser.uid));
                     onSnapshot(q, (querySnapshot) => {
                         const data = [];
                         querySnapshot.forEach((doc) => {
-                            if(doc.data().productQuantity > 0) {
+                            if (doc.data().productQuantity > 0) {
                                 data.push({
                                     id: doc.id,
                                     data: doc.data()
@@ -56,6 +56,7 @@ const FeedTab = ({ navigation }) => {
                     setIsLoading(false);
                 }
             })
+        setIsLoading(false);
         return unsubscribe;
     }, [navigation])
 
@@ -101,7 +102,7 @@ const FeedTab = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <View style={{ width: '100%' }}>
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 80}}>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
                     <View style={styles.productContainer}>
                         {isLoading ?
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>

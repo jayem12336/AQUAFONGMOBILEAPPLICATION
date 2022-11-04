@@ -9,13 +9,14 @@ import {
 } from 'firebase/auth/react-native';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCKoV0D9vmUv7XrdV2E0D31TemM7FAqYBw",
-    authDomain: "aquafondfisheries.firebaseapp.com",
-    projectId: "aquafondfisheries",
-    storageBucket: "aquafondfisheries.appspot.com",
-    messagingSenderId: "832873044598",
-    appId: "1:832873044598:web:b6d767df221716bc0f1d57"
+    apiKey: "AIzaSyB_EVz1vpdcFkUXrsZth6IejQ7J-4j2vhI",
+    authDomain: "aquafongfisheries.firebaseapp.com",
+    projectId: "aquafongfisheries",
+    storageBucket: "aquafongfisheries.appspot.com",
+    messagingSenderId: "479940922928",
+    appId: "1:479940922928:web:155ed9c494315e7583e7f5"
   };
+
 const app = initializeApp(firebaseConfig);
 
 const auth = initializeAuth(app, {
