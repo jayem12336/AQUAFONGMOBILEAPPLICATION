@@ -22,61 +22,77 @@ import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { auth, db } from '../../../utils/firebase';
 import NotificationCard from './NotificationCard';
 import NotificationProduct from './NotificationProduct';
+import NotificationShop from './NotificationShop';
 import Loader from '../../../components/Loader/Loader';
 
-const NotificationTabScreen = ({ navigation }) => {
+const NotificationTabScreen = ({ navigation, route }) => {
 
-    const [userID, setUserID] = useState('');
-    const [isLoading, setIsLoading] = useState(true)
+    const { userinfo } = route.params;
+    const [isLoading, setIsLoading] = useState(false)
     const [orders, setOrders] = useState([])
     const [products, setProducts] = useState([])
+    const [notificationShop, setNotificationShop] = useState([])
+    const [userData, setUserData] = useState([]);
 
     useEffect(() => {
-        auth.onAuthStateChanged((authUser) => {
-            setIsLoading(true)
-            if (authUser) {
-                const q = query(collection(db, "Orders"), where("buyerID", "==", authUser.uid), where("status", "in", ['To Ship', 'Cancelled', 'Delivered']));
-                onSnapshot(q, (querySnapshot) => {
-                    const data = [];
-                    querySnapshot.forEach((doc) => {
-                        data.push({
-                            id: doc.id,
-                            data: doc.data()
-                        })
-                    });
-                    setOrders(data);
-                    setIsLoading(false)
-                });
-            } else {
-                setUserID(null)
-            }
-        })
-    }, [navigation])
-
-    useEffect(() => {
-        auth.onAuthStateChanged((authUser) => {
-            setIsLoading(true)
-            if (authUser) {
-                const q = query(collection(db, "feedproducts"), where("userID", "==", authUser.uid));
-                onSnapshot(q, (querySnapshot) => {
-                    const data = [];
-                    querySnapshot.forEach((doc) => {
-                        if (doc.data().productQuantity === 0) {
-                            data.push({
-                                id: doc.id,
-                                data: doc.data()
-                            })
-                        }
-                    });
-                    setProducts(data);
-                    setIsLoading(false)
-                });
-            } else {
-                setUserID(null)
-            }
+        setIsLoading(true);
+        onSnapshot(doc(db, "users", userinfo), (doc) => {
+            setUserData(doc.data());
         })
         setIsLoading(false);
     }, [navigation])
+
+    useEffect(() => {
+        const q = query(collection(db, "Orders"), where("buyerID", "==", userinfo), where("status", "in", ['To Ship', 'Cancelled', 'Delivered']));
+        onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setOrders(data);
+            setIsLoading(false)
+        });
+    }, [navigation])
+
+    useEffect(() => {
+        setIsLoading(true)
+        const q = query(collection(db, "feedproducts"), where("userID", "==", userinfo));
+        onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                if (doc.data().productQuantity === 0) {
+                    data.push({
+                        id: doc.id,
+                        data: doc.data()
+                    })
+                }
+            });
+            setProducts(data);
+            setIsLoading(false)
+        });
+        setIsLoading(false);
+    }, [navigation])
+
+    useEffect(() => {
+        const q = query(collection(db, "notifications"), where("ownerID", "==", userinfo));
+        onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                if(doc.data().status !== "verified") {
+                    data.push({
+                        id: doc.id,
+                        data: doc.data()
+                    })
+                }
+            });
+            setNotificationShop(data);
+        });
+    }, [navigation])
+
+    console.log(notificationShop)
 
     return (
         <View style={styles.root}>
@@ -105,6 +121,11 @@ const NotificationTabScreen = ({ navigation }) => {
                             <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
                         </View>
                         : <>
+                            {notificationShop.map(({ data, id }) => (
+                                <View key={id}>
+                                    <NotificationShop data={data} id={id} />
+                                </View>
+                            ))}
                             {products.map(({ data, id }) => (
                                 <View key={id}>
                                     <NotificationProduct data={data} id={id} />

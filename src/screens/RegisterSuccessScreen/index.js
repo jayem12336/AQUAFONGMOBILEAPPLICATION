@@ -36,7 +36,7 @@ const RegisterSuccessScreen = ({navigation}) => {
                         }}>
                         <TouchableOpacity>
                             <MaterialCommunityIcons
-                                onPress={() => navigation.goBack()}
+                                onPress={() => navigation.navigate("Home")}
                                 name="chevron-left"
                                 style={{
                                     fontSize: 20,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     buttonStyle: {
         width: '80%',
         height: '90%',
-        backgroundColor: COLOURS.backgroundMedium,
+        backgroundColor: COLOURS.backgroundLight,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         letterSpacing: 1,
         color: COLOURS.black,
+        fontWeight: '500',
         textTransform: 'uppercase',
     },
 })

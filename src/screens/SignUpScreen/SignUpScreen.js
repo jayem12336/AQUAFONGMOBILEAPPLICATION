@@ -215,7 +215,7 @@ const SignUp = () => {
                     <Input
                         onChangeText={text => handleOnchange(text, 'address')}
                         onFocus={() => handleError(null, 'address')}
-                        iconName="account-outline"
+                        iconName="map-marker-outline"
                         label="Address"
                         placeholder="Enter your address"
                         error={errors.address}

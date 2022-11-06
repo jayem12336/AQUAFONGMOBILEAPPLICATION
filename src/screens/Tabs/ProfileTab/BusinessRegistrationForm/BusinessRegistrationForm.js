@@ -34,22 +34,25 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
     const [inputs, setInputs] = useState({
         businessName: '',
         shopLocation: '',
+        shopImage: null,
     })
 
     const [selected, setSelected] = useState("");
 
     const data = [
-        { key: '1', value: 'Philhealth' },
-        { key: '2', value: 'TinID' },
-        { key: '3', value: 'Drivers Licence' },
-        { key: '4', value: 'Passport' },
-        { key: '5', value: 'Voters ID' },
-        { key: '6', value: 'Postal ID' },
+        { key: '0', value: 'Philhealth' },
+        { key: '1', value: 'TinID' },
+        { key: '2', value: 'Drivers Licence' },
+        { key: '3', value: 'Passport' },
+        { key: '4', value: 'Voters ID' },
+        { key: '5', value: 'Postal ID' },
     ]
 
     const [image, setImage] = useState(null);
+    const [image2, setImage2] = useState(null);
 
     const [errors, setErrors] = useState({});
+    const [errorMessage2, setErrorMessage2] = useState('');
     const [loading, setLoading] = useState(false);
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -67,6 +70,23 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
 
         if (!result.cancelled) {
             setImage(result.uri);
+        }
+
+    };
+
+    const pickImage2 = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("You've refused to allow this appp to access your photos!");
+            return;
+        }
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+        });
+
+        if (!result.cancelled) {
+            setImage2(result.uri);
         }
 
     };
@@ -90,12 +110,18 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
             isValid = false;
         }
 
+        if (image2 === null) {
+            setErrorMessage2('Please select image shop');
+            isValid = false;
+        }
+
         if (isValid) {
             createShop();
         }
     };
 
     const createShop = async () => {
+        setLoading(true);
         const blob = await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.onload = function () {
@@ -109,6 +135,19 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
             xhr.send(null);
         });
 
+        const blobshop = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                resolve(xhr.response);
+            }
+            xhr.onerror = function () {
+                reject(new TypeError('Network request failed'));
+            }
+            xhr.responseType = 'blob';
+            xhr.open('GET', image2, true);
+            xhr.send(null);
+        });
+
         const metadata = {
             contentType: 'image/jpeg'
         };
@@ -116,9 +155,44 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
         const profileImgsRef = ref(storage, 'shopimages/' + new Date().toISOString());
         const uploadTask = uploadBytesResumable(profileImgsRef, blob, metadata);
 
+        const imageShopRef = ref(storage, 'shopsimages/' + new Date().toISOString());
+        const uploadTaskShop = uploadBytesResumable(imageShopRef, blobshop, metadata);
+
+        uploadTaskShop.on('state_changed',
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            switch (snapshot.state) {
+                case 'paused':
+                    break;
+                case 'running':
+                    break;
+            }
+        },
+        (error) => {
+            // A full list of error codes is available at
+            // https://firebase.google.com/docs/storage/web/handle-errors
+            switch (error.code) {
+                case 'storage/unauthorized':
+                    // User doesn't have permission to access the object
+                    break;
+                case 'storage/canceled':
+                    // User canceled the upload
+                    break;
+                // ...
+                case 'storage/unknown':
+                    // Unknown error occurred, inspect error.serverResponse
+                    break;
+            }
+        },
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                inputs.shopImage = downloadURL
+            })
+        }
+    )
+
         uploadTask.on('state_changed',
             (snapshot) => {
-                setLoading(true);
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 switch (snapshot.state) {
                     case 'paused':
@@ -142,22 +216,24 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                         // Unknown error occurred, inspect error.serverResponse
                         break;
                 }
-                setLoading(false)
             },
             () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    addDoc(collection(db, "users", userinfo, "shop"), {
+                getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                    await addDoc(collection(db, "users", userinfo, "shop"), {
                         businessName: inputs.businessName,
                         shopLocation: inputs.shopLocation,
                         fullName: userData.fullname,
                         contactNo: userData.phone,
-                        imageShop: downloadURL,
+                        idImage: downloadURL,
+                        imageShop: inputs.shopImage,
                         userID: userinfo,
                         dateCreated: new Date().toISOString(),
                         isShopVerified: false,
-                    }).then((docRef) => {
+                        typeofID: data[selected].value,
+                        status: '',
+                    }).then(async (docRef) => {
                         const shopRef = doc(db, 'shops', docRef.id);
-                        setDoc(shopRef, {
+                        await setDoc(shopRef, {
                             userID: userinfo,
                             shopID: docRef.id,
                             sellerID: userinfo,
@@ -166,9 +242,14 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                             shopLocation: inputs.shopLocation,
                             fullName: userData.fullname,
                             contactNo: userData.phone,
-                            imageShop: downloadURL,
+                            idImage: downloadURL,
+                            imageShop: inputs.shopImage,
                             dateCreated: new Date().toISOString(),
+                            typeofID: data[selected].value,
+                            status: '',
                         }).then(() => {
+                            const anotherRef = doc(db, 'users', userinfo, 'shop', docRef.id);
+                            setDoc(anotherRef, { imageShop: inputs.shopImage }, { merge: true });
                             const cityRef = doc(db, 'users', userinfo);
                             setDoc(cityRef, { hasShop: true, shopID: docRef.id }, { merge: true });
                             setInputs({});
@@ -180,7 +261,7 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                             });
                             Alert.alert("Success");
                             setLoading(false);
-                        }) 
+                        })
                     })
                 })
             }
@@ -262,6 +343,27 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                             <View style={styles.imageContainer}>
                                 {image && <Image source={{ uri: image }} style={styles.imageStyle} />}
                             </View>
+                        </View>
+                        <View style={styles.textFieldSubContainer}>
+                            <Text style={{ marginBottom: 10 }}>
+                                Shop Image *
+                            </Text>
+                            <View style={styles.btnValidIDContainer}>
+                                <TouchableOpacity
+                                    style={styles.buttonStyle}
+                                    onPress={pickImage2}
+                                >
+                                    <Text style={styles.buttonText}>
+                                        Insert Shop Image
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.imageContainer}>
+                                {image2 && <Image source={{ uri: image2 }} style={styles.imageStyle} />}
+                            </View>
+                            {errorMessage2 &&
+                                <Text style={{ marginTop: 7, color: COLOURS.red, fontSize: 12 }}>{errorMessage2}</Text>
+                            }
                         </View>
                     </View>
                     <View style={styles.btnContainer}>
@@ -377,7 +479,7 @@ const styles = StyleSheet.create({
         width: 200,
     },
     buttonStyle: {
-        width: '86%',
+        width: '100%',
         height: '90%',
         backgroundColor: COLOURS.backgroundPrimary,
         borderRadius: 20,

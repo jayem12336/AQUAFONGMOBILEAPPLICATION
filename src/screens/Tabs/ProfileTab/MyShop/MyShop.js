@@ -9,14 +9,16 @@ import {
   Dimensions,
   Image,
   Alert,
+  BackHandler,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { COLOURS } from '../../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import { TouchableRipple } from 'react-native-paper';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../../utils/firebase';
+import { useFocusEffect } from '@react-navigation/native';
 
 const MyShop = ({ navigation, route }) => {
 
@@ -26,6 +28,27 @@ const MyShop = ({ navigation, route }) => {
 
   const [orderCount, setOrderCount] = useState();
   const [cancelledCount, setCancelledCount] = useState();
+
+  useFocusEffect(
+    useCallback(() => {
+        const onBackPress = () => {
+            // Do Whatever you want to do on back button click
+            // Return true to stop default back navigaton
+            // Return false to keep default back navigaton
+            return true;
+        };
+
+        BackHandler.addEventListener(
+            'hardwareBackPress', onBackPress
+        );
+
+        return () =>
+            BackHandler.removeEventListener(
+                'hardwareBackPress', onBackPress
+            );
+    }, [])
+);
+
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "users", userID, "shop", shopID), (doc) => {
@@ -91,7 +114,8 @@ const MyShop = ({ navigation, route }) => {
                 <TouchableOpacity onPress={() => navigation.navigate('ShopSettings', {
                   shopID: shopID,
                   userID: userID,
-                  shopDetails: shopDetails
+                  shopDetails: shopDetails,
+                  status: shopDetails.status
                 })}>
                   <IonIcons
                     name="settings-outline"

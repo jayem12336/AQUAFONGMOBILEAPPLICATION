@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AquaPond Fisheries",
-    "slug": "aquafondfisheriesfinal",
+    "slug": "aquafondfisheriesapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon3.png",
@@ -32,7 +32,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "4469b8b7-7a29-4ef0-ad38-818865d49a77"
+        "projectId": "f0a565ad-3889-4fc2-875b-e58ab239f555"
       }
     }
   }

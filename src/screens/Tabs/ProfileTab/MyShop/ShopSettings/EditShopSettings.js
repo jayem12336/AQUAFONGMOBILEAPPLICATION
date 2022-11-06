@@ -1,14 +1,16 @@
-import { Alert, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { COLOURS } from '../../../../../utils/database/Database'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useState } from 'react';
 import Input from '../../../../../components/Input/Input';
 import { collection, deleteDoc, doc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
-import { db } from '../../../../../utils/firebase';
+import { db, storage } from '../../../../../utils/firebase';
 import Loader from '../../../../../components/Loader/Loader';
 import { async } from '@firebase/util';
 import { useEffect } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 
 const EditShopSettings = ({ navigation, route }) => {
 
@@ -17,6 +19,7 @@ const EditShopSettings = ({ navigation, route }) => {
   const [inputs, setInputs] = useState({
     businessName: shopDetails.businessName,
     shopLocation: shopDetails.shopLocation,
+    shopImage: shopDetails.imageShop
   })
 
   const [image, setImage] = useState(null);
@@ -114,7 +117,7 @@ const EditShopSettings = ({ navigation, route }) => {
                   setDoc(cityRef, { hasShop: false, shopID: '' }, { merge: true });
                   setLoading(false);
                 })
-              }) 
+              })
               Alert.alert("Removed Shop")
               navigation.navigate('ProfileTab')
             }
@@ -123,6 +126,22 @@ const EditShopSettings = ({ navigation, route }) => {
       );
     }
   }
+
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this appp to access your photos!");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
 
   const updateSettings = async (e) => {
     e.preventDefault();
@@ -147,6 +166,59 @@ const EditShopSettings = ({ navigation, route }) => {
       );
     }
     else {
+      if (image !== null) {
+        const blob = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            resolve(xhr.response);
+          }
+          xhr.onerror = function () {
+            reject(new TypeError('Network request failed'));
+          }
+          xhr.responseType = 'blob';
+          xhr.open('GET', image, true);
+          xhr.send(null);
+        });
+
+        const metadata = {
+          contentType: 'image/jpeg'
+        };
+
+        const profileImgsRef = ref(storage, 'shopimages/' + new Date().toISOString());
+        const uploadTask = uploadBytesResumable(profileImgsRef, blob, metadata);
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            switch (snapshot.state) {
+              case 'paused':
+                break;
+              case 'running':
+                break;
+            }
+          },
+          (error) => {
+            // A full list of error codes is available at
+            // https://firebase.google.com/docs/storage/web/handle-errors
+            switch (error.code) {
+              case 'storage/unauthorized':
+                // User doesn't have permission to access the object
+                break;
+              case 'storage/canceled':
+                // User canceled the upload
+                break;
+              // ...
+              case 'storage/unknown':
+                // Unknown error occurred, inspect error.serverResponse
+                break;
+            }
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              inputs.shopImage = downloadURL;
+            })
+          }
+        )
+      }
       Alert.alert(
         "Warning",
         "Are you sure you want to save changes?",
@@ -165,11 +237,13 @@ const EditShopSettings = ({ navigation, route }) => {
               await setDoc(cityRef, {
                 businessName: inputs.businessName,
                 shopLocation: inputs.shopLocation,
+                imageShop: inputs.shopImage
               }, { merge: true }).then(async () => {
                 const cityRef = doc(db, "shops", shopID);
                 await setDoc(cityRef, {
                   businessName: inputs.businessName,
                   shopLocation: inputs.shopLocation,
+                  imageShop: inputs.shopImage
                 }, { merge: true }).then(() => {
                   setLoading(false);
                   Alert.alert("Successfully updated shop details");
@@ -225,6 +299,19 @@ const EditShopSettings = ({ navigation, route }) => {
             placeholder="Enter your new shop location"
             error={errors.shopLocation}
           />
+          <View style={styles.textFieldSubContainer}>
+            <Text style={{ marginBottom: 10, fontSize: 14, color: COLOURS.grey, }}>
+              Shop Image
+            </Text>
+            <TouchableOpacity style={styles.btnContainer} onPress={pickImage}>
+              <Text style={styles.btnText}>
+                Insert New Shop Image
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.imageContainer}>
+              {image && <Image source={{ uri: image }} style={styles.imageStyle} />}
+            </View>
+          </View>
         </View>
       </ScrollView>
       <View style={styles.footerContainer}>
@@ -326,5 +413,37 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     backgroundColor: COLOURS.dirtyWhiteBackground
+  },
+  textFieldSubContainer: {
+    width: '100%',
+    maxWidth: 400,
+    flexDirection: 'column',
+    marginTop: 15
+  },
+  imageContainer: {
+    width: '100%',
+    maxWidth: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+    marginTop: 10
+  },
+  imageStyle: {
+    width: 200,
+    height: 200
+  },
+  btnContainer: {
+    alignSelf: 'flex-start',
+    backgroundColor: COLOURS.backgroundPrimary,
+    padding: 15,
+    borderRadius: 2,
+  },
+  btnText: {
+    fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 1,
+    color: COLOURS.white,
+    textTransform: 'uppercase',
+    textAlign: 'center'
   },
 })

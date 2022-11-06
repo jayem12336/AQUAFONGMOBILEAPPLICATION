@@ -37,7 +37,7 @@ import MyProducts from '../screens/Tabs/ProfileTab/MyShop/MyProducts/MyProducts'
 import MyOrder from '../screens/Tabs/MyOrders/MyOrder';
 import Message from '../screens/Tabs/MessageTabScreen/Message';
 
-import { auth } from '../utils/firebase'
+import { auth, db } from '../utils/firebase'
 import CreateProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/CreateProduct';
 import EditProduct from '../screens/Tabs/ProfileTab/MyShop/MyProducts/EditProduct';
 import NewProductInfo from '../screens/Tabs/FeedTab/NewProductInfo/NewProductInfo';
@@ -52,142 +52,10 @@ import EditShopSettings from '../screens/Tabs/ProfileTab/MyShop/ShopSettings/Edi
 import MyWallet from '../screens/Tabs/ProfileTab/MyWallet/MyWallet';
 import ShopView from '../screens/Tabs/DiscoverTab/ShopView/ShopView';
 import Reviews from '../screens/Tabs/FeedTab/NewProductInfo/Reviews';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
-
-function BottomTabNavigation() {
-    return (
-        <BottomTab.Navigator
-            screenOptions={{
-                tabBarShowLabel: false,
-                tabBarStyle: {
-                    position: 'absolute',
-                    elevation: 0,
-                    //borderTopWidth: 2,
-                    //borderTopColor: 'gray',
-                    backgroundColor: COLOURS.white,
-                    height: 65,
-                    ...styles.shadow
-                },
-                tabBarHideOnKeyboard: true
-            }}
-        >
-            <BottomTab.Screen
-                name="FeedTab"
-                component={FeedTab}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../../assets/icons/Home.png')}
-                                resizeMode='contain'
-                                style={{
-                                    width: 25,
-                                    height: 25,
-                                    tintColor: '#000000'
-                                }}
-                            />
-                            {/* <Text
-                                style={{
-                                    color: '#748c94',
-                                    fontSize: 12
-                                }}
-                            >
-                                Feed
-                            </Text> */}
-                        </View>
-                    ),
-                    headerShown: false
-                }}
-            />
-            <BottomTab.Screen
-                name="DiscoverTab"
-                component={DiscoverTab}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../../assets/icons/Location.png')}
-                                resizeMode='contain'
-                                style={{
-                                    width: 25,
-                                    height: 25,
-                                    tintColor: '#000000'
-                                }}
-                            />
-                            {/* <Text
-                                style={{
-                                    color: '#748c94',
-                                    fontSize: 12
-                                }}
-                            >
-                                Find
-                            </Text> */}
-                        </View>
-                    ),
-                    headerShown: false
-                }}
-            />
-            <BottomTab.Screen
-                name="NotificationTabScreen"
-                component={NotificationTabScreen}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../../assets/icons/Notification.png')}
-                                resizeMode='contain'
-                                style={{
-                                    width: 25,
-                                    height: 25,
-                                    tintColor: '#000000'
-                                }}
-                            />
-                            {/* <Text
-                                style={{
-                                    color: '#748c94',
-                                    fontSize: 12
-                                }}
-                            >
-                                Cart
-                            </Text> */}
-                        </View>
-                    ),
-                    headerShown: false,
-                }}
-            />
-            <BottomTab.Screen
-                name="ProfileTab"
-                component={ProfileTab}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../../assets/icons/Profile.png')}
-                                resizeMode='contain'
-                                style={{
-                                    width: 25,
-                                    height: 25,
-                                    tintColor: '#000000'
-                                }}
-                            />
-                            {/* <Text
-                                style={{
-                                    color: '#748c94',
-                                    fontSize: 12
-                                }}
-                            >
-                                Profile
-                            </Text> */}
-                        </View>
-                    ),
-                    headerShown: false,
-                }}
-            />
-        </BottomTab.Navigator>
-    )
-}
 
 const Navigation = ({ navigation }) => {
 
@@ -205,6 +73,146 @@ const Navigation = ({ navigation }) => {
             }
         })
     }, [navigation])
+
+    function BottomTabNavigation() {
+        return (
+            <BottomTab.Navigator
+                screenOptions={{
+                    tabBarShowLabel: false,
+                    tabBarStyle: {
+                        position: 'absolute',
+                        elevation: 0,
+                        //borderTopWidth: 2,
+                        //borderTopColor: 'gray',
+                        backgroundColor: COLOURS.white,
+                        height: 65,
+                        ...styles.shadow
+                    },
+                    tabBarHideOnKeyboard: true
+                }}
+            >
+                <BottomTab.Screen
+                    name="FeedTab"
+                    component={FeedTab}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <Image
+                                    source={require('../../assets/icons/Home.png')}
+                                    resizeMode='contain'
+                                    style={{
+                                        width: 25,
+                                        height: 25,
+                                        tintColor: '#000000'
+                                    }}
+                                />
+                                {/* <Text
+                                    style={{
+                                        color: '#748c94',
+                                        fontSize: 12
+                                    }}
+                                >
+                                    Feed
+                                </Text> */}
+                            </View>
+                        ),
+                        headerShown: false
+                    }}
+                />
+                <BottomTab.Screen
+                    name="DiscoverTab"
+                    component={DiscoverTab}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <Image
+                                    source={require('../../assets/icons/Location.png')}
+                                    resizeMode='contain'
+                                    style={{
+                                        width: 25,
+                                        height: 25,
+                                        tintColor: '#000000'
+                                    }}
+                                />
+                                {/* <Text
+                                    style={{
+                                        color: '#748c94',
+                                        fontSize: 12
+                                    }}
+                                >
+                                    Find
+                                </Text> */}
+                            </View>
+                        ),
+                        headerShown: false
+                    }}
+                />
+                <BottomTab.Screen
+                    initialParams={{
+                        userinfo: user,
+                    }}
+                    name="NotificationTabScreen"
+                    component={NotificationTabScreen}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <Image
+                                    source={require('../../assets/icons/Notification.png')}
+                                    resizeMode='contain'
+                                    style={{
+                                        width: 25,
+                                        height: 25,
+                                        tintColor: '#000000'
+                                    }}
+                                />
+                                {/* <Text
+                                    style={{
+                                        color: '#748c94',
+                                        fontSize: 12
+                                    }}
+                                >
+                                    Cart
+                                </Text> */}
+                            </View>
+                        ),
+                        headerShown: false,
+                    }}
+                />
+                <BottomTab.Screen
+                    name="ProfileTab"
+                    component={ProfileTab}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <Image
+                                    source={require('../../assets/icons/Profile.png')}
+                                    resizeMode='contain'
+                                    style={{
+                                        width: 25,
+                                        height: 25,
+                                        tintColor: '#000000'
+                                    }}
+                                />
+                                {/* <Text
+                                    style={{
+                                        color: '#748c94',
+                                        fontSize: 12
+                                    }}
+                                >
+                                    Profile
+                                </Text> */}
+                            </View>
+                        ),
+                        headerShown: false,
+                    }}
+                    initialParams={{
+                        userinfo: user,
+                    }}
+                />
+            </BottomTab.Navigator>
+        )
+    }
+
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -243,7 +251,7 @@ const Navigation = ({ navigation }) => {
                                 userinfo: user
                             }}
                         />
-                         <Stack.Screen
+                        <Stack.Screen
                             name="Reviews"
                             component={Reviews}
                             initialParams={{

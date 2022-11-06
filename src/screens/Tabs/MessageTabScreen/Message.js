@@ -120,7 +120,8 @@ const Message = ({ navigation, route }) => {
       </View>
       <View style={{
         paddingHorizontal: 10,
-        height: '25%'
+        height: '25%',
+        zIndex: 1
       }}>
         <View style={{
           marginTop: 10,
