@@ -13,11 +13,12 @@ import React, { useEffect, useState } from 'react';
 import { COLOURS } from '../../../utils/database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Avatar } from 'react-native-paper';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, onSnapshot, query } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
 import MessageCard from './MessageCard';
 import SearchBar from '../../../components/Searchbar/SearchBar';
 import { Button, Menu, Divider, Provider } from 'react-native-paper';
+import { async } from '@firebase/util';
 
 const MessageTabScreen = ({ navigation, route }) => {
 
@@ -27,6 +28,7 @@ const MessageTabScreen = ({ navigation, route }) => {
     const [users1, setUsers1] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
+    const [sample, setSample] = useState({})
 
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -35,11 +37,21 @@ const MessageTabScreen = ({ navigation, route }) => {
         const q = query(collection(db, "rooms", userinfo, "chatUsers"))
         const unsub = onSnapshot(q, (querySnapshot) => {
             const data = [];
-            querySnapshot.forEach((doc) => {
-                data.push({
-                    id: doc.id,
-                    data: doc.data(),
-                })
+            let obj = {};
+            querySnapshot.forEach(async (docrefs) => {
+                const ref = doc(db, "users", userinfo === docrefs.data().buyerID ? docrefs.data().sellerID : docrefs.data().buyerID)
+                const docSnap = await getDoc(ref);
+                if (docSnap.exists()) {
+                    const city = docSnap.data();
+                    // Use a City instance method
+                    setUsers(current => [...current, {
+                        id: docrefs.id,
+                        data: docrefs.data(),
+                        usedata: docSnap.data()
+                    }]);
+                } else {
+                    console.log("No such document!");
+                }
             });
             setUsers(data);
             setLoading(false);
@@ -47,8 +59,6 @@ const MessageTabScreen = ({ navigation, route }) => {
         setLoading(false);
         return unsub;
     }, [navigation]);
-
-    console.log(users)
 
     const [visible, setVisible] = React.useState(false);
 
@@ -70,7 +80,18 @@ const MessageTabScreen = ({ navigation, route }) => {
                 },
                 {
                     text: "Yes", onPress: () => {
-                        Alert.alert("Delete")
+                        setLoading(true);
+                        // for (let index = 0; index < smsData.length; index++) {
+                        //     deleteDoc(doc(db, "rooms", userinfo, "chatUsers", userinfo === data.buyerID ? data.sellerID : data.buyerID, "messages", smsData[index].id))                     
+                        // }
+                        const q = query(collection(db, "rooms", userinfo, "chatUsers"));
+                        onSnapshot(q, (querySnapshot) => {
+                            querySnapshot.forEach((docref) => {
+                                deleteDoc(doc(db, "rooms", userinfo, "chatUsers", docref.id))
+                            });
+                        });
+                        Alert.alert("Successfully deleted all conversation")
+                        setLoading(false);
                     }
                 }
             ]
@@ -168,7 +189,7 @@ const MessageTabScreen = ({ navigation, route }) => {
                             <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
                         </View>
                         : <>
-                            {users.map(({ data, id }) => (
+                            {users.filter(({ usedata }) => usedata.fullname.toLowerCase().includes(searchTerm.toLowerCase())).map(({ data, id }) => (
                                 <View key={id}>
                                     <MessageCard data={data} id={id} userinfo={userinfo} />
                                 </View>

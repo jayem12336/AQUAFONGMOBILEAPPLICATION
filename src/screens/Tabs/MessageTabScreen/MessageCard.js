@@ -8,6 +8,7 @@ import { collection, deleteDoc, doc, onSnapshot, query } from 'firebase/firestor
 import { db } from '../../../utils/firebase'
 import { useNavigation } from '@react-navigation/native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Loader from '../../../components/Loader/Loader'
 
 const MessageCard = ({ data, id, userinfo }) => {
 
@@ -18,6 +19,8 @@ const MessageCard = ({ data, id, userinfo }) => {
     const [productData, setProductData] = useState({});
 
     const [visible, setVisible] = React.useState(false);
+
+    const [loading, setLoading] = useState(false);
 
     const openMenu = () => setVisible(true);
 
@@ -76,9 +79,13 @@ const MessageCard = ({ data, id, userinfo }) => {
                 },
                 {
                     text: "Yes", onPress: () => {
-                        for (let index = 0; index < smsData.length; index++) {
-                            deleteDoc(doc(db, "rooms", userinfo, "chatUsers", userinfo === data.buyerID ? data.sellerID : data.buyerID, "messages", smsData[index].id))                     
-                        }
+                        setLoading(true);
+                        // for (let index = 0; index < smsData.length; index++) {
+                        //     deleteDoc(doc(db, "rooms", userinfo, "chatUsers", userinfo === data.buyerID ? data.sellerID : data.buyerID, "messages", smsData[index].id))                     
+                        // }
+                        deleteDoc(doc(db, "rooms", userinfo, "chatUsers", userinfo === data.buyerID ? data.sellerID : data.buyerID))
+                        Alert.alert("Successfully delete conversation")
+                        setLoading(false);
                     }
                 }
             ]
@@ -94,6 +101,7 @@ const MessageCard = ({ data, id, userinfo }) => {
                 height: '100%',
                 backgroundColor: COLOURS.backgroundLight
             }}>
+                <Loader visible={loading} />
                 <TouchableOpacity key={id} onPress={() => {
                     setVisible(false)
                     navigation.navigate('Message', {
