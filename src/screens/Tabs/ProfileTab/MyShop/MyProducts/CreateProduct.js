@@ -44,6 +44,7 @@ const CreateProduct = ({ navigation, route }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [parentProdID, setParentProdID] = useState('');
+
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({ ...prevState, [input]: text }));
   };
@@ -77,7 +78,7 @@ const CreateProduct = ({ navigation, route }) => {
     }
 
     if (image === null) {
-      setErrorMessage('Please select and enter valid ID');
+      setErrorMessage('Please select and enter product image');
       isValid = false;
     }
 
@@ -144,6 +145,7 @@ const CreateProduct = ({ navigation, route }) => {
             rating: inputs.rating,
             productImage: downloadURL,
             productQuantity: Number(inputs.productQuantity),
+            productAddress: shopDetails.shopLocation,
             userID: userID,
             shopID: shopID,
             dateCreated: new Date().toISOString()
@@ -156,6 +158,7 @@ const CreateProduct = ({ navigation, route }) => {
               productPrice: Number(inputs.productPrice),
               productDescription: inputs.productDescription,
               productQuantity: Number(inputs.productQuantity),
+              productAddress: shopDetails.shopLocation,
               rating: inputs.rating,
               productImage: downloadURL,
               prodID: docRef.id,
@@ -198,7 +201,7 @@ const CreateProduct = ({ navigation, route }) => {
   return (
     <View style={styles.root}>
       <Loader visible={loading} />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 50}}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 50 }}>
         <SafeAreaView style={styles.container}>
           <StatusBar
             backgroundColor={COLOURS.white}

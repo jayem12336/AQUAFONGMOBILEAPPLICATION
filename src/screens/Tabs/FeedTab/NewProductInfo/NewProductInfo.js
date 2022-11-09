@@ -167,7 +167,7 @@ const NewProductInfo = ({ route }) => {
                 productImage: productInfo.productImage,
                 quantity: quantity,
                 comment: inputs.comment,
-                dateCreated: new Date().toISOString() 
+                dateCreated: new Date().toISOString()
             }).then(() => {
                 setLoading(false)
                 Alert.alert("Successfully sent feedback")
@@ -253,9 +253,9 @@ const NewProductInfo = ({ route }) => {
                                         <View style={styles.addressIconContainer}>
                                             <Entypo name="location-pin" style={{ fontSize: 16, color: COLOURS.blue, }} />
                                         </View>
-                                        <Text>Concepcion,{'\n'}Bustos, Bulacan</Text>
+                                        <Text>{productInfo.productAddress}</Text>
                                     </View>
-                                    <Entypo name="chevron-right" style={{ fontSize: 22, color: COLOURS.backgroundDark, }} />
+                                    {/* <Entypo name="chevron-right" style={{ fontSize: 22, color: COLOURS.backgroundDark, }} /> */}
                                 </View>
                                 {/* <View>
                                     <Text>

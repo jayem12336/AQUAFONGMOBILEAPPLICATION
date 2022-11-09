@@ -1,5 +1,6 @@
 import {
     ActivityIndicator,
+    Alert,
     SafeAreaView,
     ScrollView,
     StatusBar,
@@ -15,6 +16,8 @@ import { Avatar } from 'react-native-paper';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
 import MessageCard from './MessageCard';
+import SearchBar from '../../../components/Searchbar/SearchBar';
+import { Button, Menu, Divider, Provider } from 'react-native-paper';
 
 const MessageTabScreen = ({ navigation, route }) => {
 
@@ -23,6 +26,9 @@ const MessageTabScreen = ({ navigation, route }) => {
     const [users, setUsers] = useState([]);
     const [users1, setUsers1] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
+
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         setLoading(true);
@@ -41,59 +47,137 @@ const MessageTabScreen = ({ navigation, route }) => {
         setLoading(false);
         return unsub;
     }, [navigation]);
+
+    console.log(users)
+
+    const [visible, setVisible] = React.useState(false);
+
+    const openMenu = () => setVisible(true);
+
+    const closeMenu = () => setVisible(false);
+
+    const onDeleteAll = (e) => {
+        setVisible(false)
+        e.preventDefault();
+        Alert.alert(
+            "Warning",
+            "Are you sure you want to remove all your messages?",
+            [
+                {
+                    text: "No",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                {
+                    text: "Yes", onPress: () => {
+                        Alert.alert("Delete")
+                    }
+                }
+            ]
+        );
+    }
+
     return (
-        <View style={styles.root}>
-            <StatusBar
-                backgroundColor={COLOURS.white}
-                barStyle="dark-content"
-            />
-            <View style={styles.mainContainer}>
-                <View style={styles.headerContainer}>
-                    <View style={styles.iconContainer}>
-                        <TouchableOpacity>
-                            <MaterialCommunityIcons
-                                onPress={() => navigation.goBack()}
-                                name="chevron-left"
-                                style={styles.backIconStyle}
-                            />
-                        </TouchableOpacity>
-                        <View style={styles.textContainer}>
-                            <Text style={styles.messageStyle}>
-                                Messages
-                            </Text>
+        <Provider>
+            <View style={styles.root}>
+                <StatusBar
+                    backgroundColor={COLOURS.white}
+                    barStyle="dark-content"
+                />
+                <View style={styles.mainContainer}>
+                    <View style={styles.headerContainer}>
+                        <View style={styles.iconContainer}>
+                            <View style={{
+                                flexDirection: 'row'
+                            }}>
+                                {
+                                    showSearch === false ?
+                                        <View style={{
+                                            flexDirection: 'row'
+                                        }}>
+                                            <TouchableOpacity>
+                                                <MaterialCommunityIcons
+                                                    onPress={() => navigation.goBack()}
+                                                    name="chevron-left"
+                                                    style={styles.backIconStyle}
+                                                />
+                                            </TouchableOpacity>
+                                            <View style={styles.textContainer}>
+                                                <Text style={styles.messageStyle}>
+                                                    Messages
+                                                </Text>
+                                            </View>
+                                        </View> :
+                                        <View style={{
+                                            alignItems: 'flex-start',
+                                            marginTop: 10
+                                        }}>
+                                            <SearchBar
+                                                value={searchTerm}
+                                                updateSearch={setSearchTerm}
+                                            />
+                                        </View>
+                                }
+                            </View>
+                            <View style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                            }}>
+                                <View>
+                                    {
+                                        showSearch === false ?
+                                            <TouchableOpacity onPress={() => setShowSearch(true)}>
+                                                <MaterialCommunityIcons
+                                                    name="magnify"
+                                                    style={styles.headerIconStyle}
+                                                />
+                                            </TouchableOpacity> :
+                                            <TouchableOpacity onPress={() => setShowSearch(false)}>
+                                                <MaterialCommunityIcons
+                                                    name="close-circle"
+                                                    style={styles.headerIconStyle}
+                                                />
+                                            </TouchableOpacity>
+                                    }
+                                </View>
+                                <View>
+                                    <Menu
+                                        visible={visible}
+                                        style={{
+                                        }}
+                                        onDismiss={closeMenu}
+                                        anchor={
+                                            <TouchableOpacity onPress={openMenu}>
+                                                <MaterialCommunityIcons
+                                                    name="dots-horizontal"
+                                                    style={styles.headerIconStyle}
+                                                />
+                                            </TouchableOpacity>
+
+                                        }>
+                                        <Menu.Item onPress={onDeleteAll} title="Delete All" />
+                                    </Menu>
+                                </View>
+                            </View>
                         </View>
                     </View>
-                    <View style={styles.iconButtonContainer}>
-                        <TouchableOpacity>
-                            <MaterialCommunityIcons
-                                name="magnify"
-                                style={styles.headerIconStyle}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <MaterialCommunityIcons
-                                name="dots-horizontal"
-                                style={styles.headerIconStyle}
-                            />
-                        </TouchableOpacity>
-                    </View>
                 </View>
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                {loading ?
-                    <View style={{ flex: 1, alignItems: 'center', height: 500, marginTop: 50 }}>
-                        <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
-                    </View>
-                    : <>
-                        {users.map(({ data, id }) => (
-                            <View key={id}>
-                                <MessageCard data={data} id={id} userinfo={userinfo} />
-                            </View>
-                        ))}
-                    </>
-                }
-            </ScrollView>
-        </View >
+                <ScrollView showsVerticalScrollIndicator={false} >
+                    {loading ?
+                        <View style={{ flex: 1, alignItems: 'center', height: 500, marginTop: 50 }}>
+                            <ActivityIndicator size={50} color={COLOURS.backgroundPrimary} />
+                        </View>
+                        : <>
+                            {users.map(({ data, id }) => (
+                                <View key={id}>
+                                    <MessageCard data={data} id={id} userinfo={userinfo} />
+                                </View>
+                            ))}
+                        </>
+                    }
+                </ScrollView>
+            </View >
+        </Provider>
     )
 }
 
@@ -139,7 +223,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLOURS.white
     },
     iconContainer: {
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between',
         alignContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'row'
@@ -152,8 +236,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     headerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
+        flexDirection: 'column',
     },
     textContainer: {
         paddingLeft: 5,

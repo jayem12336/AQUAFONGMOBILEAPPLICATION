@@ -18,7 +18,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLOURS } from '../../../utils/database/Database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { auth, db } from '../../../utils/firebase';
 import NotificationCard from './NotificationCard';
 import NotificationProduct from './NotificationProduct';
@@ -43,7 +43,7 @@ const NotificationTabScreen = ({ navigation, route }) => {
     }, [navigation])
 
     useEffect(() => {
-        const q = query(collection(db, "Orders"), where("buyerID", "==", userinfo), where("status", "in", ['To Ship', 'Cancelled', 'Delivered']));
+        const q = query(collection(db, "Orders"),where("buyerID", "==", userinfo), where("status", "in", ['To Ship', 'Cancelled', 'Delivered']));
         onSnapshot(q, (querySnapshot) => {
             const data = [];
             querySnapshot.forEach((doc) => {

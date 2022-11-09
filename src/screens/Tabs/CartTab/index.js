@@ -270,8 +270,6 @@ const CartTab = ({ navigation, route }) => {
                                     </Text>
                                 </View>
                             </View>
-                            <MaterialCommunityIcons name="chevron-right" style={styles.iconRightStyle}
-                            />
                         </View>
                     </View>
                     <View style={styles.paymentMethodContainer}>
@@ -297,7 +295,6 @@ const CartTab = ({ navigation, route }) => {
                                     }}
                                 />
                             </View>
-                            <MaterialCommunityIcons name="chevron-right" style={styles.iconRightStyle} />
                         </View>
                     </View>
                     <View style={styles.orderContainer}>

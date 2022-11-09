@@ -23,10 +23,10 @@ const Items = ({ data, userID, shopID, productID, shopDetails }) => {
                 {
                     text: "Yes", onPress: async () => {
                         await deleteDoc(doc(db, "feedproducts", data.prodID))
-                        .then(async() => {
-                            await deleteDoc(doc(db, "users", userID, "shop", shopID, "products", productID))
-                            Alert.alert("Successfully deleted product!")
-                        });
+                            .then(async () => {
+                                await deleteDoc(doc(db, "users", userID, "shop", shopID, "products", productID))
+                                Alert.alert("Successfully deleted product!")
+                            });
                     }
                 }
             ]
@@ -45,6 +45,22 @@ const Items = ({ data, userID, shopID, productID, shopDetails }) => {
                         <Text style={styles.priceInfo}>&#x20B1; {data.productPrice}</Text>
                     </View>
                 </View>
+                {
+                    data.productQuantity === 0 ?
+                        <View style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginTop: 10,
+                            marginBottom: -10
+                        }}>
+                            <Text style={{
+                                color: COLOURS.red,
+                                fontWeight: 'bold',
+                                letterSpacing: 1
+                            }}> Your product is out of stock</Text>
+                        </View>
+                        : ""
+                }
                 <View style={styles.btnContainer}>
                     <TouchableOpacity style={styles.btnStyle} onPress={showAlert}>
                         <Text style={styles.btnText}>

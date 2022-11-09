@@ -46,6 +46,7 @@ const Message = ({ navigation, route }) => {
     })
     return unsub;
   }, [navigation])
+  
   useEffect(() => {
     const collectionRef = collection(db, "rooms", buyerID, "chatUsers", sellerID, "messages");
     const q = query(collectionRef, orderBy('createdAt', 'desc'));
@@ -178,6 +179,7 @@ const Message = ({ navigation, route }) => {
       </View>
       <GiftedChat
         messages={messages}
+        alwaysShowSend
         onSend={messages => onSend(messages)}
         user={{
           _id: userinfo === sellerID ? sellerID : buyerID,
