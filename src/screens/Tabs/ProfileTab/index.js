@@ -130,15 +130,15 @@ const ProfileTab = ({ navigation }) => {
                             </View>
                             <View style={{ marginTop: 20 }}>
                                 <View style={styles.row}>
-                                    <Icon name="map-marker-radius" color={COLOURS.black} size={20} />
+                                    <Icon name="map-marker-radius" color={COLOURS.primaryOrange} size={20} />
                                     <Text style={styles.userInformation}>{userData.address}</Text>
                                 </View>
                                 <View style={styles.row}>
-                                    <Icon name="phone" color={COLOURS.black} size={20} />
+                                    <Icon name="phone" color={COLOURS.primaryOrange} size={20} />
                                     <Text style={styles.userInformation}>{userData.phone}</Text>
                                 </View>
                                 <View style={styles.row}>
-                                    <Icon name="email" color={COLOURS.black} size={20} />
+                                    <Icon name="email" color={COLOURS.primaryOrange} size={20} />
                                     <Text style={styles.userInformation}>{userData.email}</Text>
                                 </View>
                             </View>
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     userInfoSection: {
         paddingHorizontal: 30,
         paddingBottom: 20,
-        backgroundColor: COLOURS.backgroundPrimary
+        backgroundColor: COLOURS.backgroundLight
     },
     title: {
         fontSize: 18,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     },
     headerIconStyle: {
         fontSize: 25,
-        color: COLOURS.black,
+        color: COLOURS.primaryOrange,
         padding: 12,
         marginTop: 10,
     },

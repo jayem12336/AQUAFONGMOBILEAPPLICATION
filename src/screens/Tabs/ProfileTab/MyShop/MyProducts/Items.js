@@ -118,7 +118,9 @@ const styles = StyleSheet.create({
     textInfo: {
         marginLeft: 10,
         fontSize: 15,
-        letterSpacing: 1
+        letterSpacing: 1,
+        fontWeight: 'bold',
+        paddingVertical: 5
     },
     priceInfo: {
         marginLeft: 10,
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     btnStyle: {
-        backgroundColor: COLOURS.backgroundLight,
+        backgroundColor: COLOURS.primaryOrange,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '500',
         letterSpacing: 1,
-        color: COLOURS.black,
-        textTransform: 'uppercase',
+        color: COLOURS.white,
+        textTransform: 'none',
     }
 })

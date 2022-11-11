@@ -17,6 +17,7 @@ export const COLOURS = {
     grey: '#BABBC3',
     light: '#F3F4FB',
     darkBlue: '#7978B5',
+    primaryOrange: "#FE7E07"
 };
 
 export const Items = [

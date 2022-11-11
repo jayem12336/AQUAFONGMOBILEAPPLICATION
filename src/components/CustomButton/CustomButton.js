@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     container_PRIMARY: {
-        backgroundColor: COLOURS.buttonContainerPrimary,
+        backgroundColor: "#FE7E07"
     },
     container_SECONDARY: {
         borderColor: COLOURS.buttonContainerSecondary,

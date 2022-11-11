@@ -313,7 +313,7 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
                         <Input
                             onChangeText={text => handleOnchange(text, 'shopLocation')}
                             onFocus={() => handleError(null, 'shopLocation')}
-                            iconName="account-outline"
+                            iconName="map-marker-outline"
                             label="Shop Location *"
                             placeholder="Enter your shop location"
                             error={errors.shopLocation}
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     },
     backIconStyle: {
         fontSize: 18,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
         padding: 12,
         backgroundColor: COLOURS.backgroundLight,
         borderRadius: 10,
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         paddingBottom: 16,
         paddingHorizontal: 16,
-        borderBottomColor: COLOURS.backgroundMedium,
+        borderBottomColor: COLOURS.primaryOrange,
         borderBottomWidth: 3,
         marginBottom: 20
     },
@@ -421,14 +421,16 @@ const styles = StyleSheet.create({
     headerTextContainer: {
         alignContent: 'center',
         justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 15
+        alignItems: 'flex-start',
+        marginTop: 15,
+        paddingLeft: 16,
     },
     headerText: {
         fontSize: 17,
         letterSpacing: 1,
         marginTop: 5,
-        fontWeight: '500'
+        fontWeight: '600',
+        textTransform: 'uppercase'
     },
     textFieldContainer: {
         width: '100%',
@@ -482,15 +484,15 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '90%',
         backgroundColor: COLOURS.backgroundPrimary,
-        borderRadius: 20,
+        borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
     },
     buttonText: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: '500',
         letterSpacing: 1,
         color: COLOURS.white,
-        textTransform: 'uppercase',
+        textTransform: 'none',
     },
 })

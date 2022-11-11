@@ -24,14 +24,14 @@ const Input = ({
             borderColor: error
               ? COLOURS.red
               : isFocused
-              ? COLOURS.darkBlue
+              ? COLOURS.primaryOrange
               : COLOURS.light,
             alignItems: 'center',
           },
         ]}>
         <Icon
           name={iconName}
-          style={{color: COLOURS.darkBlue, fontSize: 22, marginRight: 10}}
+          style={{color: COLOURS.primaryOrange, fontSize: 22, marginRight: 10}}
         />
         <TextInput
           autoCorrect={false}
@@ -49,7 +49,7 @@ const Input = ({
           <Icon
             onPress={() => setHidePassword(!hidePassword)}
             name={hidePassword ? 'eye-outline' : 'eye-off-outline'}
-            style={{color: COLOURS.darkBlue, fontSize: 22}}
+            style={{color: COLOURS.primaryOrange, fontSize: 22}}
           />
         )}
       </View>

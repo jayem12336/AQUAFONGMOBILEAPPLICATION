@@ -76,16 +76,16 @@ const styles = StyleSheet.create({
     buttonStyle: {
         width: '80%',
         height: '90%',
-        backgroundColor: COLOURS.backgroundLight,
+        backgroundColor: COLOURS.primaryOrange,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
     },
     buttonText: {
-        fontSize: 12,
+        fontSize: 14,
         letterSpacing: 1,
-        color: COLOURS.black,
-        textTransform: 'uppercase',
+        color: COLOURS.white,
+        textTransform: 'none',
         fontWeight: 'bold'
     },
     backIconContainer: {
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     },
     successText: {
         textAlign: 'center',
-        fontSize: 20
+        fontSize: 20,
+        letterSpacing: .5
     }
 })

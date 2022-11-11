@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     },
     backIconContainer: {
         fontSize: 20,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
         padding: 12,
         backgroundColor: COLOURS.backgroundLight,
         borderRadius: 12,
@@ -282,7 +282,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textTransform: 'uppercase',
         marginLeft: 5,
-        letterSpacing: 1
+        letterSpacing: 1,
+        fontWeight: '500'
     },
     footerContainer: {
         width: '100%',
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         alignSelf: 'center',
-        backgroundColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.primaryOrange,
         width: '100%',
         padding: 15,
         borderRadius: 2
@@ -313,8 +314,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '500',
         letterSpacing: 1,
-        color: COLOURS.black,
-        textTransform: 'uppercase',
+        color: COLOURS.white,
+        textTransform: 'none',
         textAlign: 'center'
     }
 })

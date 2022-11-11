@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
         paddingHorizontal: 16,
         backgroundColor: COLOURS.dirtyWhiteBackground,
-        borderColor: COLOURS.backgroundMedium,
+        borderColor: COLOURS.primaryOrange,
         borderWidth: 2,
     },
     cardContainer: {

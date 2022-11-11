@@ -1,3 +1,5 @@
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
@@ -6,6 +8,7 @@ import {
     TouchableOpacity,
     TextInput, Image
 } from 'react-native';
+import { COLOURS } from '../../utils/database/Database';
 
 const SearchBar = ({ value, updateSearch, style }) => {
 
@@ -16,9 +19,10 @@ const SearchBar = ({ value, updateSearch, style }) => {
         <View style={[styles.container, style]}>
             <View style={styles.searchContainer}>
                 <View style={styles.vwSearch}>
-                    <Image
+                    <Ionicons
+                        name="search-outline"
                         style={styles.icSearch}
-                        source={require('../../../assets/icons/ic_search.png')} />
+                    />
                 </View>
 
                 <TextInput
@@ -43,9 +47,10 @@ const SearchBar = ({ value, updateSearch, style }) => {
                         <TouchableOpacity
                             onPress={() => setQuery('')}
                             style={styles.vwClear}>
-                            <Image
-                                style={styles.icClear}
-                                source={require('../../../assets/icons/ic_clear.png')} />
+                            <MaterialCommunityIcons
+                                name="backspace-outline"
+                                style={styles.icSearch}
+                            />
                         </TouchableOpacity>
                         : <View style={styles.vwClear} />
                 }
@@ -76,6 +81,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         flex: 1,
+        color: COLOURS.darkBlue
     },
 
     vwSearch: {
@@ -84,8 +90,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     icSearch: {
-        height: 18,
-        width: 18
+        fontSize: 20,
+        color: COLOURS.primaryOrange
     },
     searchContainer:
     {

@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         paddingBottom: 16,
         paddingHorizontal: 16,
-        borderBottomColor: COLOURS.backgroundMedium,
+        borderBottomColor: COLOURS.backgroundPrimary,
         borderBottomWidth: 2.5,
     },
     subHeaderContainer: {
@@ -166,12 +166,16 @@ const styles = StyleSheet.create({
         alignContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'row',
-        marginBottom: -20
     },
     bellIconStyle: {
         fontSize: 30,
-        color: COLOURS.black,
+        color: COLOURS.primaryOrange,
         padding: 12,
         borderRadius: 12,
     },
+    notificationTitle: {
+        fontSize: 20,
+        letterSpacing: .5,
+        fontWeight: '500'
+    }
 })

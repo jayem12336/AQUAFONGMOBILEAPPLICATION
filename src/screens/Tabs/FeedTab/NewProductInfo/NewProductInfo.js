@@ -224,7 +224,7 @@ const NewProductInfo = ({ route }) => {
                                     <Text style={{
                                         fontSize: 15,
                                         fontWeight: '500',
-                                        color: COLOURS.blue,
+                                        color: COLOURS.primaryOrange,
                                         letterSpacing: 1
                                     }}>
                                         Reviews({reviews.length})
@@ -251,7 +251,7 @@ const NewProductInfo = ({ route }) => {
                                 <View style={styles.addressContainer}>
                                     <View style={styles.addressStyle}>
                                         <View style={styles.addressIconContainer}>
-                                            <Entypo name="location-pin" style={{ fontSize: 16, color: COLOURS.blue, }} />
+                                            <Entypo name="location-pin" style={{ fontSize: 16, color: COLOURS.primaryOrange, }} />
                                         </View>
                                         <Text>{productInfo.productAddress}</Text>
                                     </View>
@@ -284,7 +284,7 @@ const NewProductInfo = ({ route }) => {
                                         alignContent: 'center'
                                     }}>
                                         <TouchableOpacity style={{
-                                            backgroundColor: COLOURS.blue,
+                                            backgroundColor: COLOURS.primaryOrange,
                                             padding: 10,
                                             borderRadius: 5
                                         }}
@@ -427,13 +427,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 16,
-        borderColor: COLOURS.backgroundPrimary,
-        backgroundColor: COLOURS.backgroundPrimary,
+        borderColor: COLOURS.primaryOrange,
+        backgroundColor: COLOURS.white,
         borderBottomWidth: 2
     },
     backIconStyle: {
         fontSize: 20,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
         padding: 12,
         backgroundColor: COLOURS.backgroundLight,
         borderRadius: 12,
@@ -443,15 +443,15 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         marginLeft: 5,
         letterSpacing: 1,
-        color: COLOURS.white,
+        color: COLOURS.black,
         fontWeight: 'bold'
     },
     container: {
         width: '100%',
-        borderColor: COLOURS.backgroundMedium,
-        borderBottomWidth: 2,
         paddingHorizontal: 15,
-        paddingVertical: 15
+        paddingVertical: 15,
+        borderBottomColor: COLOURS.backgroundLight,
+        borderBottomWidth: 1,
     },
     imageStyle: {
         width: '100%',
@@ -461,14 +461,16 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         fontSize: 15,
-        textTransform: 'uppercase',
+        textTransform: 'none',
         letterSpacing: 1,
-        marginTop: 5
+        marginTop: 5,
+        fontWeight: '500'
     },
     priceStyle: {
         fontSize: 15,
         letterSpacing: 1,
-        marginTop: 5
+        marginTop: 5,
+        fontWeight: '500'
     },
     addressContainer: {
         flexDirection: 'row',
@@ -501,7 +503,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     buttonStyle: {
-        backgroundColor: COLOURS.white,
+        backgroundColor: COLOURS.primaryOrange,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -518,12 +520,12 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '500',
         letterSpacing: 1,
-        color: COLOURS.black,
-        textTransform: 'uppercase',
+        color: COLOURS.white,
+        textTransform: 'none',
     },
     shoppingBagIcon: {
         fontSize: 25,
-        color: COLOURS.black,
+        color: COLOURS.primaryOrange,
         borderRadius: 10,
         marginLeft: 5,
     },
@@ -545,7 +547,7 @@ const styles = StyleSheet.create({
     },
     iconStyle: {
         fontSize: 16,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
     },
     buyNowContainer: {
         width: '100%',
@@ -571,15 +573,15 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLOURS.white,
+        backgroundColor: COLOURS.primaryOrange,
         padding: 12,
     },
     buyBtnText: {
         fontSize: 15,
         fontWeight: '500',
         letterSpacing: 1,
-        color: COLOURS.black,
-        textTransform: 'uppercase',
+        color: COLOURS.white,
+        textTransform: 'none',
     },
     headquantityContainer: {
         justifyContent: 'space-between',

@@ -169,7 +169,6 @@ const PurchaseScreen = ({ navigation, route }) => {
                     }}
                   />
                 </View>
-                <MaterialCommunityIcons name="chevron-right" style={styles.iconRightStyle} />
               </View>
             </View>
           </SafeAreaView>
@@ -214,7 +213,7 @@ const styles = StyleSheet.create({
   },
   iconStyle: {
     fontSize: 20,
-    color: COLOURS.backgroundDark,
+    color: COLOURS.primaryOrange,
     padding: 12,
     backgroundColor: COLOURS.backgroundLight,
     borderRadius: 12,
@@ -234,7 +233,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 10,
     letterSpacing: 1,
-    color: COLOURS.white
+    color: COLOURS.white,
+    fontWeight: '500'
   },
   shippingContainer: {
     width: '100%',
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: COLOURS.white,
     borderBottomWidth: 2,
-    borderBottomColor: COLOURS.backgroundMedium,
+    borderBottomColor: COLOURS.primaryOrange,
   },
   shippingTitle: {
     fontSize: 20,
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: COLOURS.white,
     borderBottomWidth: 2,
-    borderBottomColor: COLOURS.backgroundMedium,
+    borderBottomColor: COLOURS.primaryOrange,
     flexDirection: 'row'
   },
   productImage: {
@@ -289,7 +289,8 @@ const styles = StyleSheet.create({
   },
   infoName: {
     fontSize: 20,
-    letterSpacing: 1
+    letterSpacing: 1,
+    fontWeight: '500'
   },
   infoItem: {
     marginTop: 30,
@@ -319,17 +320,17 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     alignSelf: 'center',
-    backgroundColor: COLOURS.backgroundLight,
+    backgroundColor: COLOURS.primaryOrange,
     width: '100%',
     padding: 10,
     borderRadius: 2
   },
   btnText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '500',
     letterSpacing: 1,
-    color: COLOURS.black,
-    textTransform: 'uppercase',
+    color: COLOURS.white,
+    textTransform: 'none',
     textAlign: 'center'
   },
   paymentMethodContainer: {

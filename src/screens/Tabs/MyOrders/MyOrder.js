@@ -270,9 +270,9 @@ const styles = StyleSheet.create({
     },
     backIconStyle: {
         fontSize: 20,
-        color: COLOURS.white,
+        color: COLOURS.primaryOrange,
         padding: 12,
-        backgroundColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.backgroundLight,
         borderRadius: 12,
     },
     orderContainer: {
@@ -282,6 +282,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textTransform: 'uppercase',
         marginLeft: 5,
-        letterSpacing: 1
+        letterSpacing: 1,
+        fontWeight: 'bold'
     }
 })

@@ -59,18 +59,19 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingVertical: 12,
-        paddingHorizontal: 5,
-        backgroundColor: COLOURS.backgroundPrimary,
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        backgroundColor: COLOURS.backgroundLight,
     },
     subHeaderContainer: {
         flexDirection: 'row',
     },
     backIconContainer: {
-        fontSize: 30,
-        color: COLOURS.white,
+        fontSize: 20,
+        color: COLOURS.primaryOrange,
         padding: 12,
         borderRadius: 12,
+        backgroundColor: COLOURS.white
     },
     textContainer: {
         justifyContent: 'center'
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
         textTransform: 'none',
         marginLeft: 5,
         letterSpacing: 1.5,
-        color: COLOURS.white,
+        color: COLOURS.black,
         fontWeight: 'bold'
     },
 })

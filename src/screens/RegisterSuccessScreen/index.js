@@ -40,10 +40,11 @@ const RegisterSuccessScreen = ({navigation}) => {
                                 name="chevron-left"
                                 style={{
                                     fontSize: 20,
-                                    color: COLOURS.backgroundDark,
+                                    color: COLOURS.primaryOrange,
                                     padding: 12,
                                     backgroundColor: COLOURS.backgroundLight,
                                     borderRadius: 12,
+                                    fontWeight: 'bold'
                                 }}
                             />
                         </TouchableOpacity>
@@ -51,10 +52,10 @@ const RegisterSuccessScreen = ({navigation}) => {
                     <View style={{
                         height: '100%',
                         width: '100%',
-                        padding: 10
+                        padding: 10,
                     }}>
                         <View style={{
-                            backgroundColor: COLOURS.white,
+                            backgroundColor: COLOURS.backgroundLight,
                             height: windowHeight,
                             width: '100%',
                             justifyContent: 'center',
@@ -62,7 +63,9 @@ const RegisterSuccessScreen = ({navigation}) => {
                         }}>
                             <Text style={{
                                 textAlign: 'center',
-                                fontSize: 17
+                                fontSize: 17,
+                                fontWeight: '400',
+                                letterSpacing: .5
                             }}>
                                 Hi KaFishy! You Successfully Registered {'\n'}
                                 Welcome to AquaFond Fisheries!
@@ -91,7 +94,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         height: '100%',
-        backgroundColor: COLOURS.backgroundPrimary
+        backgroundColor: COLOURS.white
     },
     buttonContainer: {
         position: 'absolute',
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
     buttonStyle: {
         width: '80%',
         height: '90%',
-        backgroundColor: COLOURS.backgroundLight,
+        backgroundColor: COLOURS.backgroundPrimary,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 12,
         letterSpacing: 1,
-        color: COLOURS.black,
+        color: COLOURS.white,
         fontWeight: '500',
         textTransform: 'uppercase',
     },

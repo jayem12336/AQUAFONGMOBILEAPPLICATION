@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     },
     backIconStyle: {
         fontSize: 18,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
         padding: 12,
         backgroundColor: COLOURS.backgroundLight,
         borderRadius: 12,
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     },
     truckIconStyle: {
         fontSize: 18,
-        color: COLOURS.blue,
+        color: COLOURS.primaryOrange,
     },
     streetStyle: {
         fontSize: 14,

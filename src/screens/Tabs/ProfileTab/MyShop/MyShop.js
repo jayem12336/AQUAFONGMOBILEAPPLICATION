@@ -31,23 +31,23 @@ const MyShop = ({ navigation, route }) => {
 
   useFocusEffect(
     useCallback(() => {
-        const onBackPress = () => {
-            // Do Whatever you want to do on back button click
-            // Return true to stop default back navigaton
-            // Return false to keep default back navigaton
-            return true;
-        };
+      const onBackPress = () => {
+        // Do Whatever you want to do on back button click
+        // Return true to stop default back navigaton
+        // Return false to keep default back navigaton
+        return true;
+      };
 
-        BackHandler.addEventListener(
-            'hardwareBackPress', onBackPress
+      BackHandler.addEventListener(
+        'hardwareBackPress', onBackPress
+      );
+
+      return () =>
+        BackHandler.removeEventListener(
+          'hardwareBackPress', onBackPress
         );
-
-        return () =>
-            BackHandler.removeEventListener(
-                'hardwareBackPress', onBackPress
-            );
     }, [])
-);
+  );
 
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const MyShop = ({ navigation, route }) => {
     });
     return unsubscribe;
   }, [navigation])
-  
+
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -140,16 +140,26 @@ const MyShop = ({ navigation, route }) => {
               />
             </View>
             <View style={styles.addressContainer}>
-              <Text>
+              <Text style={{
+                fontSize: 15,
+                fontWeight: '500',
+                paddingVertical: 5
+              }}>
                 {shopDetails.businessName}
               </Text>
-              <Text>
+              <Text style={{
+                fontSize: 15,
+              }}>
                 {shopDetails.shopLocation}
               </Text>
             </View>
           </View>
           <View style={styles.itemsSection}>
-            <Text>
+            <Text style={{
+              fontSize: 15,
+              fontWeight: '500',
+              paddingVertical: 5
+            }}>
               Item Status
             </Text>
             <View style={styles.itemStatusContainer}>
@@ -193,7 +203,7 @@ const MyShop = ({ navigation, route }) => {
                 shopDetails: shopDetails
               })}>
                 <View style={styles.menuItem}>
-                  <MaterialCommunityIcons name="shopping" color="black" size={25} />
+                  <MaterialCommunityIcons name="shopping" color={COLOURS.primaryOrange} size={25} />
                   <Text style={styles.menuItemText}>My Products</Text>
                 </View>
               </TouchableOpacity>
@@ -201,7 +211,7 @@ const MyShop = ({ navigation, route }) => {
             <View style={[styles.linkItem, { marginTop: 15 }]}>
               <TouchableOpacity onPress={() => navigation.navigate('FeedTab')}>
                 <View style={styles.menuItem}>
-                  <MaterialCommunityIcons name="home" color="black" size={25} />
+                  <MaterialCommunityIcons name="home" color={COLOURS.primaryOrange} size={25} />
                   <Text style={styles.menuItemText}>Back to Feed</Text>
                 </View>
               </TouchableOpacity>
@@ -257,7 +267,7 @@ const styles = StyleSheet.create({
   },
   backIconStyle: {
     fontSize: 20,
-    color: COLOURS.backgroundDark,
+    color: COLOURS.primaryOrange,
     padding: 12,
     backgroundColor: COLOURS.backgroundLight,
     borderRadius: 12,
@@ -275,7 +285,7 @@ const styles = StyleSheet.create({
   },
   headerIconStyle: {
     fontSize: 25,
-    color: COLOURS.backgroundDark,
+    color: COLOURS.primaryOrange,
     padding: 12,
     backgroundColor: COLOURS.white,
     borderRadius: 12,

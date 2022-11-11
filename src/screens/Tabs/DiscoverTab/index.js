@@ -154,11 +154,11 @@ const styles = StyleSheet.create({
         padding: 16,
         height: 130,
         borderBottomWidth: 2,
-        borderBottomColor: COLOURS.backgroundMedium,
+        borderBottomColor: COLOURS.primaryOrange,
     },
     shoppingBagIcon: {
         fontSize: 18,
-        color: COLOURS.black,
+        color: COLOURS.primaryOrange,
         padding: 12,
         borderRadius: 10,
         backgroundColor: COLOURS.backgroundLight

@@ -81,7 +81,7 @@ const Navigation = ({ navigation }) => {
                     tabBarShowLabel: false,
                     tabBarStyle: {
                         position: 'absolute',
-                        elevation: 0,
+                        elevation: 1,
                         //borderTopWidth: 2,
                         //borderTopColor: 'gray',
                         backgroundColor: COLOURS.white,
@@ -103,7 +103,7 @@ const Navigation = ({ navigation }) => {
                                     style={{
                                         width: 25,
                                         height: 25,
-                                        tintColor: '#000000'
+                                        tintColor: COLOURS.primaryOrange
                                     }}
                                 />
                                 {/* <Text
@@ -131,7 +131,7 @@ const Navigation = ({ navigation }) => {
                                     style={{
                                         width: 25,
                                         height: 25,
-                                        tintColor: '#000000'
+                                        tintColor: COLOURS.primaryOrange
                                     }}
                                 />
                                 {/* <Text
@@ -162,7 +162,7 @@ const Navigation = ({ navigation }) => {
                                     style={{
                                         width: 25,
                                         height: 25,
-                                        tintColor: '#000000'
+                                        tintColor: COLOURS.primaryOrange
                                     }}
                                 />
                                 {/* <Text
@@ -190,7 +190,7 @@ const Navigation = ({ navigation }) => {
                                     style={{
                                         width: 25,
                                         height: 25,
-                                        tintColor: '#000000'
+                                        tintColor: COLOURS.primaryOrange
                                     }}
                                 />
                                 {/* <Text

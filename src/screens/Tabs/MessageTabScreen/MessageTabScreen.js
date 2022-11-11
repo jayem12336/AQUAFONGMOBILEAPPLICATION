@@ -143,6 +143,7 @@ const MessageTabScreen = ({ navigation, route }) => {
                             <View style={{
                                 flexDirection: 'row',
                                 justifyContent: 'space-between',
+                                marginTop:5
                             }}>
                                 <View>
                                     {
@@ -239,8 +240,8 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         paddingBottom: 16,
         paddingHorizontal: 16,
-        borderBottomColor: COLOURS.backgroundMedium,
-        borderBottomWidth: 1,
+        borderBottomColor: COLOURS.primaryOrange,
+        borderBottomWidth: 2,
         backgroundColor: COLOURS.white
     },
     iconContainer: {
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     },
     backIconStyle: {
         fontSize: 20,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
         padding: 12,
         backgroundColor: COLOURS.backgroundLight,
         borderRadius: 12,
@@ -260,14 +261,15 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     textContainer: {
-        paddingLeft: 5,
+        paddingLeft: 10,
         justifyContent: 'center',
         alignItems: 'center'
     },
     messageStyle: {
         fontSize: 17,
         letterSpacing: 1,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textTransform: 'uppercase'
     },
     iconButtonContainer: {
         flexDirection: 'row',
@@ -276,7 +278,7 @@ const styles = StyleSheet.create({
     },
     headerIconStyle: {
         fontSize: 25,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
         padding: 12,
     },
     messageBoxContainer: {

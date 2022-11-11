@@ -237,7 +237,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                     <Avatar.Text
                                         label={inputs.firstLetter}
                                         size={80}
-                                        style={{ color: COLOURS.white }}
+                                        style={{ color: COLOURS.white}}
                                     /> :
                                     <Avatar.Image
                                         source={{ uri: image === null ?  inputs.photoURL : image }}
@@ -251,12 +251,11 @@ const UpdateProfile = ({ navigation, route }) => {
                         }}>
                             <TouchableOpacity style={{
                                 height: 40,
-                                width: '100%',
-                                maxWidth: 200,
-                                backgroundColor: COLOURS.dirtyWhiteBackground,
+                                backgroundColor: COLOURS.primaryOrange,
                                 borderRadius: 5,
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                paddingHorizontal: 10
                             }}
                                 onPress={pickImage}
                             >
@@ -264,8 +263,8 @@ const UpdateProfile = ({ navigation, route }) => {
                                     fontSize: 12,
                                     fontWeight: '500',
                                     letterSpacing: 1,
-                                    color: COLOURS.black,
-                                    textTransform: 'uppercase',
+                                    color: COLOURS.white,
+                                    textTransform: 'none',
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                 }}>
@@ -280,6 +279,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                 label="New Email"
                                 placeholder="Enter new email"
                                 error={errors.productName}
+                                iconName="email-outline"
                             />
                             <Input
                                 onChangeText={text => handleOnchange(text, 'firstName')}
@@ -287,6 +287,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                 label="New first name"
                                 placeholder="Enter new first name"
                                 error={errors.firstName}
+                                iconName="account-outline"
                             />
                             <Input
                                 onChangeText={text => handleOnchange(text, 'lastName')}
@@ -294,6 +295,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                 label="New last name"
                                 placeholder="Enter new last name"
                                 error={errors.lastName}
+                                iconName="account-outline"
                             />
                             <Input
                                 keyboardType="numeric"
@@ -302,6 +304,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                 label="New contact no."
                                 placeholder="Enter new phone"
                                 error={errors.phone}
+                                iconName="phone-outline"
                             />
                             <Input
                                 onChangeText={text => handleOnchange(text, 'address')}
@@ -309,6 +312,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                 label="New address"
                                 placeholder="Enter new address"
                                 error={errors.address}
+                                iconName="map-marker-outline"
                             />
                         </View>
                         <View style={{
@@ -316,13 +320,12 @@ const UpdateProfile = ({ navigation, route }) => {
                             alignItems: 'center'
                         }}>
                             <TouchableOpacity style={{
-                                height: 50,
-                                width: '100%',
-                                maxWidth: 150,
                                 backgroundColor: COLOURS.backgroundPrimary,
                                 borderRadius: 5,
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                paddingVertical: 10,
+                                paddingHorizontal: 15
                             }}
                                 onPress={saveChanges}
                             >
@@ -331,7 +334,7 @@ const UpdateProfile = ({ navigation, route }) => {
                                     fontWeight: '500',
                                     letterSpacing: 1,
                                     color: COLOURS.white,
-                                    textTransform: 'uppercase',
+                                    textTransform: 'none',
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                 }}>
@@ -365,15 +368,16 @@ const styles = StyleSheet.create({
     },
     backIconStyle: {
         fontSize: 20,
-        color: COLOURS.white,
+        color: COLOURS.primaryOrange,
         padding: 12,
-        backgroundColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.backgroundLight,
         borderRadius: 12,
     },
     myShopText: {
         fontSize: 20,
         textTransform: 'uppercase',
         marginLeft: 5,
-        letterSpacing: 1
+        letterSpacing: 1,
+        fontWeight: 'bold'
     },
 })

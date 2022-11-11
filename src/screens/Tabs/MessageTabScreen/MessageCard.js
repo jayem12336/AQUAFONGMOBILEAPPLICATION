@@ -189,10 +189,11 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
         paddingHorizontal: 16,
         backgroundColor: COLOURS.dirtyWhiteBackground,
-        borderBottomColor: COLOURS.backgroundMedium,
-        borderBottomWidth: 2.5,
+        borderBottomColor: COLOURS.backgroundLight,
+        borderBottomWidth: 1,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        elevation: 1
     },
     textMessage: {
         marginLeft: 10,
@@ -213,6 +214,6 @@ const styles = StyleSheet.create({
     },
     headerIconStyle: {
         fontSize: 25,
-        color: COLOURS.backgroundDark,
+        color: COLOURS.primaryOrange,
     },
 })

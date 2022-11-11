@@ -136,14 +136,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 16,
-        backgroundColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.backgroundLight,
     },
     shoppingBagIcon: {
         fontSize: 18,
-        color: COLOURS.black,
+        color: COLOURS.primaryOrange,
         padding: 12,
         borderRadius: 10,
-        backgroundColor: COLOURS.backgroundLight
+        backgroundColor: COLOURS.white
     },
     cartIcon: {
         fontSize: 18,

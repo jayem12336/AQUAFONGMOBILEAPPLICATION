@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   },
   backIconStyle: {
     fontSize: 20,
-    color: COLOURS.backgroundDark,
+    color: COLOURS.primaryOrange,
     padding: 12,
     backgroundColor: COLOURS.backgroundLight,
     borderRadius: 12,
