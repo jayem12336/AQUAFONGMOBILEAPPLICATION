@@ -1,15 +1,15 @@
 {
   "expo": {
     "name": "AquaPond Fisheries",
-    "slug": "aquafondfisheriesapp",
+    "slug": "aquafondfisheriesfinaldeploy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon3.png",
+    "icon": "./assets/Aquafondicon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash2.png",
+      "image": "./assets/Aquafondsplash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FF9967"
+      "backgroundColor": "#FFFFFF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon2.png",
+        "foregroundImage": "./assets/AquafondAdaptive.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.jayem.aquapong"
@@ -32,7 +32,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "f0a565ad-3889-4fc2-875b-e58ab239f555"
+        "projectId": "8f01a92e-b512-4309-a412-2113672b0d94"
       }
     }
   }

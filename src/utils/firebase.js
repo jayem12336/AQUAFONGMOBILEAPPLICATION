@@ -15,8 +15,8 @@ const firebaseConfig = {
     storageBucket: "aquapond-fisheries.appspot.com",
     messagingSenderId: "580323791062",
     appId: "1:580323791062:web:44cb687a4002e6b2997977"
-  };
-  
+};
+
 
 const app = initializeApp(firebaseConfig);
 

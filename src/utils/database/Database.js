@@ -127,5 +127,17 @@ export const Items = [
     },
 ];
 
+export const ItemsProducts = [
+    {
+        id: 1,
+        productImageList: [
+            require('../../images/Jpeg/GoldFish.jpg'),
+            require('../../images/Jpeg/GoldFish.jpg'),
+            require('../../images/Jpeg/GoldFish.jpg'),
+        ],
+        rating: 2,
+    },
+];
+
 
 

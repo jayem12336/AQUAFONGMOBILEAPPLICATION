@@ -11,7 +11,7 @@ import {
     BackHandler
 } from 'react-native';
 
-import Logo from '../../images/aqualogo.png';
+import Logo from '../../images/Aquapond.png';
 import CustomButton from '../../components/CustomButton';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -201,7 +201,7 @@ export default Login
 
 const styles = StyleSheet.create({
     root: {
-        backgroundColor: COLOURS.dirtyWhiteBackground,
+        backgroundColor: COLOURS.white,
         flex: 1
     },
     logo: {

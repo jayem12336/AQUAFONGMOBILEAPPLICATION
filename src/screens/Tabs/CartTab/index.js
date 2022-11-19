@@ -125,6 +125,8 @@ const CartTab = ({ navigation, route }) => {
                     sellerID: dataState[index].data.sellerID,
                     productImage: dataState[index].data.productImage,
                     quantity: dataState[index].data.productQuantity,
+                    vouchurs: dataState[index].data.productPrice * dataState[index].data.productQuantity >= 500 ? "free delivery" : "no vouchur",
+                    price: dataState[index].data.productPrice * dataState[index].data.productQuantity >= 500 ? dataState[index].data.productPrice * dataState[index].data.productQuantity : dataState[index].data.productPrice * dataState[index].data.productQuantity + dataState[index].data.productPrice / 20,
                     buyerID: userinfo,
                     shopID: dataState[index].data.shopID,
                     prodID: dataState[index].data.prodID,
@@ -313,17 +315,27 @@ const CartTab = ({ navigation, route }) => {
                             <Text style={styles.shippingText}>
                                 Shipping Tax
                             </Text>
-                            <Text style={styles.shipping}>
-                                &#x20B1;{total / 20}
-                            </Text>
+                            {total >= 500 ?
+                                <Text style={styles.shipping}>
+                                    &#x20B1;0(free delivery)
+                                </Text> :
+                                <Text style={styles.shipping}>
+                                    &#x20B1;{total / 20}
+                                </Text>
+                            }
                         </View>
                         <View style={styles.totalContainer}>
                             <Text style={styles.totalText}>
                                 Total
                             </Text>
-                            <Text style={styles.total}>
-                                &#x20B1;{total + total / 20}
-                            </Text>
+                            {total >= 500 ?
+                                <Text style={styles.total}>
+                                    &#x20B1;{total}
+                                </Text> :
+                                <Text style={styles.total}>
+                                    &#x20B1;{total + total / 20}
+                                </Text>
+                            }
                         </View>
                     </View>
                 </View>
@@ -332,9 +344,14 @@ const CartTab = ({ navigation, route }) => {
                 <TouchableOpacity
                     onPress={checkOut}
                     style={styles.buttonStyle}>
-                    <Text style={styles.buttonText}>
-                        CHECKOUT (&#x20B1;{total + total / 20} )
-                    </Text>
+                    {total >= 500 ?
+                        <Text style={styles.buttonText}>
+                            CHECKOUT (&#x20B1;{total} )
+                        </Text> :
+                        <Text style={styles.buttonText}>
+                            CHECKOUT (&#x20B1;{total + total / 20} )
+                        </Text>
+                    }
                 </TouchableOpacity>
             </View>
         </View>

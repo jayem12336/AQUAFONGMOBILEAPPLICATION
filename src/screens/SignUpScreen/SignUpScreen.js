@@ -129,7 +129,8 @@ const SignUp = () => {
                         ownerId: user.uid,
                         hasShop: false,
                         shopID: '',
-                        photoURL: ''
+                        photoURL: '',
+                        walletID: ''
                     }
                 );
                 const jsonValue = JSON.stringify(user)

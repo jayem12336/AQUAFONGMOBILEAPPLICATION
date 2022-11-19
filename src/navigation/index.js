@@ -53,6 +53,9 @@ import MyWallet from '../screens/Tabs/ProfileTab/MyWallet/MyWallet';
 import ShopView from '../screens/Tabs/DiscoverTab/ShopView/ShopView';
 import Reviews from '../screens/Tabs/FeedTab/NewProductInfo/Reviews';
 import { doc, onSnapshot } from 'firebase/firestore';
+import CreateCard from '../screens/Tabs/ProfileTab/MyWallet/CreateCard/CreateCard';
+import CardInfo from '../screens/Tabs/ProfileTab/MyWallet/CreateCard/CardInfo';
+import EditCard from '../screens/Tabs/ProfileTab/MyWallet/CreateCard/EditCard';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -279,6 +282,27 @@ const Navigation = ({ navigation }) => {
                         <Stack.Screen
                             name="MyWallet"
                             component={MyWallet}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="CreateCard"
+                            component={CreateCard}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="CardInfo"
+                            component={CardInfo}
+                            initialParams={{
+                                userinfo: user
+                            }}
+                        />
+                        <Stack.Screen
+                            name="EditCard"
+                            component={EditCard}
                             initialParams={{
                                 userinfo: user
                             }}

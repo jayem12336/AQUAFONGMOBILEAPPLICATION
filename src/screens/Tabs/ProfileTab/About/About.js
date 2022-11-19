@@ -2,7 +2,7 @@ import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View 
 import React from 'react'
 import { COLOURS } from '../../../../utils/database/Database'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Logo from '../../../../images/aqualogo.png'
+import Logo from '../../../../images/Aquapond.png'
 
 const About = ({ navigation }) => {
     return (
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     },
     backIconContainer: {
         fontSize: 30,
-        color: COLOURS.backgroundPrimary,
+        color: COLOURS.primaryOrange,
         padding: 12,
         borderRadius: 12,
     },

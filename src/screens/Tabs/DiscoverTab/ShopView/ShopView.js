@@ -308,20 +308,22 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingVertical: 10,
-        paddingHorizontal: 5,
-        backgroundColor: COLOURS.backgroundPrimary,
-        elevation: 1
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        backgroundColor: COLOURS.backgroundLight,
+        elevation: 1,
+        borderBottomWidth: 2,
+        borderBottomColor: COLOURS.primaryOrange
     },
     subHeaderContainer: {
         flexDirection: 'row',
     },
     backIconContainer: {
-        fontSize: 30,
-        color: COLOURS.white,
-        padding: 12,
-        width: 60,
+        fontSize: 20,
+        color: COLOURS.primaryOrange,
+        padding: 10,
         borderRadius: 12,
+        backgroundColor: COLOURS.white
     },
     textContainer: {
         justifyContent: 'center',
@@ -330,10 +332,11 @@ const styles = StyleSheet.create({
     textStyle: {
         fontSize: 20,
         textTransform: 'none',
-        color: COLOURS.white,
+        color: COLOURS.black,
         fontWeight: 'bold',
         textAlign: 'justify',
-        letterSpacing: 1.5
+        letterSpacing: 1.5,
+        marginLeft: 10
     },
     productContainer: {
         flexDirection: 'row',

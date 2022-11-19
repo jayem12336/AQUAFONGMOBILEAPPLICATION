@@ -234,6 +234,26 @@ const OrderDetails = ({ route, navigation }) => {
                                     }}>{location === "PurchaseHistory" || location === "myOrders" || location === "Notification" ? sellerData.address : buyerData.address}</Text>
                                 </View>
                             </View>
+                            {
+                                productData.price >= 500 ?
+                                    <View style={{
+                                        width: '50%',
+                                        marginTop: 10
+                                    }}>
+                                        <Text style={{
+                                            fontSize: 15,
+                                            color: COLOURS.backgroundMedium,
+                                            fontWeight: 'bold'
+                                        }}>Vouchur</Text>
+                                        <Text style={{
+                                            marginTop: 5,
+                                            fontSize: 15,
+                                            fontWeight: 'bold',
+                                            color: COLOURS.green
+                                        }}>Free Shipping</Text>
+                                    </View> : ""
+                            }
+
                         </View>
                     </View>
                     <View style={{
@@ -336,7 +356,7 @@ const OrderDetails = ({ route, navigation }) => {
                                 }}>Price</Text>
                                 <Text style={{
                                     marginTop: 10
-                                }}>&#x20B1;{productData.quantity * productData.productPrice}</Text>
+                                }}>&#x20B1;{productData.price}</Text>
                             </View>
                         </View>
                     </View>
@@ -419,7 +439,7 @@ const OrderDetails = ({ route, navigation }) => {
                                                 Buyer cancel the order on {moment(productData.cancelledDate).format("ll")}
                                             </Text>
                                         </View>
-                                    </View> :  ""
+                                    </View> : ""
 
                     }
                 </View>

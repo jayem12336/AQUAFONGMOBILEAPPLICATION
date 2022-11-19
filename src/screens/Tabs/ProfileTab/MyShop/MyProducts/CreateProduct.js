@@ -11,6 +11,8 @@ import {
   Image,
   Alert,
   Keyboard,
+  FlatList,
+  useWindowDimensions,
 } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
@@ -21,6 +23,7 @@ import Input from '../../../../../components/Input/Input';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '../../../../../utils/firebase';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { Button } from 'react-native-paper';
 
 const CreateProduct = ({ navigation, route }) => {
 
@@ -38,10 +41,13 @@ const CreateProduct = ({ navigation, route }) => {
   })
 
   const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
+  const { width } = useWindowDimensions();
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessageImages, setErrorMessageImages] = useState('');
 
   const [parentProdID, setParentProdID] = useState('');
 
@@ -79,6 +85,11 @@ const CreateProduct = ({ navigation, route }) => {
 
     if (image === null) {
       setErrorMessage('Please select and enter product image');
+      isValid = false;
+    }
+
+    if (images.length !== 3) {
+      setErrorMessageImages('Please select exactly 3 images');
       isValid = false;
     }
 
@@ -146,6 +157,7 @@ const CreateProduct = ({ navigation, route }) => {
             productImage: downloadURL,
             productQuantity: Number(inputs.productQuantity),
             productAddress: shopDetails.shopLocation,
+            imagesPreview: images,
             userID: userID,
             shopID: shopID,
             dateCreated: new Date().toISOString()
@@ -161,6 +173,7 @@ const CreateProduct = ({ navigation, route }) => {
               productAddress: shopDetails.shopLocation,
               rating: inputs.rating,
               productImage: downloadURL,
+              imagesPreview: images,
               prodID: docRef.id,
               dateCreated: new Date().toISOString()
             }).then((newRef) => {
@@ -198,78 +211,127 @@ const CreateProduct = ({ navigation, route }) => {
     }
   };
 
+  const pickImages = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      //allowsEditing: false,
+      selectionLimit: 3,
+      aspect: [4, 3],
+      quality: 1
+    })
+
+    if (!result.cancelled) {
+      setImages(result.uri ? [result.uri] : result.selected);
+    }
+  }
+
   return (
     <View style={styles.root}>
       <Loader visible={loading} />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 50 }}>
-        <SafeAreaView style={styles.container}>
-          <StatusBar
-            backgroundColor={COLOURS.white}
-            barStyle="dark-content"
-          />
-          <View
-            style={{ width: '100%' }}>
-            <View style={styles.headerContainer}>
-              <View style={{ flexDirection: 'row', }}>
-                <TouchableOpacity>
-                  <MaterialCommunityIcons
-                    onPress={() => navigation.navigate('MyProducts', {
-                      userID: userID,
-                      shopID: shopID,
-                      shopDetails: shopDetails
-                    })}
-                    name="chevron-left"
-                    style={styles.backIconStyle}
-                  />
-                </TouchableOpacity>
-                <View style={{ justifyContent: 'center' }}>
-                  <Text style={styles.myShopText}> Create Product </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-          <View style={{ padding: 20 }}>
-            <Input
-              onChangeText={text => handleOnchange(text, 'productName')}
-              onFocus={() => handleError(null, 'productName')}
-              label="Product Name *"
-              placeholder="Enter your product name"
-              error={errors.productName}
-            />
-            <Input
-              keyboardType="numeric"
-              onChangeText={text => handleOnchange(text, 'productPrice')}
-              onFocus={() => handleError(null, 'productPrice')}
-              label="Product Price *"
-              placeholder="Enter your product price"
-              error={errors.productPrice}
-            />
-            <Input
-              keyboardType="numeric"
-              onChangeText={text => handleOnchange(text, 'productQuantity')}
-              onFocus={() => handleError(null, 'productQuantity')}
-              label="Product Quantity *"
-              placeholder="Enter your product quantity"
-              error={errors.productQuantity}
-            />
-            <View style={styles.textFieldSubContainer}>
-              <Text style={{ marginBottom: 10, fontSize: 14, color: COLOURS.grey, }}>
-                Product Image *
-              </Text>
-              <TouchableOpacity style={styles.btnContainer} onPress={pickImage}>
-                <Text style={styles.btnText}>
-                  Insert Product Image
-                </Text>
+      <ScrollView horizontal={false}>
+        <StatusBar
+          backgroundColor={COLOURS.white}
+          barStyle="dark-content"
+        />
+        <View
+          style={{ width: '100%' }}>
+          <View style={styles.headerContainer}>
+            <View style={{ flexDirection: 'row', }}>
+              <TouchableOpacity>
+                <MaterialCommunityIcons
+                  onPress={() => navigation.navigate('MyProducts', {
+                    userID: userID,
+                    shopID: shopID,
+                    shopDetails: shopDetails
+                  })}
+                  name="chevron-left"
+                  style={styles.backIconStyle}
+                />
               </TouchableOpacity>
-              {errorMessage &&
-                <Text style={{ marginTop: 7, color: COLOURS.red, fontSize: 12 }}>{errorMessage}</Text>
-              }
-              <View style={styles.imageContainer}>
-                {image && <Image source={{ uri: image }} style={styles.imageStyle} />}
+              <View style={{ justifyContent: 'center' }}>
+                <Text style={styles.myShopText}> Create Product </Text>
               </View>
             </View>
           </View>
-        </SafeAreaView>
+        </View>
+        <View style={{ padding: 20 }}>
+          <Input
+            onChangeText={text => handleOnchange(text, 'productName')}
+            onFocus={() => handleError(null, 'productName')}
+            label="Product Name *"
+            placeholder="Enter your product name"
+            error={errors.productName}
+          />
+          <Input
+            keyboardType="numeric"
+            onChangeText={text => handleOnchange(text, 'productPrice')}
+            onFocus={() => handleError(null, 'productPrice')}
+            label="Product Price *"
+            placeholder="Enter your product price"
+            error={errors.productPrice}
+          />
+          <Input
+            keyboardType="numeric"
+            onChangeText={text => handleOnchange(text, 'productQuantity')}
+            onFocus={() => handleError(null, 'productQuantity')}
+            label="Product Quantity *"
+            placeholder="Enter your product quantity"
+            error={errors.productQuantity}
+          />
+          <View style={styles.textFieldSubContainer}>
+            <Text style={{ marginBottom: 10, fontSize: 14, color: COLOURS.grey, }}>
+              Product Image *
+            </Text>
+            <TouchableOpacity style={styles.btnContainer} onPress={pickImage}>
+              <Text style={styles.btnText}>
+                Insert Product Image
+              </Text>
+            </TouchableOpacity>
+            {errorMessage &&
+              <Text style={{ marginTop: 7, color: COLOURS.red, fontSize: 12 }}>{errorMessage}</Text>
+            }
+            <View style={styles.imageContainer}>
+              {image && <Image source={{ uri: image }} style={styles.imageStyle} />}
+            </View>
+          </View>
+
+          <ScrollView horizontal={true}>
+            <FlatList
+              data={images}
+              renderItem={({ item }) => (
+                <Image source={{ uri: item.uri }} style={{
+                  width: width,
+                  height: 250,
+                  marginBottom: 10
+                }} />
+              )}
+              contentContainerStyle={{
+                paddingBottom: 100,
+              }}
+              ListHeaderComponent={
+                <View style={{
+                  marginTop: 10,
+                  marginBottom: 10
+                }}>
+                  <Text style={{ marginBottom: 10, fontSize: 14, color: COLOURS.grey, }}>
+                    Product Preview Images (maximum of 3) *
+                  </Text>
+                  <TouchableOpacity style={styles.btnContainer} onPress={pickImages}>
+                    <Text style={styles.btnText}>
+                      Pick Images
+                    </Text>
+                  </TouchableOpacity>
+                  {errorMessageImages &&
+                    <Text style={{ marginTop: 7, color: COLOURS.red, fontSize: 12 }}>{errorMessageImages}</Text>
+                  }
+                </View>
+              }
+              keyExtractor={(item) => item.uri}
+              nestedScrollEnabled
+            />
+          </ScrollView>
+        </View>
       </ScrollView>
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.btnContainer2} onPress={validate}>
@@ -321,14 +383,13 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    maxWidth: 200,
     alignItems: 'center',
     justifyContent: 'center',
     alignContent: 'center',
     marginTop: 10
   },
   imageStyle: {
-    width: 200,
+    width: '100%',
     height: 200
   },
   btnContainer: {
@@ -336,6 +397,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOURS.primaryOrange,
     padding: 15,
     borderRadius: 2,
+    width: 170
   },
   btnText: {
     fontSize: 12,

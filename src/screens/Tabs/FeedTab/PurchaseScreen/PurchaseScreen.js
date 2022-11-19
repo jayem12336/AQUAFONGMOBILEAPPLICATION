@@ -63,6 +63,8 @@ const PurchaseScreen = ({ navigation, route }) => {
                 buyerID: userinfo,
                 shopID: productID.shopID,
                 prodID: productID.prodID,
+                vouchurs: productID.productPrice * quantity >= 500 ? "free delivery" : "no vouchur",
+                price: productID.productPrice * quantity >= 500 ? productID.productPrice * quantity : productID.productPrice * quantity + productID.productPrice / 20,
                 parentProdID: productID.parentProductID,
                 dateOrder: new Date().toISOString(),
                 paymentMethod: handlePaymentMethod,
@@ -108,7 +110,7 @@ const PurchaseScreen = ({ navigation, route }) => {
                 Purchase
               </Text>
             </View>
-            <View style={styles.shippingContainer}>
+            <View style={styles.shippingContainers}>
               <Text style={styles.shippingTitle}>
                 Shipping Information
               </Text>
@@ -171,12 +173,56 @@ const PurchaseScreen = ({ navigation, route }) => {
                 </View>
               </View>
             </View>
+            <View style={styles.orderContainer}>
+              <Text style={styles.orderSubContainer}>
+                Order Info
+              </Text>
+              <View style={styles.subTotalContainer}>
+                <Text style={styles.subTotalText}>
+                  Subtotal
+                </Text>
+                <Text style={styles.subTotal}>
+                  &#x20B1;{productID.productPrice * quantity}.00
+                </Text>
+              </View>
+              <View style={styles.shippingContainer}>
+                <Text style={styles.shippingText}>
+                  Shipping Tax
+                </Text>
+                {productID.productPrice * quantity >= 500 ?
+                  <Text style={styles.shipping}>
+                    &#x20B1;0(free delivery)
+                  </Text> :
+                  <Text style={styles.shipping}>
+                    &#x20B1;{productID.productPrice * quantity / 20}
+                  </Text>
+                }
+              </View>
+              <View style={styles.totalContainer}>
+                <Text style={styles.totalText}>
+                  Total
+                </Text>
+                {productID.productPrice * quantity >= 500 ?
+                  <Text style={styles.total}>
+                    &#x20B1;{productID.productPrice * quantity}
+                  </Text> :
+                  <Text style={styles.total}>
+                    &#x20B1;{productID.productPrice * quantity + productID.productPrice * quantity / 20}
+                  </Text>
+                }
+              </View>
+            </View>
           </SafeAreaView>
         </ScrollView>
         <View style={styles.footerContainer}>
-          <Text>
-            Total: &#x20B1; {quantity * productID.productPrice}
-          </Text>
+          {productID.productPrice * quantity >= 500 ?
+            <Text>
+              Total: &#x20B1;{productID.productPrice * quantity}
+            </Text> :
+            <Text>
+              Total: &#x20B1;{productID.productPrice * quantity + productID.productPrice * quantity / 20}
+            </Text>
+          }
           <View style={styles.footerSubContainer}>
             <TouchableOpacity
               onPress={placeOrder}
@@ -227,7 +273,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: COLOURS.backgroundPrimary
+    backgroundColor: COLOURS.primaryOrange
   },
   textHeader: {
     fontSize: 20,
@@ -236,7 +282,7 @@ const styles = StyleSheet.create({
     color: COLOURS.white,
     fontWeight: '500'
   },
-  shippingContainer: {
+  shippingContainers: {
     width: '100%',
     flexDirection: 'column',
     height: 180,
@@ -381,5 +427,71 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     opacity: 0.5,
   },
-
+  orderContainer: {
+    paddingHorizontal: 16,
+    marginTop: 40,
+    marginBottom: 80,
+  },
+  orderSubContainer: {
+    fontSize: 16,
+    color: COLOURS.black,
+    fontWeight: '500',
+    letterSpacing: 1,
+    marginBottom: 20,
+  },
+  subTotalContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  subTotalText: {
+    fontSize: 12,
+    fontWeight: '400',
+    maxWidth: '80%',
+    color: COLOURS.black,
+    opacity: 0.5,
+  },
+  subTotal: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: COLOURS.black,
+    opacity: 0.8,
+  },
+  totalContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  totalText: {
+    fontSize: 12,
+    fontWeight: '400',
+    maxWidth: '80%',
+    color: COLOURS.black,
+    opacity: 0.5,
+  },
+  total: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: COLOURS.black,
+  },
+  shippingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 22,
+  },
+  shippingText: {
+    fontSize: 12,
+    fontWeight: '400',
+    maxWidth: '80%',
+    color: COLOURS.black,
+    opacity: 0.5,
+  },
+  shipping: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: COLOURS.black,
+    opacity: 0.8,
+  },
 })

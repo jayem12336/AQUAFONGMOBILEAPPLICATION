@@ -12,6 +12,9 @@ import {
     TouchableOpacity,
     Image,
     ActivityIndicator,
+    Dimensions,
+    Animated,
+    FlatList,
 } from 'react-native'
 import SearchBarComponent from '../../../components/Searchbar/SearchBar';
 import { COLOURS, Items } from '../../../utils/database/Database';
@@ -19,6 +22,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { auth, db } from '../../../utils/firebase';
+import logo1 from '../../../images/Adsfirst.png'
+import logo2 from '../../../images/Adssecond.png';
+import logo3 from '../../../images/Adsthird.png'
 
 const FeedTab = ({ navigation }) => {
 
@@ -30,6 +36,12 @@ const FeedTab = ({ navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [userID, setUserID] = useState('');
+
+    const width = Dimensions.get('window').width;
+
+    const scrollX = new Animated.Value(0);
+
+    let position = Animated.divide(scrollX, width);
 
     useEffect(() => {
         setIsLoading(true);
@@ -64,6 +76,7 @@ const FeedTab = ({ navigation }) => {
 
     }
 
+
     const ProductCard = ({ data, productID }) => {
         return (
             <TouchableOpacity
@@ -86,6 +99,29 @@ const FeedTab = ({ navigation }) => {
             </TouchableOpacity>
         )
     }
+    const Item = ({ image }) => {
+        return (
+            <View style={{
+                width: width,
+                height: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingTop: 20,
+                paddingHorizontal: 20
+            }}>
+                <Image source={image} style={{
+                    width: '100%',
+                    height: '100%',
+                    resizeMode: 'stretch'
+                }} />
+            </View>
+        );
+    }
+
+    const renderItem = ({ item }) => (
+        <Item name={item.name} image={item.image} />
+    );
+
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
@@ -100,6 +136,46 @@ const FeedTab = ({ navigation }) => {
                 <TouchableOpacity onPress={() => navigation.navigate('MessageTabScreen')}>
                     <IonIcons name="mail-outline" style={styles.shoppingBagIcon} />
                 </TouchableOpacity>
+            </View>
+            <View style={{
+                backgroundColor: COLOURS.primaryOrange,
+                height: 300
+            }}>
+                <FlatList
+                    data={countries}
+                    horizontal
+                    renderItem={renderItem}
+                    showsHorizontalScrollIndicator={false}
+                    decelerationRate={0.8}
+                    snapToInterval={width}
+                    bounces={false}
+                    onScroll={Animated.event(
+                        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                        { useNativeDriver: false },
+                    )}
+                />
+                <View style={styles.imageListContainer}>
+                    {countries.map((data, index) => {
+                        let opacity = position.interpolate({
+                            inputRange: [index - 1, index, index + 1],
+                            outputRange: [0.2, 1, 0.2],
+                            extrapolate: 'clamp',
+                        });
+                        return (
+                            <Animated.View
+                                key={index}
+                                style={{
+                                    width: '16%',
+                                    height: 2.4,
+                                    backgroundColor: COLOURS.white,
+                                    opacity,
+                                    marginHorizontal: 4,
+                                    borderRadius: 100,
+                                }}></Animated.View>
+                        );
+                    })
+                    }
+                </View>
             </View>
             <View style={{ width: '100%' }}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
@@ -119,11 +195,29 @@ const FeedTab = ({ navigation }) => {
                     </View>
                 </ScrollView>
             </View>
-        </View>
+        </View >
     )
 }
 
 export default FeedTab
+
+const countries = [
+    {
+        id: '1',
+        name: 'first ads',
+        image: logo1
+    },
+    {
+        id: '2',
+        name: 'second ads',
+        image: logo2
+    },
+    {
+        id: '3',
+        name: 'third ads',
+        image: logo3
+    },
+];
 
 const styles = StyleSheet.create({
     container: {
@@ -136,7 +230,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 16,
-        backgroundColor: COLOURS.backgroundLight,
+        backgroundColor: COLOURS.primaryOrange,
     },
     shoppingBagIcon: {
         fontSize: 18,
@@ -236,5 +330,25 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginBottom: 5,
         //height: 30
-    }
+    },
+    item: {
+        backgroundColor: 'orange',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 3, height: 3 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+    },
+
+    imageListContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+        marginTop: 32,
+    },
 })

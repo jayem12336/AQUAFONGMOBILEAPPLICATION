@@ -1,4 +1,4 @@
-import { Alert, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Animated, Dimensions, FlatList, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Loader from '../../../../components/Loader/Loader';
 import { COLOURS } from '../../../../utils/database/Database';
@@ -31,6 +31,12 @@ const NewProductInfo = ({ route }) => {
     const [inputs, setInputs] = useState({
         comment: '',
     })
+
+    const width = Dimensions.get('window').width;
+
+    const scrollX = new Animated.Value(0);
+
+    let position = Animated.divide(scrollX, width);
 
     const handleOnchange = (text, input) => {
         setInputs(prevState => ({ ...prevState, [input]: text }));
@@ -107,6 +113,26 @@ const NewProductInfo = ({ route }) => {
                 }
             ]
         );
+    }
+
+    //ProductFish horizontal scroll product card
+    const renderProduct = ({ item, index }) => {
+        return (
+            <View style={{
+                width: width,
+                height: 260,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingTop: 20,
+                paddingHorizontal: 20
+            }}>
+                <Image source={{ uri: item.uri }} style={{
+                    width: '100%',
+                    height: '100%',
+                    resizeMode:'stretch'
+                }} />
+            </View>
+        )
     }
 
     const goToMessage = async () => {
@@ -202,10 +228,43 @@ const NewProductInfo = ({ route }) => {
                             </View>
                         </View>
                     </View>
+                    <FlatList
+                        data={productInfo.imagesPreview ? productInfo.imagesPreview : null}
+                        horizontal
+                        renderItem={renderProduct}
+                        showsHorizontalScrollIndicator={false}
+                        decelerationRate={0.8}
+                        snapToInterval={width}
+                        bounces={false}
+                        onScroll={Animated.event(
+                            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                            { useNativeDriver: false },
+                        )}
+                    />
+                    <View style={styles.imageListContainer}>
+                        {productInfo.imagesPreview
+                            ? productInfo.imagesPreview.map((data, index) => {
+                                let opacity = position.interpolate({
+                                    inputRange: [index - 1, index, index + 1],
+                                    outputRange: [0.2, 1, 0.2],
+                                    extrapolate: 'clamp',
+                                });
+                                return (
+                                    <Animated.View
+                                        key={index}
+                                        style={{
+                                            width: '16%',
+                                            height: 2.4,
+                                            backgroundColor: COLOURS.primaryOrange,
+                                            opacity,
+                                            marginHorizontal: 4,
+                                            borderRadius: 100,
+                                        }}></Animated.View>
+                                );
+                            })
+                            : null}
+                    </View>
                     <View style={styles.container}>
-                        <View>
-                            <Image source={{ uri: productInfo.productImage }} style={styles.imageStyle} />
-                        </View>
                         <View style={{
                             marginTop: 10,
                             paddingLeft: 5
@@ -303,11 +362,6 @@ const NewProductInfo = ({ route }) => {
                             <View style={styles.quantityView}>
                                 {/* <Text>Available {productInfo.productQuantity}</Text> */}
                                 <View style={styles.quantitySubView}>
-                                    <View style={styles.imagesContainer}>
-                                        <Image source={{ uri: productInfo.productImage }} alt="Product Image" style={styles.productImageStyle} />
-                                        <Image source={{ uri: productInfo.productImage }} alt="Product Image" style={styles.productImageStyle} />
-                                        <Image source={{ uri: productInfo.productImage }} alt="Product Image" style={styles.productImageStyle} />
-                                    </View>
                                     <View style={styles.headquantityContainer}>
                                         <View style={styles.quantityTextContainer}>
                                             <Text>Quantity</Text>
@@ -416,7 +470,6 @@ export default NewProductInfo
 
 const styles = StyleSheet.create({
     root: {
-        flex: 1,
         justifyContent: 'center',
         height: '100%',
         backgroundColor: COLOURS.white,
@@ -607,7 +660,6 @@ const styles = StyleSheet.create({
     quantityView: {
         padding: 10,
         backgroundColor: COLOURS.backgroundPrimary,
-        height: 300,
     },
     quantitySubView: {
         width: '100%',
@@ -655,5 +707,13 @@ const styles = StyleSheet.create({
         color: COLOURS.black,
         textTransform: 'uppercase',
         textAlign: 'center'
+    },
+    imageListContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+        marginTop: 32,
     },
 })

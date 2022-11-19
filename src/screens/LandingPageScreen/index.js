@@ -8,7 +8,7 @@ import {
     StatusBar,
 } from "react-native";
 
-import Logo from '../../images/aqualogo.png';
+import Logo from '../../images/Aquapond.png';
 import CustomButton from "../../components/CustomButton";
 
 import { useNavigation } from "@react-navigation/native";

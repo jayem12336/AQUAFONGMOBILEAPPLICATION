@@ -45,7 +45,10 @@ const SearchBar = ({ value, updateSearch, style }) => {
                 {
                     query ?
                         <TouchableOpacity
-                            onPress={() => setQuery('')}
+                            onPress={() => {
+                                setQuery('')
+                                updateSearch('')
+                            }}
                             style={styles.vwClear}>
                             <MaterialCommunityIcons
                                 name="backspace-outline"
@@ -54,7 +57,6 @@ const SearchBar = ({ value, updateSearch, style }) => {
                         </TouchableOpacity>
                         : <View style={styles.vwClear} />
                 }
-
             </View>
             {
                 error &&
@@ -104,5 +106,4 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
     },
-
 })

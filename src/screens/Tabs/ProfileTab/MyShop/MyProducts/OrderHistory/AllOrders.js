@@ -171,7 +171,7 @@ const AllOrders = ({ data, location, id }) => {
                         fontWeight: 'bold',
                         marginLeft: 10
                     }}>
-                        &#x20B1; {data.productPrice * data.quantity}
+                        &#x20B1; {data.price}
                     </Text>
                 </View>
             </View>
@@ -199,7 +199,7 @@ const AllOrders = ({ data, location, id }) => {
                 {data.status === "To Ship" && location === "to ship"? 
                     <TouchableOpacity style={{
                         padding: 7,
-                        borderColor: COLOURS.black,
+                        borderColor: COLOURS.green,
                         borderWidth: 1,
                         borderRadius: 18,
                         width: 90,

@@ -2,8 +2,34 @@ import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 
 import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLOURS } from '../../../../utils/database/Database';
+import Card from './CreateCard/Card';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../../../utils/firebase';
 
 const MyWallet = ({ navigation, route }) => {
+
+    const [wallets, setWallets] = useState([]);
+
+    const { userinfo } = route.params;
+
+    useEffect(() => {
+        const q = query(collection(db, "users", userinfo, "wallets"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+                data.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            });
+            setWallets(data);
+        });
+        return unsubscribe;
+    }, [navigation])
+
+
     return (
         <View style={styles.root}>
             <StatusBar
@@ -24,120 +50,64 @@ const MyWallet = ({ navigation, route }) => {
                         </View>
                     </View>
                 </View>
-                <View style={{
-                    marginTop: 20,
-                    paddingHorizontal: 20
-                }}>
-                    <Text style={{
-                        fontSize: 17,
-                        color: COLOURS.grey,
-                        fontWeight: '500',
-                        letterSpacing: 1
-                    }}>My Bank Card</Text>
-                    <View style={{
-                        backgroundColor: COLOURS.backgroundLight,
-                        marginTop: 20,
-                        padding: 15,
-                        borderRadius: 20,
-                        flexDirection: 'row',
-                        alignItems: 'center'
-                    }}>
-                        <TouchableOpacity>
-                            <MaterialCommunityIcons
-                                onPress={() => navigation.goBack()}
-                                name="plus-thick"
-                                style={styles.plusIconContainer}
-                            />
-                        </TouchableOpacity>
-                        <Text style={{
-                            marginLeft: 5,
-                            fontSize: 16,
-                            fontWeight: 'bold',
-                            letterSpacing: 1
+                {
+                    wallets.length > 0 ?
+                        "" :
+                        <View style={{
+                            marginTop: 20,
+                            paddingHorizontal: 20
                         }}>
-                            New Card
-                        </Text>
-                    </View>
-                </View>
-                <View style={{
-                    marginTop: 20,
-                    paddingHorizontal: 20
-                }}>
-                    <Text style={{
-                        fontSize: 17,
-                        color: COLOURS.grey,
-                        fontWeight: '500',
-                        letterSpacing: 1
-                    }}>Bank Transfer</Text>
-                    <View style={{
-                        backgroundColor: COLOURS.backgroundLight,
-                        marginTop: 20,
-                        padding: 15,
-                        borderRadius: 20,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                    }}>
-                        <Text style={{
-                            marginLeft: 5,
-                            fontSize: 16,
-                            fontWeight: 'bold',
-                            letterSpacing: 1
+                            <Text style={{
+                                fontSize: 17,
+                                color: COLOURS.grey,
+                                fontWeight: '500',
+                                letterSpacing: 1
+                            }}>Add Gcash Account</Text>
+                            <View style={{
+                                backgroundColor: COLOURS.backgroundLight,
+                                marginTop: 20,
+                                padding: 15,
+                                borderRadius: 20,
+                                flexDirection: 'row',
+                                alignItems: 'center'
+                            }}>
+                                <TouchableOpacity onPress={() => navigation.navigate('CreateCard')}>
+                                    <MaterialCommunityIcons
+                                        name="plus-thick"
+                                        style={styles.plusIconContainer}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={{
+                                    marginLeft: 5,
+                                    fontSize: 16,
+                                    fontWeight: 'bold',
+                                    letterSpacing: 1
+                                }}>
+                                    Add
+                                </Text>
+                            </View>
+                        </View>
+                }
+
+                {
+                    wallets.length > 0 ?
+                        <View style={{
+                            marginTop: 20,
+                            paddingHorizontal: 20
                         }}>
-                            Logo here
-                        </Text>
-                        <TouchableOpacity>
-                            <MaterialCommunityIcons
-                                onPress={() => navigation.goBack()}
-                                name="plus-thick"
-                                style={styles.plusIconContainer}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{
-                        backgroundColor: COLOURS.backgroundLight,
-                        marginTop: 20,
-                        padding: 15,
-                        borderRadius: 20,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                    }}>
-                        <Text style={{
-                            marginLeft: 5,
-                            fontSize: 16,
-                            fontWeight: 'bold',
-                            letterSpacing: 1
-                        }}>
-                            Logo here
-                        </Text>
-                        <TouchableOpacity>
-                            <MaterialCommunityIcons
-                                onPress={() => navigation.goBack()}
-                                name="plus-thick"
-                                style={styles.plusIconContainer}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                            <Text style={{
+                                fontSize: 17,
+                                color: COLOURS.grey,
+                                fontWeight: '500',
+                                letterSpacing: 1
+                            }}>Gcash Account</Text>
+                            {wallets.map(({ data, id }) => (
+                                <Card data={data} key={id} id={id} />
+                            ))}
+                        </View> : ""
+                }
+
             </ScrollView>
-            <View style={styles.footerContainer}>
-                <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center'
-                }}>
-                    <TouchableOpacity style={{
-                        position: 'absolute',
-                        bottom: 1
-                    }}>
-                        <MaterialCommunityIcons
-                                onPress={() => navigation.goBack()}
-                                name="plus-thick"
-                                style={styles.plusIconContainer2}
-                            />
-                    </TouchableOpacity>
-                </View>
-            </View>
         </View>
     )
 }
@@ -165,7 +135,7 @@ const styles = StyleSheet.create({
     },
     backIconContainer: {
         fontSize: 30,
-        color: COLOURS.backgroundPrimary,
+        color: COLOURS.primaryOrange,
         padding: 12,
         width: 60,
         borderRadius: 12,
@@ -186,14 +156,14 @@ const styles = StyleSheet.create({
     plusIconContainer: {
         fontSize: 25,
         color: COLOURS.white,
-        backgroundColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.primaryOrange,
         padding: 10,
         borderRadius: 12,
     },
     plusIconContainer2: {
         fontSize: 30,
         color: COLOURS.white,
-        backgroundColor: COLOURS.backgroundPrimary,
+        backgroundColor: COLOURS.primaryOrange,
         padding: 10,
         borderRadius: 30,
     },
