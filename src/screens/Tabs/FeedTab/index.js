@@ -72,6 +72,7 @@ const FeedTab = ({ navigation }) => {
         return unsubscribe;
     }, [navigation])
 
+
     const updateSearch = (value) => {
 
     }
@@ -137,48 +138,48 @@ const FeedTab = ({ navigation }) => {
                     <IonIcons name="mail-outline" style={styles.shoppingBagIcon} />
                 </TouchableOpacity>
             </View>
-            <View style={{
-                backgroundColor: COLOURS.primaryOrange,
-                height: 300
-            }}>
-                <FlatList
-                    data={countries}
-                    horizontal
-                    renderItem={renderItem}
-                    showsHorizontalScrollIndicator={false}
-                    decelerationRate={0.8}
-                    snapToInterval={width}
-                    bounces={false}
-                    onScroll={Animated.event(
-                        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                        { useNativeDriver: false },
-                    )}
-                />
-                <View style={styles.imageListContainer}>
-                    {countries.map((data, index) => {
-                        let opacity = position.interpolate({
-                            inputRange: [index - 1, index, index + 1],
-                            outputRange: [0.2, 1, 0.2],
-                            extrapolate: 'clamp',
-                        });
-                        return (
-                            <Animated.View
-                                key={index}
-                                style={{
-                                    width: '16%',
-                                    height: 2.4,
-                                    backgroundColor: COLOURS.white,
-                                    opacity,
-                                    marginHorizontal: 4,
-                                    borderRadius: 100,
-                                }}></Animated.View>
-                        );
-                    })
-                    }
-                </View>
-            </View>
             <View style={{ width: '100%' }}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
+                    <View style={{
+                        backgroundColor: COLOURS.primaryOrange,
+                        height: 300
+                    }}>
+                        <FlatList
+                            data={countries}
+                            horizontal
+                            renderItem={renderItem}
+                            showsHorizontalScrollIndicator={false}
+                            decelerationRate={0.8}
+                            snapToInterval={width}
+                            bounces={false}
+                            onScroll={Animated.event(
+                                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                                { useNativeDriver: false },
+                            )}
+                        />
+                        <View style={styles.imageListContainer}>
+                            {countries.map((data, index) => {
+                                let opacity = position.interpolate({
+                                    inputRange: [index - 1, index, index + 1],
+                                    outputRange: [0.2, 1, 0.2],
+                                    extrapolate: 'clamp',
+                                });
+                                return (
+                                    <Animated.View
+                                        key={index}
+                                        style={{
+                                            width: '16%',
+                                            height: 2.4,
+                                            backgroundColor: COLOURS.white,
+                                            opacity,
+                                            marginHorizontal: 4,
+                                            borderRadius: 100,
+                                        }}></Animated.View>
+                                );
+                            })
+                            }
+                        </View>
+                    </View>
                     <View style={styles.productContainer}>
                         {isLoading ?
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: 500 }}>

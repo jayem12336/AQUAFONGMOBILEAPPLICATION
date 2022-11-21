@@ -41,7 +41,9 @@ const CreateProduct = ({ navigation, route }) => {
   })
 
   const [image, setImage] = useState(null);
+  const [image1, setImage2] = useState(null);
   const [images, setImages] = useState([]);
+  const [imageList, setImageList] = useState([]);
   const { width } = useWindowDimensions();
 
   const [errors, setErrors] = useState({});
@@ -85,11 +87,6 @@ const CreateProduct = ({ navigation, route }) => {
 
     if (image === null) {
       setErrorMessage('Please select and enter product image');
-      isValid = false;
-    }
-
-    if (images.length !== 3) {
-      setErrorMessageImages('Please select exactly 3 images');
       isValid = false;
     }
 
@@ -148,8 +145,8 @@ const CreateProduct = ({ navigation, route }) => {
         setLoading(false)
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          addDoc(collection(db, "feedproducts"), {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          await addDoc(collection(db, "feedproducts"), {
             productName: inputs.productName,
             productPrice: Number(inputs.productPrice),
             productDescription: inputs.productDescription,
@@ -157,15 +154,14 @@ const CreateProduct = ({ navigation, route }) => {
             productImage: downloadURL,
             productQuantity: Number(inputs.productQuantity),
             productAddress: shopDetails.shopLocation,
-            imagesPreview: images,
             userID: userID,
             shopID: shopID,
             dateCreated: new Date().toISOString()
-          }).then((docRef) => {
+          }).then(async (docRef) => {
             const cityRef = doc(db, 'feedproducts', docRef.id);
             setDoc(cityRef, { prodID: docRef.id }, { merge: true });
             setParentProdID(docRef.id)
-            addDoc(collection(db, "users", userID, "shop", shopID, "products"), {
+            await addDoc(collection(db, "users", userID, "shop", shopID, "products"), {
               productName: inputs.productName,
               productPrice: Number(inputs.productPrice),
               productDescription: inputs.productDescription,
@@ -173,7 +169,6 @@ const CreateProduct = ({ navigation, route }) => {
               productAddress: shopDetails.shopLocation,
               rating: inputs.rating,
               productImage: downloadURL,
-              imagesPreview: images,
               prodID: docRef.id,
               dateCreated: new Date().toISOString()
             }).then((newRef) => {
@@ -202,7 +197,7 @@ const CreateProduct = ({ navigation, route }) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       //allowsEditing: true,
-      //aspect: [1, 2],
+      aspect: [1, 2],
       quality: 1,
     });
 
@@ -211,13 +206,33 @@ const CreateProduct = ({ navigation, route }) => {
     }
   };
 
+  const pickImage2 = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this appp to access your photos!");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [1, 2],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setImage2(result.uri);
+    }
+  };
+
+
   const pickImages = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
-      //allowsEditing: false,
+      allowsEditing: false,
       selectionLimit: 3,
-      aspect: [4, 3],
+      aspect: [1, 2],
       quality: 1
     })
 
@@ -229,7 +244,9 @@ const CreateProduct = ({ navigation, route }) => {
   return (
     <View style={styles.root}>
       <Loader visible={loading} />
-      <ScrollView horizontal={false}>
+      <ScrollView horizontal={false} contentContainerStyle={{
+        paddingBottom: 80
+      }}>
         <StatusBar
           backgroundColor={COLOURS.white}
           barStyle="dark-content"
@@ -295,8 +312,24 @@ const CreateProduct = ({ navigation, route }) => {
               {image && <Image source={{ uri: image }} style={styles.imageStyle} />}
             </View>
           </View>
+          {/* <View style={{
+            marginTop: 10,
+            marginBottom: 10
+          }}>
+            <Text style={{ marginBottom: 10, fontSize: 14, color: COLOURS.grey, }}>
+              Product Preview Image*
+            </Text>
+            <TouchableOpacity style={styles.btnContainer} onPress={pickImage2}>
+              <Text style={styles.btnText}>
+                Pick Image Preview
+              </Text>
+            </TouchableOpacity>
+            {errorMessageImages &&
+              <Text style={{ marginTop: 7, color: COLOURS.red, fontSize: 12 }}>{errorMessageImages}</Text>
+            }
+          </View> */}
 
-          <ScrollView horizontal={true}>
+          {/* <ScrollView horizontal={true}>
             <FlatList
               data={images}
               renderItem={({ item }) => (
@@ -330,7 +363,7 @@ const CreateProduct = ({ navigation, route }) => {
               keyExtractor={(item) => item.uri}
               nestedScrollEnabled
             />
-          </ScrollView>
+          </ScrollView> */}
         </View>
       </ScrollView>
       <View style={styles.footerContainer}>

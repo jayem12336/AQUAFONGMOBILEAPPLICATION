@@ -115,8 +115,8 @@ const NewProductInfo = ({ route }) => {
         );
     }
 
-    //ProductFish horizontal scroll product card
-    const renderProduct = ({ item, index }) => {
+    const Item = ({ image }) => {
+        console.log(image)
         return (
             <View style={{
                 width: width,
@@ -126,14 +126,18 @@ const NewProductInfo = ({ route }) => {
                 paddingTop: 20,
                 paddingHorizontal: 20
             }}>
-                <Image source={{ uri: item.uri }} style={{
+                <Image source={image} style={{
                     width: '100%',
                     height: '100%',
-                    resizeMode:'stretch'
+                    resizeMode: 'stretch'
                 }} />
             </View>
-        )
+        );
     }
+
+    const renderProduct = ({ item }) => (
+        <Item image={item.imageUrl} />
+    );
 
     const goToMessage = async () => {
         const refBuyer = doc(db,
@@ -228,41 +232,19 @@ const NewProductInfo = ({ route }) => {
                             </View>
                         </View>
                     </View>
-                    <FlatList
-                        data={productInfo.imagesPreview ? productInfo.imagesPreview : null}
-                        horizontal
-                        renderItem={renderProduct}
-                        showsHorizontalScrollIndicator={false}
-                        decelerationRate={0.8}
-                        snapToInterval={width}
-                        bounces={false}
-                        onScroll={Animated.event(
-                            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                            { useNativeDriver: false },
-                        )}
-                    />
-                    <View style={styles.imageListContainer}>
-                        {productInfo.imagesPreview
-                            ? productInfo.imagesPreview.map((data, index) => {
-                                let opacity = position.interpolate({
-                                    inputRange: [index - 1, index, index + 1],
-                                    outputRange: [0.2, 1, 0.2],
-                                    extrapolate: 'clamp',
-                                });
-                                return (
-                                    <Animated.View
-                                        key={index}
-                                        style={{
-                                            width: '16%',
-                                            height: 2.4,
-                                            backgroundColor: COLOURS.primaryOrange,
-                                            opacity,
-                                            marginHorizontal: 4,
-                                            borderRadius: 100,
-                                        }}></Animated.View>
-                                );
-                            })
-                            : null}
+                    <View style={{
+                        width: width,
+                        height: 260,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingTop: 20,
+                        paddingHorizontal: 20
+                    }}>
+                        <Image source={{uri : productInfo.productImage}} style={{
+                            width: '100%',
+                            height: '100%',
+                            resizeMode: 'stretch'
+                        }} />
                     </View>
                     <View style={styles.container}>
                         <View style={{

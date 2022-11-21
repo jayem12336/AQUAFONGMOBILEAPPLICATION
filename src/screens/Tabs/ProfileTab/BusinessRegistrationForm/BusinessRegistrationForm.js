@@ -88,7 +88,6 @@ const BusinessRegistrationForm = ({ navigation, route }) => {
         if (!result.cancelled) {
             setImage2(result.uri);
         }
-
     };
 
     const validate = () => {

@@ -75,10 +75,6 @@ const RenderProduct = ({ data, navigation, check, userid, id, userinfo }) => {
             <Text style={styles.productPriceText}>
               &#x20B1;{data.productPrice * data.productQuantity}
             </Text>
-            <Text>
-              (&#x20B1;
-              {data.productPrice * data.productQuantity + data.productPrice / 20})
-            </Text>
           </View>
         </View>
       </View>

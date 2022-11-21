@@ -64,7 +64,7 @@ const PurchaseScreen = ({ navigation, route }) => {
                 shopID: productID.shopID,
                 prodID: productID.prodID,
                 vouchurs: productID.productPrice * quantity >= 500 ? "free delivery" : "no vouchur",
-                price: productID.productPrice * quantity >= 500 ? productID.productPrice * quantity : productID.productPrice * quantity + productID.productPrice / 20,
+                price: productID.productPrice * quantity >= 500 ? productID.productPrice * quantity : (productID.productPrice * quantity) + (productID.productPrice * quantity) / 20,
                 parentProdID: productID.parentProductID,
                 dateOrder: new Date().toISOString(),
                 paymentMethod: handlePaymentMethod,

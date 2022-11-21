@@ -244,7 +244,7 @@ const OrderDetails = ({ route, navigation }) => {
                                             fontSize: 15,
                                             color: COLOURS.backgroundMedium,
                                             fontWeight: 'bold'
-                                        }}>Vouchur</Text>
+                                        }}>Voucher</Text>
                                         <Text style={{
                                             marginTop: 5,
                                             fontSize: 15,

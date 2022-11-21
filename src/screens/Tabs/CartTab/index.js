@@ -126,7 +126,7 @@ const CartTab = ({ navigation, route }) => {
                     productImage: dataState[index].data.productImage,
                     quantity: dataState[index].data.productQuantity,
                     vouchurs: dataState[index].data.productPrice * dataState[index].data.productQuantity >= 500 ? "free delivery" : "no vouchur",
-                    price: dataState[index].data.productPrice * dataState[index].data.productQuantity >= 500 ? dataState[index].data.productPrice * dataState[index].data.productQuantity : dataState[index].data.productPrice * dataState[index].data.productQuantity + dataState[index].data.productPrice / 20,
+                    price: dataState[index].data.productPrice * dataState[index].data.productQuantity >= 500 ? dataState[index].data.productPrice * dataState[index].data.productQuantity : (dataState[index].data.productPrice * dataState[index].data.productQuantity) + (dataState[index].data.productPrice  * dataState[index].data.productQuantity)/ 20,
                     buyerID: userinfo,
                     shopID: dataState[index].data.shopID,
                     prodID: dataState[index].data.prodID,
