@@ -273,7 +273,10 @@ const NewProductInfo = ({ route }) => {
                                 </TouchableOpacity>
                             </View>
                             <Text style={styles.priceStyle}>
-                                &#x20B1;{productInfo.productPrice}
+                                Price: &#x20B1;{productInfo.productPrice}
+                            </Text>
+                            <Text style={styles.priceStyle}>
+                                Stocks: {productInfo.productQuantity}
                             </Text>
                         </View>
                         {/* <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>
@@ -367,7 +370,7 @@ const NewProductInfo = ({ route }) => {
                                                 <View style={[styles.plusIconContainer, { marginLeft: 20 }]}>
                                                     <TouchableOpacity onPress={
                                                         () => {
-                                                            if (quantity <= productInfo.productQuantity) { setQuantity(quantity + 1) }
+                                                            if (quantity < productInfo.productQuantity) { setQuantity(quantity + 1) }
                                                         }
                                                     }>
                                                         <MaterialCommunityIcons
@@ -421,7 +424,7 @@ const NewProductInfo = ({ route }) => {
                                         <TouchableOpacity
                                             onPress={() => {
                                                 navigation.navigate('Purchase', { productID: productInfo, quantity: quantity }),
-                                                    setBuyNowButton(false)
+                                                 setBuyNowButton(false)
                                                 setQuantity(1)
                                             }}
                                             style={styles.buyBtnContainer}
